@@ -39,3 +39,27 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# temp deploy / scrape artifacts
+*.html
+*cookies*.txt
+*_snapshot.json
+*_payload.json
+*_result.json
+*_res.json
+*_status.json
+api_*.json
+eventflow_*.json
+create_*.json
+test_*.json
+all_apps.json
+app_req.json
+token_*.json
+db_status.json
+extract*.js
+make*.js
+enable*.js
+parse*.js
+inspect*.js
+check*.js
+

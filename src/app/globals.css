@@ -1,26 +1,201 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+@theme {
+  --color-primary: #E91E63;         /* TMD Hot Pink / Magenta */
+  --color-primary-dark: #C2185B;
+  --color-primary-light: #FF4081;
+  --color-accent: #FF6F61;          /* TMD Coral / Rose */
+  --color-accent-light: #FF8A80;
+  --color-background: #0A0A0A;      /* Deep Near-Black */
+  --color-surface: #141414;         /* Charcoal Primary Surface */
+  --color-surface-light: #1E1E1E;   /* Elevated Card Surface */
+  --color-surface-hover: #262626;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #9E9E9E;
+  --color-text-muted: #616161;
+  --color-success: #10B981;
+  --color-error: #EF4444;
+  --color-warning: #F59E0B;
+  --color-border: #222222;
+  --color-border-light: #2E2E2E;
+  --color-border-focus: #E91E63;
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-family: 'Oracle Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --radius-max: 8px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #0A0A0A;
+  color: #FFFFFF;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0A0A0A;
+  color: #FFFFFF;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(233, 30, 99, 0.07), transparent 45%),
+    radial-gradient(circle at 100% 100%, rgba(255, 111, 97, 0.04), transparent 40%);
+  background-attachment: fixed;
+}
+
+/* Strict max 8px border radius constraint across all components */
+button, input, textarea, select, nav, dialog, .tmd-card, .tmd-surface {
+  border-radius: 8px;
+}
+
+/* Typography Hierarchy Tokens */
+.tmd-display {
+  font-size: 2rem;
+  line-height: 2.25rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.tmd-h1 {
+  font-size: 1.5rem;
+  line-height: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.tmd-h2 {
+  font-size: 1.25rem;
+  line-height: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.tmd-h3 {
+  font-size: 1rem;
+  line-height: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.tmd-section-title {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #616161;
+}
+
+.tmd-body-large {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 400;
+}
+
+.tmd-body {
+  font-size: 0.875rem;
+  line-height: 1.35rem;
+  font-weight: 400;
+}
+
+.tmd-body-small {
+  font-size: 0.75rem;
+  line-height: 1.15rem;
+  font-weight: 400;
+  color: #9E9E9E;
+}
+
+.tmd-caption {
+  font-size: 0.6875rem;
+  line-height: 0.95rem;
+  font-weight: 500;
+  color: #616161;
+}
+
+/* Clean Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #222222;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #E91E63;
+}
+
+::selection {
+  background-color: #E91E63;
+  color: #FFFFFF;
+}
+
+/* Animations */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.18s ease-out forwards;
+}
+
+/* Surface & Card Classes */
+.tmd-surface {
+  background-color: #141414;
+  border: 1px solid #222222;
+  border-radius: 8px;
+}
+
+.tmd-surface-card {
+  background-color: #1A1A1A;
+  border: 1px solid #282828;
+  border-radius: 8px;
+}
+
+.tmd-surface-elevated {
+  background-color: #202020;
+  border: 1px solid #303030;
+  border-radius: 8px;
+}
+
+.tmd-blur-glass {
+  background: rgba(18, 18, 18, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Touch Target helper */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
 }
