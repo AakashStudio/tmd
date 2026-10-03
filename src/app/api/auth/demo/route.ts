@@ -4,7 +4,13 @@ import { queryOne, query } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   try {
-    const { role = 'pro_499' } = await request.json();
+    let body: any = {};
+    try {
+      body = await request.json();
+    } catch {
+      body = {};
+    }
+    const { role = 'pro_499' } = body || {};
 
     let userId = 'user_ananya';
     let userRole: 'user' | 'admin' = 'user';
