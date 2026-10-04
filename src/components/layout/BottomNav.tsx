@@ -21,8 +21,8 @@ export function BottomNav() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-40 bg-[#0E0E0E]/95 backdrop-blur-xl border-t border-[#1C1C1C]">
-      <div className="flex items-center justify-around h-16 px-2">
+    <nav className="w-full bg-[#0E0E12] border-t border-[#1E1E26] z-40 select-none">
+      <div className="flex items-center justify-around h-14 max-w-lg mx-auto px-2">
         {NAV_ITEMS.map((item) => {
           const active = isActive(item.href);
           const Icon = item.icon;
@@ -30,19 +30,19 @@ export function BottomNav() {
             <Link
               key={item.key}
               href={item.href}
-              className={`relative flex flex-col items-center justify-center flex-1 h-full py-1 transition-all duration-150 select-none ${
-                active ? 'text-[#E91E63]' : 'text-[#616161] hover:text-[#A0A0A0]'
+              className={`relative flex flex-col items-center justify-center flex-1 h-full py-1 transition-all duration-150 ${
+                active ? 'text-[#FF1493]' : 'text-[#71717A] hover:text-[#A1A1AA]'
               }`}
             >
               {active && (
-                <span className="absolute top-0 w-6 h-[2px] bg-[#E91E63] rounded-[1px] shadow-[0_0_8px_rgba(233,30,99,0.8)]" />
+                <span className="absolute top-0 w-8 h-[2px] bg-gradient-to-r from-[#FF1493] to-[#FF4D6D] rounded-full shadow-[0_0_8px_rgba(255,20,147,0.7)]" />
               )}
               <Icon
-                size={21}
-                strokeWidth={active ? 2.4 : 1.75}
-                className={`transition-transform duration-150 ${active ? 'scale-105 drop-shadow-[0_0_8px_rgba(233,30,99,0.35)]' : ''}`}
+                size={20}
+                strokeWidth={active ? 2.4 : 1.8}
+                className={`transition-transform duration-150 ${active ? 'scale-105' : ''}`}
               />
-              <span className={`text-[10px] tracking-tight mt-1 font-semibold ${active ? 'text-white' : 'text-[#616161]'}`}>
+              <span className={`text-[10px] tracking-tight mt-0.5 font-bold ${active ? 'text-white' : 'text-[#71717A]'}`}>
                 {item.label}
               </span>
             </Link>

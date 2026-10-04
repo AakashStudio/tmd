@@ -3,7 +3,7 @@
 import { ReactNode } from 'react';
 import { Button } from './Button';
 
-interface DialogProps {
+export interface DialogProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
@@ -43,10 +43,10 @@ export function Dialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onClick={onClose} />
-      <div className="relative bg-[#141414] border border-[#282828] rounded-[8px] w-full max-w-sm p-5 shadow-2xl z-10 animate-slide-up">
+      <div className="relative bg-[#121216] border border-[#2D2D38] rounded-[8px] w-full max-w-sm p-5 shadow-2xl z-10 animate-slide-up">
         <h3 className="text-base font-extrabold text-white mb-2 tracking-tight">{title}</h3>
         {description && (
-          <p className="text-[#9E9E9E] text-xs leading-relaxed mb-4">{description}</p>
+          <p className="text-[#A1A1AA] text-xs leading-relaxed mb-4">{description}</p>
         )}
         {children && <div className="mb-4">{children}</div>}
         {onConfirm && (

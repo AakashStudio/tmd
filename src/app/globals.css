@@ -1,24 +1,66 @@
 @import 'tailwindcss';
 
+/* Oracle Sans Font Faces */
+@font-face {
+  font-family: 'Oracle Sans';
+  src: url('/fonts/OracleSans-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Oracle Sans';
+  src: url('/fonts/OracleSans-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Oracle Sans';
+  src: url('/fonts/OracleSans-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Oracle Sans';
+  src: url('/fonts/OracleSans-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Oracle Sans';
+  src: url('/fonts/OracleSans-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
-  --color-primary: #E91E63;         /* TMD Hot Pink / Magenta */
-  --color-primary-dark: #C2185B;
-  --color-primary-light: #FF4081;
-  --color-accent: #FF6F61;          /* TMD Coral / Rose */
-  --color-accent-light: #FF8A80;
-  --color-background: #0A0A0A;      /* Deep Near-Black */
-  --color-surface: #141414;         /* Charcoal Primary Surface */
-  --color-surface-light: #1E1E1E;   /* Elevated Card Surface */
-  --color-surface-hover: #262626;
+  --color-primary: #FF1493;           /* TMD Hot Pink / Magenta */
+  --color-primary-hover: #E0007E;
+  --color-primary-active: #C2006D;
+  --color-accent: #FF4D6D;            /* TMD Coral / Rose */
+  --color-accent-soft: #FF758F;
+  --color-background: #08080A;        /* Near-black deep foundation */
+  --color-surface: #121216;           /* Charcoal primary surface */
+  --color-surface-elevated: #1A1A22;  /* Elevated surface (cards, sheets) */
+  --color-surface-hover: #22222E;
+  --color-surface-active: #2A2A38;
+  --color-border-subtle: #1E1E26;     /* 1px subtle divider */
+  --color-border-strong: #2D2D38;     /* Interactive borders */
+  --color-border-focus: #FF1493;
   --color-text-primary: #FFFFFF;
-  --color-text-secondary: #9E9E9E;
-  --color-text-muted: #616161;
+  --color-text-secondary: #A1A1AA;
+  --color-text-muted: #71717A;
   --color-success: #10B981;
   --color-error: #EF4444;
   --color-warning: #F59E0B;
-  --color-border: #222222;
-  --color-border-light: #2E2E2E;
-  --color-border-focus: #E91E63;
 }
 
 :root {
@@ -37,39 +79,29 @@ html {
   font-family: var(--font-family);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #0A0A0A;
+  background-color: #08080A;
   color: #FFFFFF;
   text-rendering: optimizeLegibility;
 }
 
 body {
-  background-color: #0A0A0A;
+  background-color: #08080A;
   color: #FFFFFF;
   min-height: 100dvh;
   overflow-x: hidden;
-  background-image: 
-    radial-gradient(circle at 50% 0%, rgba(233, 30, 99, 0.07), transparent 45%),
-    radial-gradient(circle at 100% 100%, rgba(255, 111, 97, 0.04), transparent 40%);
-  background-attachment: fixed;
 }
 
-/* Global component defaults */
-input, textarea, select {
-  border-radius: 10px;
-}
-
-
-/* Typography Hierarchy Tokens */
+/* Typography Hierarchy Scale */
 .tmd-display {
-  font-size: 2rem;
-  line-height: 2.25rem;
+  font-size: 2.25rem;
+  line-height: 2.5rem;
   font-weight: 900;
   letter-spacing: -0.03em;
 }
 
 .tmd-h1 {
-  font-size: 1.5rem;
-  line-height: 1.85rem;
+  font-size: 1.75rem;
+  line-height: 2.1rem;
   font-weight: 800;
   letter-spacing: -0.025em;
 }
@@ -82,19 +114,10 @@ input, textarea, select {
 }
 
 .tmd-h3 {
-  font-size: 1rem;
-  line-height: 1.4rem;
+  font-size: 1.05rem;
+  line-height: 1.45rem;
   font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-.tmd-section-title {
-  font-size: 0.75rem;
-  line-height: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #616161;
+  letter-spacing: -0.015em;
 }
 
 .tmd-body-large {
@@ -113,17 +136,32 @@ input, textarea, select {
   font-size: 0.75rem;
   line-height: 1.15rem;
   font-weight: 400;
-  color: #9E9E9E;
+  color: #A1A1AA;
 }
 
 .tmd-caption {
   font-size: 0.6875rem;
   line-height: 0.95rem;
   font-weight: 500;
-  color: #616161;
+  color: #71717A;
 }
 
-/* Clean Custom Scrollbar */
+.tmd-metadata {
+  font-size: 0.625rem;
+  line-height: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tmd-button {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
@@ -132,15 +170,15 @@ input, textarea, select {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #222222;
+  background: #1E1E26;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #E91E63;
+  background: #FF1493;
 }
 
 ::selection {
-  background-color: #E91E63;
+  background-color: #FF1493;
   color: #FFFFFF;
 }
 
@@ -161,6 +199,21 @@ input, textarea, select {
   to { opacity: 1; }
 }
 
+@keyframes stamp-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) rotate(-15deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05) rotate(-10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(-10deg);
+  }
+}
+
 .animate-slide-up {
   animation: slide-up 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -169,34 +222,15 @@ input, textarea, select {
   animation: fade-in 0.18s ease-out forwards;
 }
 
-/* Surface & Card Classes */
-.tmd-surface {
-  background-color: #141414;
-  border: 1px solid #222222;
-  border-radius: 8px;
+.animate-stamp-like {
+  animation: stamp-pop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.tmd-surface-card {
-  background-color: #1A1A1A;
-  border: 1px solid #282828;
-  border-radius: 8px;
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
-
-.tmd-surface-elevated {
-  background-color: #202020;
-  border: 1px solid #303030;
-  border-radius: 8px;
-}
-
-.tmd-blur-glass {
-  background: rgba(18, 18, 18, 0.85);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-/* Touch Target helper */
-.touch-target {
-  min-height: 44px;
-  min-width: 44px;
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

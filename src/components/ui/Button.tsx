@@ -1,6 +1,6 @@
 import { forwardRef, ButtonHTMLAttributes } from 'react';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   fullWidth?: boolean;
@@ -11,13 +11,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   { variant = 'primary', size = 'md', fullWidth = false, loading = false, disabled, children, className = '', ...props },
   ref
 ) {
-  const baseStyles = 'inline-flex items-center justify-center font-bold transition-all duration-150 rounded-lg select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E91E63] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100';
+  const baseStyles = 'inline-flex items-center justify-center font-bold transition-all duration-150 rounded-[8px] select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF1493] focus-visible:ring-offset-2 focus-visible:ring-offset-[#08080A] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100';
 
   const variants = {
-    primary: 'bg-[#E91E63] text-white hover:bg-[#D81B60] active:bg-[#C2185B] shadow-md shadow-[#E91E63]/20 border border-[#FF4081]/30',
-    secondary: 'bg-[#1A1A1A] text-white border border-[#2A2A2A] hover:bg-[#222222] hover:border-[#383838]',
-    outline: 'bg-transparent text-[#E91E63] border border-[#E91E63] hover:bg-[#E91E63]/10',
-    ghost: 'bg-transparent text-[#9E9E9E] hover:text-white hover:bg-[#1A1A1A]',
+    primary: 'bg-[#FF1493] hover:bg-[#E0007E] active:bg-[#C2006D] text-white shadow-md shadow-[#FF1493]/20 border border-[#FF4D6D]/30',
+    secondary: 'bg-[#1A1A22] text-white border border-[#2D2D38] hover:bg-[#22222E] hover:border-[#3D3D4C]',
+    outline: 'bg-transparent text-[#FF1493] border border-[#FF1493] hover:bg-[#FF1493]/10',
+    ghost: 'bg-transparent text-[#A1A1AA] hover:text-white hover:bg-[#1A1A22]',
     danger: 'bg-[#EF4444] text-white hover:bg-[#DC2626] border border-[#F87171]/20',
   };
 

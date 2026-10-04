@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Sparkles, PhoneCall, Check } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 export function PhoneLogin() {
   const [phone, setPhone] = useState('9876543210');
@@ -101,10 +101,10 @@ export function PhoneLogin() {
       {step === 'phone' ? (
         <>
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-[#9E9E9E]">Mobile Number</label>
+            <label className="text-xs font-bold uppercase tracking-wider text-[#A1A1AA]">Mobile Number</label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white font-medium text-sm flex items-center gap-1.5">
-                <span className="text-[#9E9E9E]">🇮🇳</span> +91
+                <span className="text-[#A1A1AA]">🇮🇳</span> +91
               </span>
               <Input
                 type="tel"
@@ -118,30 +118,30 @@ export function PhoneLogin() {
             </div>
           </div>
 
-          <Button onClick={handleSendOtp} loading={loading} fullWidth size="lg" className="shadow-lg shadow-[#E91E63]/20">
+          <Button onClick={handleSendOtp} loading={loading} fullWidth size="lg">
             Get Verification Code
           </Button>
         </>
       ) : (
         <>
           <div className="text-center space-y-1">
-            <p className="text-white text-sm font-medium">Verify your mobile</p>
-            <p className="text-[#9E9E9E] text-xs">
+            <p className="text-white text-sm font-bold">Verify your mobile</p>
+            <p className="text-[#A1A1AA] text-xs">
               Code sent to <span className="text-white font-mono font-semibold">+91 {phone}</span>
             </p>
           </div>
 
-          {/* Dev OTP Auto-Fill Helper */}
+          {/* Dev OTP Helper */}
           {devOtp && (
             <div
               onClick={handleAutoFillAndVerify}
-              className="p-3 bg-[#E91E63]/10 border border-[#E91E63]/30 rounded-lg flex items-center justify-between cursor-pointer hover:bg-[#E91E63]/15 transition-all text-xs"
+              className="p-3 bg-[#FF1493]/10 border border-[#FF1493]/30 rounded-[8px] flex items-center justify-between cursor-pointer hover:bg-[#FF1493]/15 transition-all text-xs"
             >
               <div className="flex items-center gap-2">
-                <Sparkles size={16} className="text-[#E91E63]" />
-                <span className="text-white">Dev Code: <strong className="text-[#E91E63] font-mono tracking-widest text-sm">{devOtp}</strong></span>
+                <Sparkles size={16} className="text-[#FF1493]" />
+                <span className="text-white">Dev Code: <strong className="text-[#FF1493] font-mono tracking-widest text-sm">{devOtp}</strong></span>
               </div>
-              <span className="text-[10px] bg-[#E91E63] text-white px-2 py-0.5 rounded font-semibold">
+              <span className="text-[10px] bg-[#FF1493] text-white px-2 py-0.5 rounded-[4px] font-bold">
                 Tap to Auto-fill
               </span>
             </div>
@@ -159,7 +159,7 @@ export function PhoneLogin() {
             />
           </div>
 
-          <Button onClick={() => handleVerifyOtp()} loading={loading} fullWidth size="lg" className="shadow-lg shadow-[#E91E63]/20">
+          <Button onClick={() => handleVerifyOtp()} loading={loading} fullWidth size="lg">
             Verify & Enter
           </Button>
 
@@ -167,7 +167,7 @@ export function PhoneLogin() {
             <button
               type="button"
               onClick={() => { setStep('phone'); setOtp(''); setError(''); }}
-              className="text-[#9E9E9E] hover:text-white transition-colors"
+              className="text-[#A1A1AA] hover:text-white transition-colors"
             >
               Edit number
             </button>
@@ -175,7 +175,7 @@ export function PhoneLogin() {
               type="button"
               onClick={handleSendOtp}
               disabled={resendCooldown > 0 || loading}
-              className="text-[#E91E63] font-medium disabled:text-[#616161] transition-colors"
+              className="text-[#FF1493] font-bold disabled:text-[#71717A] transition-colors"
             >
               {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend Code'}
             </button>
@@ -184,7 +184,7 @@ export function PhoneLogin() {
       )}
 
       {error && (
-        <div className="p-2.5 bg-[#F44336]/10 border border-[#F44336]/30 rounded-lg text-xs text-[#F44336] text-center">
+        <div className="p-2.5 bg-[#EF4444]/10 border border-[#EF4444]/30 rounded-[8px] text-xs text-[#EF4444] text-center">
           {error}
         </div>
       )}

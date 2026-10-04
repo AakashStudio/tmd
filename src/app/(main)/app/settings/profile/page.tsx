@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  ArrowLeft, Plus, X, Lock, CheckCircle2, Camera, ShieldCheck, Sparkles,
-  MapPin, Briefcase, GraduationCap, Heart, Check, Eye, Edit3, ChevronRight
+  ArrowLeft, Plus, X, Lock, Camera, ShieldCheck,
+  MapPin, Briefcase, Check, Eye, Edit3
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -219,8 +219,8 @@ export default function EditProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-[calc(100dvh-4rem)] flex items-center justify-center text-xs text-[#888888]">
-        Loading dating profile...
+      <div className="flex-1 flex items-center justify-center text-xs text-[#71717A] bg-[#08080A]">
+        Loading profile...
       </div>
     );
   }
@@ -228,36 +228,39 @@ export default function EditProfilePage() {
   const primaryPhoto = photos[0]?.url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80';
 
   return (
-    <div className="min-h-[calc(100dvh-4rem)] px-4 py-4 space-y-4 select-none pb-24 bg-[#0A0A0A]">
+    <div className="flex-1 p-4 space-y-4 select-none bg-[#08080A]">
       {/* Header & Mode Switcher */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <button
+            type="button"
             onClick={() => router.push('/app/settings')}
-            className="w-8 h-8 rounded-[6px] bg-[#141414] border border-[#242424] flex items-center justify-center text-[#9E9E9E] hover:text-white transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-[6px] bg-[#121216] border border-[#1E1E26] flex items-center justify-center text-[#A1A1AA] hover:text-white transition-colors cursor-pointer"
           >
             <ArrowLeft size={18} />
           </button>
           <div>
-            <h1 className="text-lg font-black text-white tracking-tight">Dating Profile</h1>
-            <p className="text-[11px] text-[#888888]">Your public persona</p>
+            <h1 className="tmd-h3 text-white">Edit Profile</h1>
+            <p className="tmd-caption text-[#A1A1AA]">Your public persona</p>
           </div>
         </div>
 
         {/* View Switcher: Edit vs Preview */}
-        <div className="flex bg-[#141414] p-0.5 rounded-[6px] border border-[#242424]">
+        <div className="flex bg-[#121216] p-0.5 rounded-[6px] border border-[#1E1E26]">
           <button
+            type="button"
             onClick={() => setActiveTab('edit')}
             className={`px-2.5 py-1 rounded-[4px] text-xs font-bold transition-colors cursor-pointer flex items-center gap-1 ${
-              activeTab === 'edit' ? 'bg-[#E91E63] text-white shadow-sm' : 'text-[#888888] hover:text-white'
+              activeTab === 'edit' ? 'bg-[#FF1493] text-white shadow-sm' : 'text-[#71717A] hover:text-white'
             }`}
           >
             <Edit3 size={12} /> Edit
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('preview')}
             className={`px-2.5 py-1 rounded-[4px] text-xs font-bold transition-colors cursor-pointer flex items-center gap-1 ${
-              activeTab === 'preview' ? 'bg-[#E91E63] text-white shadow-sm' : 'text-[#888888] hover:text-white'
+              activeTab === 'preview' ? 'bg-[#FF1493] text-white shadow-sm' : 'text-[#71717A] hover:text-white'
             }`}
           >
             <Eye size={12} /> Preview
@@ -265,10 +268,10 @@ export default function EditProfilePage() {
         </div>
       </div>
 
-      {/* MODE 1: LIVE PROFILE CARD PREVIEW (What others see on Discovery) */}
+      {/* MODE 1: LIVE PROFILE CARD PREVIEW */}
       {activeTab === 'preview' && (
         <div className="space-y-3 animate-fade-in">
-          <div className="relative aspect-[3/4] w-full rounded-[8px] overflow-hidden bg-[#141414] border border-[#242424] shadow-2xl">
+          <div className="relative aspect-[3/4] w-full rounded-[8px] overflow-hidden bg-[#121216] border border-[#1E1E26] shadow-2xl">
             <img
               src={photos[previewPhotoIndex]?.url || primaryPhoto}
               alt=""
@@ -306,7 +309,7 @@ export default function EditProfilePage() {
             )}
 
             {/* Scrim Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-black/50 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#08080A] via-black/50 to-transparent pointer-events-none" />
 
             {/* Information Layer Over Photo */}
             <div className="absolute bottom-0 left-0 right-0 p-4 z-20 space-y-2">
@@ -315,7 +318,7 @@ export default function EditProfilePage() {
                   {form.name}, <span className="font-normal">{form.age}</span>
                 </h2>
                 {isVerified && (
-                  <span className="inline-flex items-center gap-0.5 text-[10px] font-black bg-[#E91E63] text-white px-1.5 py-0.5 rounded-[4px]">
+                  <span className="inline-flex items-center gap-0.5 text-[10px] font-black bg-[#FF1493] text-white px-1.5 py-0.5 rounded-[4px]">
                     <Check size={10} strokeWidth={3} /> VERIFIED
                   </span>
                 )}
@@ -323,13 +326,13 @@ export default function EditProfilePage() {
 
               <div className="flex items-center gap-2.5 text-xs text-white/90">
                 <span className="flex items-center gap-1 font-semibold">
-                  <MapPin size={13} className="text-[#FF6F61]" /> {form.city || 'Location'}
+                  <MapPin size={13} className="text-[#FF4D6D]" /> {form.city || 'Location'}
                 </span>
                 {form.profession && (
                   <>
                     <span className="text-white/40">•</span>
                     <span className="flex items-center gap-1 truncate text-white/85">
-                      <Briefcase size={13} className="text-[#A0A0A0]" /> {form.profession}
+                      <Briefcase size={13} className="text-[#A1A1AA]" /> {form.profession}
                     </span>
                   </>
                 )}
@@ -350,35 +353,32 @@ export default function EditProfilePage() {
               )}
             </div>
           </div>
-
-          <p className="text-[11px] text-[#666666] text-center">
-            Tap left/right to view your photos exactly as other members see them.
-          </p>
         </div>
       )}
 
       {/* MODE 2: EDIT DATING IDENTITY FORM */}
       {activeTab === 'edit' && (
-        <div className="space-y-5 animate-fade-in">
-          {/* Photos Showcase (Hero 1st slot + 5 secondary slots) */}
+        <div className="space-y-4 animate-fade-in pb-4">
+          {/* Photos Showcase */}
           <div className="space-y-2">
             <div className="flex items-center justify-between px-1">
-              <span className="text-xs font-bold text-[#888888] uppercase tracking-wider">
+              <span className="tmd-metadata text-[#71717A]">
                 Photo Gallery ({photos.length}/6)
               </span>
-              <span className="text-[10px] text-[#FF6F61] font-semibold">Slot 1 is your cover photo</span>
+              <span className="text-[10px] text-[#FF4D6D] font-semibold">Slot 1 is your cover photo</span>
             </div>
 
             <div className="grid grid-cols-3 gap-2">
               {photos.map((photo, idx) => (
                 <div
                   key={photo.id}
-                  className={`rounded-[8px] overflow-hidden relative bg-[#141414] border border-[#242424] ${
+                  className={`rounded-[8px] overflow-hidden relative bg-[#121216] border border-[#1E1E26] ${
                     idx === 0 ? 'col-span-2 row-span-2 aspect-[3/4]' : 'aspect-square'
                   }`}
                 >
                   <img src={photo.url} alt="" className="w-full h-full object-cover object-top" />
                   <button
+                    type="button"
                     onClick={() => handlePhotoDelete(photo.id)}
                     className="absolute top-1.5 right-1.5 w-6 h-6 bg-black/80 rounded-[4px] flex items-center justify-center text-white hover:bg-[#EF4444] transition-colors cursor-pointer"
                     aria-label="Remove photo"
@@ -386,17 +386,17 @@ export default function EditProfilePage() {
                     <X size={13} />
                   </button>
                   {photo.isPrimary && (
-                    <span className="absolute bottom-1.5 left-1.5 text-[9px] font-black bg-[#E91E63] px-2 py-0.5 rounded-[4px] text-white tracking-wider">
-                      PRIMARY COVER
+                    <span className="absolute bottom-1.5 left-1.5 text-[9px] font-black bg-[#FF1493] px-2 py-0.5 rounded-[4px] text-white tracking-wider">
+                      PRIMARY
                     </span>
                   )}
                 </div>
               ))}
 
               {photos.length < 6 && (
-                <label className="aspect-square rounded-[8px] border-2 border-dashed border-[#262626] hover:border-[#E91E63] flex flex-col items-center justify-center cursor-pointer transition-colors bg-[#121212]">
-                  <Plus size={20} className="text-[#666666]" />
-                  <span className="text-[10px] text-[#666666] mt-1 font-semibold">Add Photo</span>
+                <label className="aspect-square rounded-[8px] border-2 border-dashed border-[#2D2D38] hover:border-[#FF1493] flex flex-col items-center justify-center cursor-pointer transition-colors bg-[#121216]">
+                  <Plus size={20} className="text-[#71717A]" />
+                  <span className="text-[10px] text-[#71717A] mt-1 font-semibold">Add Photo</span>
                   <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handlePhotoUpload} />
                 </label>
               )}
@@ -404,14 +404,14 @@ export default function EditProfilePage() {
           </div>
 
           {/* Verification Badge Status */}
-          <div className="bg-[#121212] p-3 rounded-[8px] border border-[#202020] flex items-center justify-between">
+          <div className="bg-[#121216] p-3 rounded-[8px] border border-[#1E1E26] flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <ShieldCheck size={20} className={isVerified ? 'text-[#10B981]' : 'text-[#E91E63]'} />
+              <ShieldCheck size={20} className={isVerified ? 'text-[#10B981]' : 'text-[#FF1493]'} />
               <div>
                 <span className="text-xs font-bold text-white block">
                   {isVerified ? 'Verified Profile Active' : 'Get Verified Badge'}
                 </span>
-                <span className="text-[10px] text-[#888888]">
+                <span className="text-[10px] text-[#71717A]">
                   {isVerified ? 'Your identity is authenticated' : 'Verified profiles get 3x more matches'}
                 </span>
               </div>
@@ -419,24 +419,25 @@ export default function EditProfilePage() {
 
             {!isVerified && (
               <button
+                type="button"
                 onClick={() => router.push('/app/settings/verification')}
-                className="text-xs font-bold text-[#E91E63] hover:underline"
+                className="text-xs font-bold text-[#FF1493] hover:underline"
               >
                 Verify →
               </button>
             )}
           </div>
 
-          {/* Core Identity Section */}
-          <div className="bg-[#121212] p-4 rounded-[8px] border border-[#202020] space-y-3.5">
-            <h3 className="text-xs font-black text-white uppercase tracking-wider">Core Identity</h3>
+          {/* Core Identity */}
+          <div className="bg-[#121216] p-4 rounded-[8px] border border-[#1E1E26] space-y-3.5">
+            <h3 className="tmd-metadata text-[#71717A]">Core Identity</h3>
 
             {/* Display Name */}
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-[#888888]">Display Name</label>
+                <label className="text-xs font-semibold text-[#A1A1AA]">Display Name</label>
                 {!isPro && (
-                  <span className="text-[10px] text-[#FF6F61] flex items-center gap-1 font-bold">
+                  <span className="text-[10px] text-[#FF4D6D] flex items-center gap-1 font-bold">
                     <Lock size={11} /> Pro Tier Required
                   </span>
                 )}
@@ -449,26 +450,27 @@ export default function EditProfilePage() {
               />
             </div>
 
-            {/* Date of Birth & Age (Locked per spec) */}
+            {/* Date of Birth & Age */}
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-[#888888]">Date of Birth (Age {form.age})</label>
+                <label className="text-xs font-semibold text-[#A1A1AA]">Date of Birth (Age {form.age})</label>
                 <button
+                  type="button"
                   onClick={() => setShowDobModal(true)}
-                  className="text-[11px] text-[#E91E63] font-bold hover:underline"
+                  className="text-[11px] text-[#FF1493] font-bold hover:underline"
                 >
                   Correction Request
                 </button>
               </div>
               <div className="relative">
                 <Input value={form.dob} disabled className="opacity-75" />
-                <Lock size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#666666]" />
+                <Lock size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#71717A]" />
               </div>
             </div>
 
             {/* City */}
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-[#888888]">Current City</label>
+              <label className="text-xs font-semibold text-[#A1A1AA]">Current City</label>
               <Input
                 value={form.city}
                 onChange={(e) => setForm({ ...form, city: e.target.value })}
@@ -477,11 +479,11 @@ export default function EditProfilePage() {
             </div>
           </div>
 
-          {/* About Me / Bio Section */}
-          <div className="bg-[#121212] p-4 rounded-[8px] border border-[#202020] space-y-2">
+          {/* About Me / Bio */}
+          <div className="bg-[#121216] p-4 rounded-[8px] border border-[#1E1E26] space-y-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-black text-white uppercase tracking-wider">About You</h3>
-              <span className="text-[10px] text-[#555555]">{form.bio.length}/500</span>
+              <h3 className="tmd-metadata text-[#71717A]">About You</h3>
+              <span className="text-[10px] text-[#71717A]">{form.bio.length}/500</span>
             </div>
             <textarea
               value={form.bio}
@@ -489,13 +491,13 @@ export default function EditProfilePage() {
               rows={3}
               maxLength={500}
               placeholder="What makes you laugh? What's your ideal Friday night in the city?"
-              className="w-full px-3 py-2 bg-[#141414] border border-[#242424] rounded-[8px] text-white text-xs placeholder-[#555555] focus:outline-none focus:border-[#E91E63] resize-none"
+              className="w-full px-3 py-2 bg-[#121216] border border-[#1E1E26] rounded-[8px] text-white text-xs placeholder-[#71717A] focus:outline-none focus:border-[#FF1493] resize-none"
             />
           </div>
 
-          {/* Profession & Lifestyle */}
-          <div className="bg-[#121212] p-4 rounded-[8px] border border-[#202020] space-y-3">
-            <h3 className="text-xs font-black text-white uppercase tracking-wider">Career & Education</h3>
+          {/* Career & Lifestyle */}
+          <div className="bg-[#121216] p-4 rounded-[8px] border border-[#1E1E26] space-y-3">
+            <h3 className="tmd-metadata text-[#71717A]">Career & Education</h3>
 
             <div className="grid grid-cols-2 gap-2.5">
               <Input
@@ -523,9 +525,9 @@ export default function EditProfilePage() {
             />
           </div>
 
-          {/* Relationship Intention */}
-          <div className="bg-[#121212] p-4 rounded-[8px] border border-[#202020] space-y-2.5">
-            <h3 className="text-xs font-black text-white uppercase tracking-wider">Looking For</h3>
+          {/* Looking For */}
+          <div className="bg-[#121216] p-4 rounded-[8px] border border-[#1E1E26] space-y-2.5">
+            <h3 className="tmd-metadata text-[#71717A]">Looking For</h3>
             <div className="grid grid-cols-2 gap-2">
               {INTENTIONS.map((opt) => {
                 const isSelected = form.relationshipIntention === opt.value;
@@ -536,8 +538,8 @@ export default function EditProfilePage() {
                     onClick={() => setForm({ ...form, relationshipIntention: opt.value })}
                     className={`p-2.5 rounded-[8px] border text-left text-xs font-bold transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-[#E91E63]/15 border-[#E91E63] text-white shadow-sm'
-                        : 'bg-[#141414] border-[#242424] text-[#888888] hover:border-[#333333]'
+                        ? 'bg-[#FF1493]/15 border-[#FF1493] text-white shadow-sm'
+                        : 'bg-[#121216] border-[#1E1E26] text-[#A1A1AA] hover:border-[#2D2D38]'
                     }`}
                   >
                     {opt.label}
@@ -546,21 +548,21 @@ export default function EditProfilePage() {
               })}
             </div>
           </div>
+
+          {/* Save Button */}
+          <div className="pt-2">
+            <Button onClick={handleSave} loading={saving} fullWidth size="lg">
+              Save Profile
+            </Button>
+          </div>
         </div>
       )}
-
-      {/* Floating Save Bar */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] p-3 bg-[#0A0A0A]/95 backdrop-blur-xl border-t border-[#1C1C1C] z-30">
-        <Button onClick={handleSave} loading={saving} fullWidth size="lg" className="shadow-xl shadow-[#E91E63]/25">
-          Save Dating Profile
-        </Button>
-      </div>
 
       {/* DOB Correction Request Bottom Sheet */}
       {showDobModal && (
         <BottomSheet isOpen={showDobModal} onClose={() => setShowDobModal(false)} title="DOB Correction Request">
           <div className="space-y-4 pb-4">
-            <p className="text-xs text-[#888888] leading-relaxed">
+            <p className="text-xs text-[#A1A1AA] leading-relaxed">
               Date of birth is strictly locked per TMD's 18+ policy. Corrections require admin review.
             </p>
 
@@ -573,18 +575,18 @@ export default function EditProfilePage() {
             />
 
             <div>
-              <label className="block text-xs font-semibold text-[#888888] mb-1">Reason for Correction</label>
+              <label className="block text-xs font-semibold text-[#A1A1AA] mb-1">Reason for Correction</label>
               <textarea
                 value={dobReason}
                 onChange={(e) => setDobReason(e.target.value)}
                 placeholder="e.g. Typo during mobile signup"
                 rows={3}
-                className="w-full px-3 py-2 bg-[#141414] border border-[#242424] rounded-[8px] text-white text-xs placeholder-[#555555] focus:outline-none focus:border-[#E91E63] resize-none"
+                className="w-full px-3 py-2 bg-[#121216] border border-[#1E1E26] rounded-[8px] text-white text-xs placeholder-[#71717A] focus:outline-none focus:border-[#FF1493] resize-none"
               />
             </div>
 
             <Button onClick={handleDobCorrectionSubmit} loading={submittingDob} fullWidth size="lg">
-              Submit to Support
+              Submit Request
             </Button>
           </div>
         </BottomSheet>

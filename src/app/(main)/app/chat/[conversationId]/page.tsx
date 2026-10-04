@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Send, Camera, Check, CheckCheck, MoreVertical, Shield, Flag, UserX, Eye, X, Sparkles } from 'lucide-react';
+import { ArrowLeft, Send, Camera, Check, CheckCheck, MoreVertical, Shield, Flag, UserX, X } from 'lucide-react';
 import { Dialog } from '@/components/ui/Dialog';
 import { BottomSheet } from '@/components/ui/BottomSheet';
+import { Avatar } from '@/components/ui/Avatar';
 
 interface Message {
   id: string;
@@ -276,7 +277,7 @@ export default function ConversationPage() {
     switch (status) {
       case 'sent': return <Check size={12} className="text-white/60" />;
       case 'delivered': return <CheckCheck size={12} className="text-white/70" />;
-      case 'read': return <CheckCheck size={12} className="text-[#FFD54F]" />;
+      case 'read': return <CheckCheck size={12} className="text-[#FF4D6D]" />;
       default: return null;
     }
   };
@@ -286,12 +287,13 @@ export default function ConversationPage() {
   };
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-[#0A0A0A] select-none">
+    <div className="flex flex-col h-full bg-[#08080A] select-none">
       {/* Header */}
-      <header className="flex items-center gap-3 px-3 py-2.5 bg-[#0E0E0E]/95 backdrop-blur-md border-b border-[#1E1E1E] sticky top-0 z-20 shadow-md">
+      <header className="flex items-center gap-3 px-3 py-2.5 bg-[#0E0E12] border-b border-[#1E1E26] sticky top-0 z-20 shadow-md">
         <button
+          type="button"
           onClick={() => router.push('/app/chat')}
-          className="w-8 h-8 rounded-[6px] flex items-center justify-center text-[#9E9E9E] hover:text-white transition-colors"
+          className="w-8 h-8 rounded-full flex items-center justify-center text-[#A1A1AA] hover:text-white transition-colors cursor-pointer"
           aria-label="Back"
         >
           <ArrowLeft size={19} />
@@ -299,28 +301,18 @@ export default function ConversationPage() {
 
         {otherUser ? (
           <div className="flex items-center gap-2.5 flex-1 min-w-0">
-            <div className="relative flex-shrink-0">
-              <div className="w-9 h-9 rounded-[8px] overflow-hidden bg-[#202020] border border-[#2E2E2E]">
-                {otherUser.photo ? (
-                  <img src={otherUser.photo} alt={otherUser.name} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-xs font-bold text-white">
-                    {otherUser.name[0]}
-                  </div>
-                )}
-              </div>
-              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#10B981] border border-[#0E0E0E]" />
+            <div className="relative">
+              <Avatar
+                src={otherUser.photo}
+                alt={otherUser.name}
+                size="sm"
+                verified={otherUser.verified}
+              />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#10B981] border border-[#0E0E12]" />
             </div>
 
             <div className="min-w-0">
-              <div className="flex items-center gap-1">
-                <h2 className="text-xs font-black text-white truncate">{otherUser.name}</h2>
-                {otherUser.verified && (
-                  <span className="w-3.5 h-3.5 rounded-[2px] bg-[#E91E63] text-white flex items-center justify-center text-[7px] font-bold">
-                    ✓
-                  </span>
-                )}
-              </div>
+              <h2 className="text-xs font-bold text-white truncate">{otherUser.name}</h2>
               <span className="text-[10px] text-[#10B981] font-semibold flex items-center gap-1">
                 Active now
               </span>
@@ -331,8 +323,9 @@ export default function ConversationPage() {
         )}
 
         <button
+          type="button"
           onClick={() => setShowOptions(true)}
-          className="w-8 h-8 rounded-[6px] flex items-center justify-center text-[#9E9E9E] hover:text-white hover:bg-[#1E1E1E] transition-colors"
+          className="w-8 h-8 rounded-full flex items-center justify-center text-[#A1A1AA] hover:text-white hover:bg-[#1A1A22] transition-colors cursor-pointer"
           aria-label="Options"
         >
           <MoreVertical size={17} />
@@ -341,10 +334,10 @@ export default function ConversationPage() {
 
       {/* Message Thread */}
       <main className="flex-1 overflow-y-auto px-3.5 py-4 space-y-3">
-        {/* Safety Encrypted Notice */}
-        <div className="text-center py-2">
-          <span className="text-[10px] text-[#666666] bg-[#121212] px-3 py-1 rounded-[6px] border border-[#1E1E1E] inline-flex items-center gap-1">
-            <Shield size={11} className="text-[#E91E63]" /> TMD Encrypted • View Once Protection Active
+        {/* Safety Notice */}
+        <div className="text-center py-1">
+          <span className="text-[10px] text-[#71717A] bg-[#121216] px-3 py-1 rounded-[6px] border border-[#1E1E26] inline-flex items-center gap-1">
+            <Shield size={11} className="text-[#FF1493]" /> TMD Encrypted • View Once Active
           </span>
         </div>
 
@@ -355,8 +348,8 @@ export default function ConversationPage() {
               <div
                 className={`max-w-[78%] rounded-[8px] px-3.5 py-2 text-xs shadow-md transition-all ${
                   isMine
-                    ? 'bg-gradient-to-r from-[#E91E63] to-[#C2185B] text-white border border-[#FF4081]/25'
-                    : 'bg-[#141414] text-white border border-[#222222]'
+                    ? 'bg-gradient-to-r from-[#FF1493] to-[#FF4D6D] text-white'
+                    : 'bg-[#121216] text-white border border-[#1E1E26]'
                 }`}
               >
                 {/* View Once Photo Bubble */}
@@ -366,7 +359,7 @@ export default function ConversationPage() {
                     className={`flex items-center gap-2.5 py-1 ${!isMine && !msg.media?.viewedAt ? 'cursor-pointer hover:opacity-90' : ''}`}
                   >
                     <div className="w-8 h-8 rounded-[6px] bg-black/35 flex items-center justify-center flex-shrink-0">
-                      <Camera size={16} className={msg.media?.viewedAt ? 'text-[#888888]' : 'text-[#FFD54F]'} />
+                      <Camera size={16} className={msg.media?.viewedAt ? 'text-[#71717A]' : 'text-[#FF4D6D]'} />
                     </div>
                     <div>
                       <p className="font-bold text-[11px]">
@@ -394,14 +387,14 @@ export default function ConversationPage() {
         <div ref={messagesEndRef} />
       </main>
 
-      {/* Input Bar */}
-      <footer className="px-3 py-2.5 bg-[#0E0E0E] border-t border-[#1C1C1C] sticky bottom-0">
+      {/* Input Dock */}
+      <footer className="px-3 py-2.5 bg-[#0E0E12] border-t border-[#1E1E26]">
         <div className="flex items-center gap-2">
-          {/* Camera / View Once Photo Trigger */}
+          {/* Camera / View Once Trigger */}
           <button
             type="button"
             onClick={handleSendViewOnce}
-            className="w-10 h-10 rounded-[8px] bg-[#141414] border border-[#242424] text-[#9E9E9E] hover:text-[#E91E63] hover:border-[#E91E63]/40 flex items-center justify-center transition-all cursor-pointer flex-shrink-0"
+            className="w-10 h-10 rounded-[8px] bg-[#121216] border border-[#1E1E26] text-[#A1A1AA] hover:text-[#FF1493] hover:border-[#FF1493]/40 flex items-center justify-center transition-all cursor-pointer flex-shrink-0"
             title="Send View Once photo"
             aria-label="Send View Once"
           >
@@ -421,7 +414,7 @@ export default function ConversationPage() {
               }
             }}
             placeholder="Type a message..."
-            className="flex-1 h-10 px-3 bg-[#141414] border border-[#242424] rounded-[8px] text-white placeholder-[#555555] text-xs focus:outline-none focus:border-[#E91E63] transition-colors"
+            className="flex-1 h-10 px-3 bg-[#121216] border border-[#1E1E26] rounded-[8px] text-white placeholder-[#71717A] text-xs focus:outline-none focus:border-[#FF1493] transition-colors"
           />
 
           {/* Send Button */}
@@ -429,7 +422,7 @@ export default function ConversationPage() {
             type="button"
             onClick={handleSend}
             disabled={!newMessage.trim() || sending}
-            className="w-10 h-10 rounded-[8px] bg-[#E91E63] text-white flex items-center justify-center disabled:opacity-40 hover:bg-[#D81B60] active:scale-95 transition-all cursor-pointer flex-shrink-0 shadow-md shadow-[#E91E63]/25"
+            className="w-10 h-10 rounded-[8px] bg-[#FF1493] text-white flex items-center justify-center disabled:opacity-40 hover:bg-[#E0007E] active:scale-95 transition-all cursor-pointer flex-shrink-0 shadow-md shadow-[#FF1493]/25"
             aria-label="Send message"
           >
             <Send size={15} />
@@ -441,12 +434,13 @@ export default function ConversationPage() {
       {viewingPhotoUrl && (
         <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-between p-4 select-none animate-fade-in">
           <div className="w-full flex items-center justify-between z-10 pt-2 px-2">
-            <span className="text-xs font-black bg-[#E91E63] text-white px-3 py-1 rounded-[6px] shadow-lg">
+            <span className="text-xs font-bold bg-[#FF1493] text-white px-3 py-1 rounded-[6px] shadow-lg">
               Self-Destructs in {viewTimeRemaining}s
             </span>
             <button
+              type="button"
               onClick={() => setViewingPhotoUrl(null)}
-              className="w-8 h-8 rounded-[6px] bg-white/20 text-white flex items-center justify-center cursor-pointer"
+              className="w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center cursor-pointer"
             >
               <X size={18} />
             </button>
@@ -466,7 +460,7 @@ export default function ConversationPage() {
             </div>
           </div>
 
-          <p className="text-[11px] text-[#888888] pb-4">
+          <p className="text-[11px] text-[#71717A] pb-4">
             Protected single-view media. Screenshots & recording are strictly prohibited.
           </p>
         </div>
@@ -476,35 +470,38 @@ export default function ConversationPage() {
       <BottomSheet isOpen={showOptions} onClose={() => setShowOptions(false)} title="Conversation Options">
         <div className="space-y-1 pb-4">
           <button
+            type="button"
             onClick={() => {
               setShowOptions(false);
               setShowUnmatch(true);
             }}
-            className="w-full text-left px-3.5 py-3 rounded-[8px] hover:bg-[#1A1A1A] text-xs font-bold text-white flex items-center gap-3 transition-colors cursor-pointer"
+            className="w-full text-left px-3.5 py-3 rounded-[8px] hover:bg-[#1A1A22] text-xs font-bold text-white flex items-center gap-3 transition-colors cursor-pointer"
           >
-            <UserX size={16} className="text-[#FF6F61]" />
+            <UserX size={16} className="text-[#FF4D6D]" />
             <span>Unmatch {otherUser?.name}</span>
           </button>
 
           <button
+            type="button"
             onClick={() => {
               setShowOptions(false);
               setShowBlock(true);
             }}
-            className="w-full text-left px-3.5 py-3 rounded-[8px] hover:bg-[#1A1A1A] text-xs font-bold text-[#EF4444] flex items-center gap-3 transition-colors cursor-pointer"
+            className="w-full text-left px-3.5 py-3 rounded-[8px] hover:bg-[#1A1A22] text-xs font-bold text-[#EF4444] flex items-center gap-3 transition-colors cursor-pointer"
           >
             <Shield size={16} className="text-[#EF4444]" />
             <span>Block & Report {otherUser?.name}</span>
           </button>
 
           <button
+            type="button"
             onClick={() => {
               setShowOptions(false);
               router.push('/app/settings/report');
             }}
-            className="w-full text-left px-3.5 py-3 rounded-[8px] hover:bg-[#1A1A1A] text-xs font-semibold text-[#888888] hover:text-white flex items-center gap-3 transition-colors cursor-pointer"
+            className="w-full text-left px-3.5 py-3 rounded-[8px] hover:bg-[#1A1A22] text-xs font-semibold text-[#A1A1AA] hover:text-white flex items-center gap-3 transition-colors cursor-pointer"
           >
-            <Flag size={16} className="text-[#888888]" />
+            <Flag size={16} className="text-[#71717A]" />
             <span>Report Profile</span>
           </button>
         </div>

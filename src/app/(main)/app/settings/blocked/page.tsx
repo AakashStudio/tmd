@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, UserX, Shield } from 'lucide-react';
+import { ArrowLeft, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useToast } from '@/components/ui/Toast';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 interface BlockedUser {
   id: string;
@@ -61,28 +62,33 @@ export default function BlockedUsersPage() {
   };
 
   return (
-    <div className="min-h-[calc(100dvh-5rem)] px-4 py-4 max-w-lg mx-auto">
-      <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => router.push('/app/settings')} className="text-[#9E9E9E] hover:text-white">
-          <ArrowLeft size={22} />
+    <div className="flex-1 p-4 select-none bg-[#08080A]">
+      <div className="flex items-center gap-3 mb-5">
+        <button
+          type="button"
+          onClick={() => router.push('/app/settings')}
+          className="w-8 h-8 rounded-[6px] bg-[#121216] border border-[#1E1E26] flex items-center justify-center text-[#A1A1AA] hover:text-white transition-colors cursor-pointer"
+        >
+          <ArrowLeft size={18} />
         </button>
-        <h1 className="text-xl font-bold">Blocked Users</h1>
+        <h1 className="tmd-h3 text-white">Blocked Users</h1>
       </div>
 
       {loading ? (
-        <div className="text-center py-8 text-[#9E9E9E]">Loading...</div>
+        <div className="text-center py-12 text-xs text-[#71717A]">Loading...</div>
       ) : blockedList.length === 0 ? (
-        <div className="text-center py-16 space-y-3">
-          <Shield size={36} className="text-[#616161] mx-auto" />
-          <p className="text-[#9E9E9E] text-sm">You haven't blocked anyone.</p>
-        </div>
+        <EmptyState
+          icon={Shield}
+          title="No blocked users"
+          description="You haven't blocked anyone yet. Blocked accounts cannot message or discover you."
+        />
       ) : (
-        <div className="divide-y divide-[#2E2E2E] bg-[#1A1A1A] rounded-lg border border-[#2E2E2E]">
+        <div className="divide-y divide-[#1E1E26] bg-[#121216] rounded-[8px] border border-[#1E1E26] overflow-hidden">
           {blockedList.map((user) => (
-            <div key={user.id} className="p-4 flex items-center justify-between">
+            <div key={user.id} className="p-3.5 flex items-center justify-between">
               <div>
-                <p className="font-semibold text-sm">{user.name}</p>
-                <p className="text-xs text-[#616161]">
+                <p className="font-bold text-xs text-white">{user.name}</p>
+                <p className="text-[10px] text-[#71717A]">
                   Blocked {new Date(user.createdAt).toLocaleDateString()}
                 </p>
               </div>
