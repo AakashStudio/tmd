@@ -53,10 +53,11 @@ body {
   background-attachment: fixed;
 }
 
-/* Strict max 8px border radius constraint across all components */
-button, input, textarea, select, nav, dialog, .tmd-card, .tmd-surface {
-  border-radius: 8px;
+/* Global component defaults */
+input, textarea, select {
+  border-radius: 10px;
 }
+
 
 /* Typography Hierarchy Tokens */
 .tmd-display {
