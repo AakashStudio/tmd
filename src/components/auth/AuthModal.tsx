@@ -8,11 +8,16 @@ import { useAuth } from "@/hooks/useAuth";
 interface AuthModalProps {
   onSuccess: (hasProfile: boolean) => void;
   onCancel?: () => void;
+  initialProvider?: "PHONE_OTP" | "EMAIL_OTP";
 }
 
-export const AuthModal: React.FC<AuthModalProps> = ({ onSuccess, onCancel }) => {
+export const AuthModal: React.FC<AuthModalProps> = ({
+  onSuccess,
+  onCancel,
+  initialProvider = "PHONE_OTP",
+}) => {
   const { sendOtp, verifyOtp } = useAuth();
-  const [provider, setProvider] = useState<"PHONE_OTP" | "EMAIL_OTP">("PHONE_OTP");
+  const [provider, setProvider] = useState<"PHONE_OTP" | "EMAIL_OTP">(initialProvider);
   const [identifier, setIdentifier] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState<"REQUEST_OTP" | "VERIFY_OTP">("REQUEST_OTP");

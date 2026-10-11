@@ -17,10 +17,13 @@ import { Card } from "@/components/ui/Card";
 import { Sparkles, RefreshCw, Flame, ShieldCheck, Heart } from "lucide-react";
 import Link from "next/link";
 
+import { SplashScreen } from "@/components/auth/SplashScreen";
+import { MeetupAuthHero } from "@/components/auth/MeetupAuthHero";
+
 export default function HomePage() {
   const { user, isLoading: authLoading, hasProfile, refreshUser } = useAuth();
   const { profile, entitlements, isLoading: profileLoading, refreshProfile } = useProfile();
-  const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
+  const [showSplash, setShowSplash] = useState<boolean>(true);
 
   const {
     candidates,
@@ -38,6 +41,10 @@ export default function HomePage() {
     refresh,
   } = useDiscovery();
 
+  if (showSplash) {
+    return <SplashScreen onFinish={() => setShowSplash(false)} durationMs={1800} />;
+  }
+
   if (authLoading || profileLoading) {
     return (
       <div className="min-h-screen bg-[#0a0a0c] flex items-center justify-center text-white">
@@ -49,66 +56,15 @@ export default function HomePage() {
     );
   }
 
-  // 1. Not Authenticated State -> Welcome Landing
+  // 1. Not Authenticated State -> Meetup Design Auth Hero
   if (!user) {
     return (
-      <main className="min-h-screen bg-[#0a0a0c] text-white flex flex-col justify-center px-5 py-8 max-w-md mx-auto">
-        <div className="text-center space-y-2">
-          <div className="w-14 h-14 mx-auto rounded-lg bg-gradient-to-tr from-[#ff1475] to-[#ff6b8b] flex items-center justify-center font-black text-2xl text-white shadow-lg shadow-[#ff1475]/30">
-            TMD
-          </div>
-          <h1 className="text-2xl font-black tracking-tight text-white">
-            The Match Date
-          </h1>
-          <p className="text-xs text-[#9e9ea8] max-w-xs mx-auto leading-relaxed">
-            Real dates. Real people. Verified connections and live local events.
-          </p>
-        </div>
-
-        <div className="space-y-2.5 my-6">
-          <Card className="flex items-center gap-3 bg-[#14141a]/80 p-3">
-            <Flame className="w-5 h-5 text-[#ff1475] shrink-0" />
-            <div className="text-left text-xs">
-              <span className="font-bold text-white block">Focus on Genuine Matches</span>
-              <span className="text-[#7a7a88]">No Super Likes, no vanity metrics. Just mutual interest.</span>
-            </div>
-          </Card>
-          <Card className="flex items-center gap-3 bg-[#14141a]/80 p-3">
-            <ShieldCheck className="w-5 h-5 text-[#10b981] shrink-0" />
-            <div className="text-left text-xs">
-              <span className="font-bold text-white block">Strict 18+ Verification</span>
-              <span className="text-[#7a7a88]">Verified identities with strict safety policies.</span>
-            </div>
-          </Card>
-        </div>
-
-        <div className="space-y-2">
-          <Button
-            variant="primary"
-            size="md"
-            className="w-full"
-            onClick={() => setShowAuthModal(true)}
-          >
-            Get Started with Mobile OTP
-          </Button>
-          <p className="text-[11px] text-center text-[#5e5e6e]">
-            By continuing, you confirm that you are at least 18 years of age.
-          </p>
-        </div>
-
-        {showAuthModal && (
-          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <AuthModal
-              onSuccess={() => {
-                setShowAuthModal(false);
-                refreshUser();
-                refreshProfile();
-              }}
-              onCancel={() => setShowAuthModal(false)}
-            />
-          </div>
-        )}
-      </main>
+      <MeetupAuthHero
+        onSuccess={() => {
+          refreshUser();
+          refreshProfile();
+        }}
+      />
     );
   }
 
