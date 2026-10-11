@@ -1,0 +1,687 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ==========================================
+// 1. USER & IDENTITY
+// ==========================================
+
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+  DELETED
+}
+
+model User {
+  id           String      @id @default(cuid())
+  phone        String?     @unique
+  email        String?     @unique
+  role         UserRole    @default(USER)
+  status       UserStatus  @default(ACTIVE)
+  lastActiveAt DateTime    @default(now())
+  isVerified   Boolean     @default(false)
+  verifiedAt   DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  // 1:1 Relations
+  profile      Profile?
+  preference   Preference?
+  organizer    Organizer?
+
+  // 1:N Relations
+  authIdentities       AuthIdentity[]
+  swipeWindows         SwipeWindow[]
+  likesGiven           Like[]                @relation("LikesGiven")
+  likesReceived        Like[]                @relation("LikesReceived")
+  passesGiven          Pass[]                @relation("PassesGiven")
+  passesReceived       Pass[]                @relation("PassesReceived")
+  matchesAsUser1       Match[]               @relation("User1Matches")
+  matchesAsUser2       Match[]               @relation("User2Matches")
+  messagesSent         Message[]
+  openedMedia          MessageMedia[]        @relation("OpenedMediaUser")
+  subscriptions        Subscription[]
+  payments             Payment[]
+  eventsOrganized      Event[]               @relation("EventsOrganized")
+  eventAttendances     EventAttendee[]
+  reportsFiled         Report[]              @relation("ReportsFiled")
+  reportsAgainst       Report[]              @relation("ReportsAgainst")
+  blocksInitiated      Block[]               @relation("BlocksInitiated")
+  blocksReceived       Block[]               @relation("BlocksReceived")
+  verificationRequests VerificationRequest[]
+  pushTokens           PushToken[]
+  supportTickets       SupportTicket[]
+
+  @@index([status, lastActiveAt])
+  @@map("users")
+}
+
+enum AuthProvider {
+  PHONE_OTP
+  EMAIL_OTP
+}
+
+model AuthIdentity {
+  id            String       @id @default(cuid())
+  userId        String
+  provider      AuthProvider
+  identifier    String
+  otpCodeHash   String?
+  otpExpiresAt  DateTime?
+  attemptsCount Int          @default(0)
+  lastSentAt    DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, identifier])
+  @@index([userId])
+  @@map("auth_identities")
+}
+
+// ==========================================
+// 2. PROFILE & ATTRIBUTES
+// ==========================================
+
+enum RelationshipIntention {
+  LONG_TERM
+  SHORT_TERM_CASUAL
+  FRIENDSHIP
+  NOT_SURE_YET
+}
+
+model Profile {
+  id                    String                @id @default(cuid())
+  userId                String                @unique
+  name                  String
+  dob                   DateTime
+  age                   Int
+  gender                String
+  interestedIn          String
+  city                  String
+  latitude              Float?
+  longitude             Float?
+  bio                   String?
+  profession            String?
+  education             String?
+  height                Int?
+  relationshipIntention RelationshipIntention @default(NOT_SURE_YET)
+  isNameLocked          Boolean               @default(true)
+  locationChangeCount   Int                   @default(0)
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photos    ProfilePhoto[]
+  interests ProfileInterest[]
+  languages ProfileLanguage[]
+
+  @@index([city, gender])
+  @@index([age])
+  @@map("profiles")
+}
+
+enum PhotoStatus {
+  APPROVED
+  PENDING_REVIEW
+  REJECTED
+}
+
+model ProfilePhoto {
+  id         String      @id @default(cuid())
+  profileId  String
+  storageKey String
+  url        String
+  order      Int
+  isPrimary  Boolean     @default(false)
+  status     PhotoStatus @default(APPROVED)
+  flagReason String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId, order])
+  @@map("profile_photos")
+}
+
+model Preference {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  minAge           Int      @default(18)
+  maxAge           Int      @default(99)
+  maxDistanceKm    Int      @default(50)
+  targetCity       String?
+  preferredGenders String   @default("[]") // JSON serialized array of gender preferences
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("preferences")
+}
+
+model Interest {
+  id        String            @id @default(cuid())
+  name      String            @unique
+  slug      String            @unique
+  icon      String?
+  category  String?
+  createdAt DateTime          @default(now())
+  profiles  ProfileInterest[]
+
+  @@map("interests")
+}
+
+model ProfileInterest {
+  id         String   @id @default(cuid())
+  profileId  String
+  interestId String
+  createdAt  DateTime @default(now())
+
+  profile  Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  interest Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, interestId])
+  @@map("profile_interests")
+}
+
+model Language {
+  id        String            @id @default(cuid())
+  name      String            @unique
+  code      String            @unique
+  createdAt DateTime          @default(now())
+  profiles  ProfileLanguage[]
+
+  @@map("languages")
+}
+
+model ProfileLanguage {
+  id         String   @id @default(cuid())
+  profileId  String
+  languageId String
+  createdAt  DateTime @default(now())
+
+  profile  Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  language Language @relation(fields: [languageId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, languageId])
+  @@map("profile_languages")
+}
+
+// ==========================================
+// 3. DISCOVERY, SWIPES & MATCHES
+// ==========================================
+
+model Like {
+  id         String   @id @default(cuid())
+  fromUserId String
+  toUserId   String
+  createdAt  DateTime @default(now())
+
+  fromUser User @relation("LikesGiven", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser   User @relation("LikesReceived", fields: [toUserId], references: [id], onDelete: Cascade)
+
+  @@unique([fromUserId, toUserId])
+  @@index([toUserId, createdAt])
+  @@map("likes")
+}
+
+model Pass {
+  id         String   @id @default(cuid())
+  fromUserId String
+  toUserId   String
+  createdAt  DateTime @default(now())
+
+  fromUser User @relation("PassesGiven", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser   User @relation("PassesReceived", fields: [toUserId], references: [id], onDelete: Cascade)
+
+  @@unique([fromUserId, toUserId])
+  @@index([fromUserId, createdAt])
+  @@map("passes")
+}
+
+model SwipeWindow {
+  id          String   @id @default(cuid())
+  userId      String
+  windowStart DateTime
+  count       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, windowStart])
+  @@index([userId, windowStart])
+  @@map("swipe_windows")
+}
+
+enum MatchStatus {
+  ACTIVE
+  UNMATCHED
+}
+
+model Match {
+  id            String       @id @default(cuid())
+  user1Id       String
+  user2Id       String
+  status        MatchStatus  @default(ACTIVE)
+  unmatchedById String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  user1        User          @relation("User1Matches", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2        User          @relation("User2Matches", fields: [user2Id], references: [id], onDelete: Cascade)
+  conversation Conversation?
+
+  @@unique([user1Id, user2Id])
+  @@index([user1Id, status])
+  @@index([user2Id, status])
+  @@map("matches")
+}
+
+// ==========================================
+// 4. CHAT & VIEW ONCE MEDIA
+// ==========================================
+
+model Conversation {
+  id            String    @id @default(cuid())
+  matchId       String    @unique
+  lastMessageAt DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  match    Match     @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@map("conversations")
+}
+
+enum MessageType {
+  TEXT
+  VIEW_ONCE_PHOTO
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+}
+
+model Message {
+  id             String        @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String
+  type           MessageType   @default(TEXT)
+  status         MessageStatus @default(SENT)
+  createdAt      DateTime      @default(now())
+
+  conversation Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User          @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  media        MessageMedia?
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
+}
+
+model MessageMedia {
+  id             String    @id @default(cuid())
+  messageId      String    @unique
+  storageKey     String
+  isViewOnce     Boolean   @default(true)
+  openedAt       DateTime?
+  openedByUserId String?
+  expiresAt      DateTime?
+  createdAt      DateTime  @default(now())
+
+  message      Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  openedByUser User?   @relation("OpenedMediaUser", fields: [openedByUserId], references: [id], onDelete: SetNull)
+
+  @@map("message_media")
+}
+
+// ==========================================
+// 5. PLANS, SUBSCRIPTIONS & PAYMENTS
+// ==========================================
+
+enum PlanCode {
+  FREE
+  TIER_49
+  TIER_149
+  PRO_499
+}
+
+model Plan {
+  id            String   @id @default(cuid())
+  code          PlanCode @unique
+  name          String
+  priceInPaise  Int
+  durationDays  Int
+  features      String   // JSON string of entitlement features
+  isPro         Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  subscriptions Subscription[]
+  payments      Payment[]
+
+  @@map("plans")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  SUPERSEDED
+}
+
+model Subscription {
+  id        String             @id @default(cuid())
+  userId    String
+  planId    String
+  status    SubscriptionStatus @default(ACTIVE)
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan Plan @relation(fields: [planId], references: [id], onDelete: Restrict)
+
+  @@index([userId, status])
+  @@map("subscriptions")
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  userId            String
+  planId            String
+  razorpayOrderId   String        @unique
+  razorpayPaymentId String?       @unique
+  razorpaySignature String?
+  amountInPaise     Int
+  status            PaymentStatus @default(PENDING)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  user   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan   Plan           @relation(fields: [planId], references: [id], onDelete: Restrict)
+  events PaymentEvent[]
+
+  @@map("payments")
+}
+
+model PaymentEvent {
+  id        String   @id @default(cuid())
+  paymentId String?
+  eventId   String   @unique
+  eventType String
+  payload   String   // JSON raw payload
+  createdAt DateTime @default(now())
+
+  payment Payment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+
+  @@map("payment_events")
+}
+
+// ==========================================
+// 6. EVENTS & ORGANIZERS (PRO FEATURE)
+// ==========================================
+
+enum AttendanceMode {
+  OPEN_JOIN
+  REQUEST_APPROVAL
+}
+
+enum EventStatus {
+  ACTIVE
+  CANCELLED
+  CLOSED
+}
+
+model Event {
+  id             String         @id @default(cuid())
+  organizerId    String
+  title          String
+  category       String
+  description    String
+  coverPhotoUrl  String?
+  startDateTime  DateTime
+  endDateTime    DateTime
+  venue          String
+  address        String
+  latitude       Float?
+  longitude      Float?
+  isResidential  Boolean        @default(false)
+  minAge         Int            @default(18)
+  capacity       Int
+  seatsLeft      Int
+  feeInPaise     Int            @default(0)
+  attendanceMode AttendanceMode @default(OPEN_JOIN)
+  status         EventStatus    @default(ACTIVE)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  organizer User            @relation("EventsOrganized", fields: [organizerId], references: [id], onDelete: Cascade)
+  attendees EventAttendee[]
+  reports   Report[]
+
+  @@index([status, startDateTime])
+  @@index([category])
+  @@map("events")
+}
+
+enum AttendeeStatus {
+  REQUESTED
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+model EventAttendee {
+  id        String         @id @default(cuid())
+  eventId   String
+  userId    String
+  status    AttendeeStatus @default(REQUESTED)
+  joinedAt  DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([eventId, status])
+  @@map("event_attendees")
+}
+
+enum VerificationStatus {
+  UNVERIFIED
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model Organizer {
+  id                 String             @id @default(cuid())
+  userId             String             @unique
+  verificationStatus VerificationStatus @default(UNVERIFIED)
+  identityDocUrl     String?
+  agreementAcceptedAt DateTime?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("organizers")
+}
+
+// ==========================================
+// 7. SAFETY, MODERATION & REPORTS
+// ==========================================
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  DISMISSED
+  ACTIONED
+}
+
+model Report {
+  id              String       @id @default(cuid())
+  reporterId      String
+  reportedUserId  String?
+  reportedEventId String?
+  reason          String
+  details         String?
+  status          ReportStatus @default(PENDING)
+  actionTaken     String?
+  reviewedAt      DateTime?
+  reviewedBy      String?
+  createdAt       DateTime     @default(now())
+
+  reporter     User   @relation("ReportsFiled", fields: [reporterId], references: [id], onDelete: Cascade)
+  reportedUser User?  @relation("ReportsAgainst", fields: [reportedUserId], references: [id], onDelete: SetNull)
+  reportedEvent Event? @relation(fields: [reportedEventId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@map("reports")
+}
+
+model Block {
+  id            String   @id @default(cuid())
+  blockerId     String
+  blockedUserId String
+  createdAt     DateTime @default(now())
+
+  blocker     User @relation("BlocksInitiated", fields: [blockerId], references: [id], onDelete: Cascade)
+  blockedUser User @relation("BlocksReceived", fields: [blockedUserId], references: [id], onDelete: Cascade)
+
+  @@unique([blockerId, blockedUserId])
+  @@map("blocks")
+}
+
+enum RequestType {
+  FACE_VERIFICATION
+  DOB_CORRECTION
+}
+
+model VerificationRequest {
+  id          String             @id @default(cuid())
+  userId      String
+  requestType RequestType
+  payload     String             // JSON payload containing requested DOB or photo reference
+  status      VerificationStatus @default(PENDING)
+  adminNotes  String?
+  reviewedBy  String?
+  reviewedAt  DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status, requestType])
+  @@map("verification_requests")
+}
+
+// ==========================================
+// 8. NOTIFICATIONS & SUPPORT
+// ==========================================
+
+model PushToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String
+  platform  String   @default("web") // web | ios | android
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, token])
+  @@map("push_tokens")
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+model SupportTicket {
+  id              String       @id @default(cuid())
+  userId          String
+  subject         String
+  message         String
+  status          TicketStatus @default(OPEN)
+  resolutionNotes String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@map("support_tickets")
+}
+
+// ==========================================
+// 9. ADMIN & AUDITING
+// ==========================================
+
+enum AdminRole {
+  SUPER_ADMIN
+  MODERATOR
+  SUPPORT_ADMIN
+}
+
+model AdminUser {
+  id           String          @id @default(cuid())
+  email        String          @unique
+  passwordHash String
+  name         String
+  role         AdminRole       @default(MODERATOR)
+  isActive     Boolean         @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  auditLogs AdminAuditLog[]
+
+  @@map("admin_users")
+}
+
+model AdminAuditLog {
+  id          String   @id @default(cuid())
+  adminUserId String
+  action      String
+  targetType  String
+  targetId    String
+  details     String?  // JSON details
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+
+  adminUser AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Restrict)
+
+  @@index([adminUserId, createdAt])
+  @@index([targetType, targetId])
+  @@map("admin_audit_logs")
+}
