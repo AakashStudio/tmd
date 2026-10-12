@@ -11,9 +11,9 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
   const [authMode, setAuthMode] = useState<"PHONE" | "EMAIL" | null>(null);
 
   return (
-    <div className="relative min-h-screen bg-[#111116] text-white flex flex-col justify-between overflow-hidden max-w-md mx-auto select-none">
+    <div className="relative h-screen h-[100dvh] max-h-screen bg-[#111116] text-white flex flex-col justify-between overflow-hidden max-w-md mx-auto select-none">
       {/* Top Background Artwork Header */}
-      <div className="relative w-full h-[52vh] min-h-[340px] flex flex-col items-center justify-between pt-6 pb-4 overflow-hidden">
+      <div className="relative w-full flex-1 min-h-0 flex flex-col items-center justify-between pt-5 pb-2 overflow-hidden">
         {/* Textured/Painterly Violet Background Layer */}
         <div
           className="absolute inset-0 bg-cover bg-center pointer-events-none"
@@ -25,50 +25,50 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
         />
 
         {/* Soft dark vignette gradient towards bottom for seamless transition */}
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#111116] via-[#111116]/80 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#111116] via-[#111116]/80 to-transparent pointer-events-none" />
 
         {/* Top App Branding */}
-        <div className="relative z-10 flex items-center gap-2 mt-4 drop-shadow-md">
+        <div className="relative z-10 flex items-center gap-2 mt-2 drop-shadow-md">
           {/* Logo Icon */}
-          <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-lg">
-            <span className="font-black text-[#FF6079] text-xl italic font-serif">m</span>
+          <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-lg">
+            <span className="font-black text-[#FF6079] text-lg italic font-serif">m</span>
           </div>
-          <span className="text-2xl font-black tracking-tight text-white drop-shadow">
+          <span className="text-xl sm:text-2xl font-black tracking-tight text-white drop-shadow">
             meetup
           </span>
         </div>
 
         {/* Floating Category Doodle Badges */}
-        <div className="absolute left-6 top-28 text-white/40 text-xl pointer-events-none">
+        <div className="absolute left-6 top-20 text-white/40 text-lg pointer-events-none">
           💬
         </div>
-        <div className="absolute right-8 top-32 text-white/40 text-xl pointer-events-none">
+        <div className="absolute right-8 top-24 text-white/40 text-lg pointer-events-none">
           ✨
         </div>
-        <div className="absolute left-6 bottom-20 text-white/40 text-xl pointer-events-none">
+        <div className="absolute left-6 bottom-12 text-white/40 text-lg pointer-events-none">
           🎵
         </div>
-        <div className="absolute right-6 bottom-24 text-white/40 text-xl pointer-events-none">
+        <div className="absolute right-6 bottom-16 text-white/40 text-lg pointer-events-none">
           👤
         </div>
       </div>
 
-      {/* Bottom Content & Action Section */}
-      <div className="relative z-10 px-5 pb-8 pt-0 flex flex-col justify-end space-y-4">
+      {/* Bottom Content & Action Section - Fixed in viewport, no scrolling */}
+      <div className="relative z-10 px-5 pb-5 pt-0 flex flex-col justify-end space-y-3 shrink-0">
         {/* Hero Slogan */}
-        <div className="text-center mb-1">
-          <h1 className="text-[26px] font-black text-white tracking-tight">
+        <div className="text-center mb-0.5">
+          <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
             The people platform
           </h1>
         </div>
 
         {/* Social & Primary Action Buttons */}
-        <div className="space-y-2.5 w-full max-w-sm mx-auto">
+        <div className="space-y-2 w-full max-w-sm mx-auto">
           {/* Google Button */}
           <button
             type="button"
             onClick={() => setAuthMode("EMAIL")}
-            className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-full bg-[#2a2a32] hover:bg-[#34343e] text-white text-[13px] font-bold tracking-wide transition-all shadow-md active:scale-[0.98]"
+            className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-full bg-[#2a2a32] hover:bg-[#34343e] text-white text-[13px] font-bold tracking-wide transition-all shadow-md active:scale-[0.98]"
           >
             {/* Google G icon */}
             <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
@@ -96,7 +96,7 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
           <button
             type="button"
             onClick={() => setAuthMode("PHONE")}
-            className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-full bg-white hover:bg-zinc-100 text-black text-[13px] font-bold tracking-wide transition-all shadow-md active:scale-[0.98]"
+            className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-full bg-white hover:bg-zinc-100 text-black text-[13px] font-bold tracking-wide transition-all shadow-md active:scale-[0.98]"
           >
             {/* Apple Logo SVG */}
             <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 170 170">
@@ -109,7 +109,7 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
           <button
             type="button"
             onClick={() => setAuthMode("PHONE")}
-            className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-full bg-[#4867aa] hover:bg-[#3d5995] text-white text-[13px] font-bold tracking-wide transition-all shadow-md active:scale-[0.98]"
+            className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-full bg-[#4867aa] hover:bg-[#3d5995] text-white text-[13px] font-bold tracking-wide transition-all shadow-md active:scale-[0.98]"
           >
             {/* Facebook F icon */}
             <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
@@ -119,9 +119,9 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
           </button>
 
           {/* Divider with 'or' */}
-          <div className="flex items-center gap-3 py-1">
+          <div className="flex items-center gap-3 py-0.5">
             <div className="flex-1 h-[1px] bg-zinc-800" />
-            <span className="text-xs text-zinc-500 font-medium">or</span>
+            <span className="text-[11px] text-zinc-500 font-medium">or</span>
             <div className="flex-1 h-[1px] bg-zinc-800" />
           </div>
 
@@ -129,13 +129,13 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
           <button
             type="button"
             onClick={() => setAuthMode("EMAIL")}
-            className="w-full py-3 px-4 rounded-full bg-[#3d3257] hover:bg-[#483c66] text-white text-[13px] font-bold tracking-wide transition-all shadow-md active:scale-[0.98]"
+            className="w-full py-2.5 px-4 rounded-full bg-[#3d3257] hover:bg-[#483c66] text-white text-[13px] font-bold tracking-wide transition-all shadow-md active:scale-[0.98]"
           >
             Sign up with email
           </button>
 
           {/* Log in with email / phone */}
-          <div className="text-center pt-1">
+          <div className="text-center pt-0.5">
             <button
               type="button"
               onClick={() => setAuthMode("PHONE")}
