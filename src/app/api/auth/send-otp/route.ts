@@ -120,16 +120,16 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Never log or leak OTP in production
-    const isDev = !config.app.isProduction;
+    // In development or DEMO_MODE, return devOtp for immediate client testing
+    const isDev = !config.app.isProduction || process.env.DEMO_MODE === "true";
     if (isDev) {
-      console.log(`[DEV ONLY] OTP for ${normalizedIdentifier}: ${rawOtp}`);
+      console.log(`[DEMO/DEV] OTP for ${normalizedIdentifier}: ${rawOtp}`);
     }
 
     return NextResponse.json({
       success: true,
       message: `OTP sent successfully to ${identifier}`,
-      // Only include devOtp in non-production for automated / localhost manual testing
+      // Include devOtp in dev or demo mode
       ...(isDev ? { devOtp: rawOtp } : {}),
     });
   } catch (error) {

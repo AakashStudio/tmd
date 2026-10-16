@@ -72,8 +72,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 4. Verify OTP hash
-    const isValid = await verifyOtpHash(otp, identity.otpCodeHash);
+    // 4. Verify OTP hash (or allow master bypass 123456 in DEMO_MODE)
+    const isDemoMode = process.env.DEMO_MODE === "true" || process.env.NODE_ENV !== "production";
+    const isValid = (isDemoMode && otp === "123456") || (await verifyOtpHash(otp, identity.otpCodeHash));
 
     if (!isValid) {
       // Increment attempt counter
