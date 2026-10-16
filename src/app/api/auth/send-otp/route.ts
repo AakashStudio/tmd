@@ -61,40 +61,62 @@ export async function POST(req: NextRequest) {
         },
       });
     } else {
-      // Create user record
-      const newUser = await prisma.user.create({
-        data: {
-          phone: provider === "PHONE_OTP" ? normalizedIdentifier : null,
-          email: provider === "EMAIL_OTP" ? normalizedIdentifier : null,
-          authIdentities: {
-            create: {
-              provider: provider as AuthProvider,
-              identifier: normalizedIdentifier,
-              otpCodeHash: otpHash,
-              otpExpiresAt,
-              attemptsCount: 0,
-              lastSentAt: new Date(),
-            },
-          },
-        },
-      });
-      userId = newUser.id;
-
-      // Assign default Free plan
-      const freePlan = await prisma.plan.findUnique({
-        where: { code: "FREE" },
+      // Check if a user already exists with this phone/email
+      const existingUser = await prisma.user.findFirst({
+        where: provider === "PHONE_OTP"
+          ? { phone: normalizedIdentifier }
+          : { email: normalizedIdentifier },
       });
 
-      if (freePlan) {
-        await prisma.subscription.create({
+      if (existingUser) {
+        userId = existingUser.id;
+        await prisma.authIdentity.create({
           data: {
-            userId: newUser.id,
-            planId: freePlan.id,
-            status: "ACTIVE",
-            startDate: new Date(),
-            endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // Default 1 year baseline
+            userId: existingUser.id,
+            provider: provider as AuthProvider,
+            identifier: normalizedIdentifier,
+            otpCodeHash: otpHash,
+            otpExpiresAt,
+            attemptsCount: 0,
+            lastSentAt: new Date(),
           },
         });
+      } else {
+        // Create user record
+        const newUser = await prisma.user.create({
+          data: {
+            phone: provider === "PHONE_OTP" ? normalizedIdentifier : null,
+            email: provider === "EMAIL_OTP" ? normalizedIdentifier : null,
+            authIdentities: {
+              create: {
+                provider: provider as AuthProvider,
+                identifier: normalizedIdentifier,
+                otpCodeHash: otpHash,
+                otpExpiresAt,
+                attemptsCount: 0,
+                lastSentAt: new Date(),
+              },
+            },
+          },
+        });
+        userId = newUser.id;
+
+        // Assign default Free plan
+        const freePlan = await prisma.plan.findUnique({
+          where: { code: "FREE" },
+        });
+
+        if (freePlan) {
+          await prisma.subscription.create({
+            data: {
+              userId: newUser.id,
+              planId: freePlan.id,
+              status: "ACTIVE",
+              startDate: new Date(),
+              endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // Default 1 year baseline
+            },
+          });
+        }
       }
     }
 

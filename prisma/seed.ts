@@ -1,12 +1,17 @@
 import { PrismaClient, PlanCode, UserRole, UserStatus, RelationshipIntention, PhotoStatus, AdminRole } from "@prisma/client";
-import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
+const targetDbUrl = process.env.OVERRIDE_DB_URL || process.env.DATABASE_URL;
+const prisma = new PrismaClient({
+  datasources: targetDbUrl
+    ? { db: { url: targetDbUrl } }
+    : undefined,
+});
 
 async function main() {
   if (process.env.NODE_ENV === "production" && process.env.ALLOW_SEED !== "true") {
     throw new Error("⛔ CRITICAL: Development seed data cannot be executed in production environment without ALLOW_SEED=true.");
   }
+  console.log("DB URL:", targetDbUrl);
   console.log("🌱 Starting TMD Database Seed (Development Mode)...");
 
   // 1. Seed Master Plans
@@ -143,7 +148,7 @@ async function main() {
 
   // 4. Seed Super Admin
   console.log("Seeding Super Admin...");
-  const adminPasswordHash = await bcrypt.hash("AdminSecretPass#2026", 12);
+  const adminPasswordHash = "$2b$12$tzmhU67RqqHUhwidunfLKu6tD6FqNrOOk4kGxOTZzUfWbFcn30oDe";
   await prisma.adminUser.upsert({
     where: { email: "admin@thematchdate.com" },
     update: {
