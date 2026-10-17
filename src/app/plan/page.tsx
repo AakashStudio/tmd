@@ -1,13 +1,28 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { BottomNav } from "@/components/navigation/BottomNav";
-import { Crown, Check, Sparkles, ShieldCheck, Zap, AlertCircle } from "lucide-react";
-import { Badge } from "@/components/ui/Badge";
-import { Card } from "@/components/ui/Card";
 import { useProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "@/components/auth/AuthModal";
+import {
+  X,
+  Check,
+  Flame,
+  Crown,
+  Sparkles,
+  ShieldCheck,
+  Zap,
+  Star,
+  Globe,
+  Eye,
+  Sliders,
+  VolumeX,
+  ChevronRight,
+  AlertCircle,
+} from "lucide-react";
 
 interface PlanItem {
   id: string;
@@ -21,14 +36,15 @@ interface PlanItem {
 }
 
 export default function PlansPage() {
+  const router = useRouter();
   const { entitlements, refreshProfile } = useProfile();
   const { user, refreshUser } = useAuth();
+
   const [plans, setPlans] = useState<PlanItem[]>([]);
   const [subscription, setSubscription] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
-  const [selectedPlan, setSelectedPlan] = useState<PlanItem | null>(null);
-  const [showCheckoutModal, setShowCheckoutModal] = useState<boolean>(false);
+  const [selectedPlanCode, setSelectedPlanCode] = useState<string>("TIER_149");
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -40,6 +56,12 @@ export default function PlansPage() {
           const data = await res.json();
           setPlans(data.plans || []);
           setSubscription(data.subscription || null);
+          // Default selection: if user has an active plan, or popular TIER_149
+          if (data.activePlanCode && data.activePlanCode !== "FREE") {
+            setSelectedPlanCode(data.activePlanCode);
+          } else {
+            setSelectedPlanCode("TIER_149");
+          }
         }
       } catch (err) {
         console.error("Failed to fetch plans:", err);
@@ -50,38 +72,58 @@ export default function PlansPage() {
     loadPlans();
   }, []);
 
-  const handleInitiatePurchase = (plan: PlanItem) => {
-    if (plan.isActive) return;
-    setSelectedPlan(plan);
-    if (!user) {
-      setShowAuthModal(true);
-      return;
-    }
-    setShowCheckoutModal(true);
-  };
+  const planPackages = [
+    {
+      code: "TIER_149",
+      badge: "Popular",
+      title: "1 Week",
+      subtitle: "₹159.00/wk",
+      price: 159,
+      totalPrice: 159,
+      isPopular: true,
+    },
+    {
+      code: "TIER_49",
+      badge: null,
+      title: "1 Month",
+      subtitle: "₹79.75/wk",
+      price: 319,
+      totalPrice: 319,
+      isPopular: false,
+    },
+    {
+      code: "PRO_499",
+      badge: "VIP PRO",
+      title: "VIP Pass",
+      subtitle: "₹124.75/wk",
+      price: 499,
+      totalPrice: 499,
+      isPopular: false,
+    },
+  ];
+
+  const currentSelectedPkg =
+    planPackages.find((p) => p.code === selectedPlanCode) || planPackages[0];
 
   const handleExecutePayment = async () => {
-    if (!selectedPlan) return;
     if (!user) {
-      setShowCheckoutModal(false);
       setShowAuthModal(true);
       return;
     }
-    setIsProcessing(true);
 
+    setIsProcessing(true);
     try {
-      // 1. Create Order
+      // 1. Create order
       const orderRes = await fetch("/api/payments/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planCode: selectedPlan.code }),
+        body: JSON.stringify({ planCode: selectedPlanCode }),
       });
 
       if (!orderRes.ok) {
         if (orderRes.status === 401) {
-          setShowCheckoutModal(false);
           setShowAuthModal(true);
-          throw new Error("Please log in with your phone number to complete purchase.");
+          throw new Error("Please log in to complete purchase.");
         }
         const err = await orderRes.json().catch(() => ({}));
         throw new Error(err.error || "Failed to create order");
@@ -89,7 +131,7 @@ export default function PlansPage() {
 
       const orderData = await orderRes.json();
 
-      // 2. Complete Payment Verification (Development mock simulation or Razorpay client handler)
+      // 2. Verify payment
       const verifyRes = await fetch("/api/payments/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -97,7 +139,7 @@ export default function PlansPage() {
           orderId: orderData.orderId,
           paymentId: `pay_${Date.now()}`,
           signature: "dev_signature",
-          planCode: selectedPlan.code,
+          planCode: selectedPlanCode,
         }),
       });
 
@@ -106,16 +148,14 @@ export default function PlansPage() {
         throw new Error(verifyErr.error || "Payment verification failed");
       }
 
-      const verifyData = await verifyRes.json();
-
-      // Refresh entitlements
       await refreshProfile();
       await refreshUser();
 
-      setShowCheckoutModal(false);
-      setSuccessMessage(`Success! Upgraded to ${selectedPlan.name}. All features are now unlocked!`);
+      setSuccessMessage(
+        `Success! You are now upgraded to ${currentSelectedPkg.title} TMD Gold. All features are active! 🎉`
+      );
 
-      // Reload plans state
+      // Reload plans
       const plansRes = await fetch("/api/plans");
       if (plansRes.ok) {
         const pData = await plansRes.json();
@@ -123,224 +163,246 @@ export default function PlansPage() {
         setSubscription(pData.subscription || null);
       }
     } catch (err: any) {
-      alert(err.message || "Failed to complete payment");
+      alert(err.message || "Payment could not be completed.");
     } finally {
       setIsProcessing(false);
     }
   };
 
+  const goldFeatures = [
+    {
+      title: "Unlimited Likes",
+      desc: null,
+    },
+    {
+      title: "See Who Likes You",
+      desc: null,
+    },
+    {
+      title: "Unlimited Rewinds",
+      desc: null,
+    },
+    {
+      title: "1 Free Boost per month",
+      desc: "Free monthly Boost only available for 1 month or longer subscriptions.",
+    },
+    {
+      title: "2 Free Super Likes per week",
+      desc: null,
+    },
+    {
+      title: "Unlimited Passport™ Mode*",
+      desc: "Match and chat with people anywhere in the world. *Restrictions apply. Learn more",
+    },
+    {
+      title: "Control Your Profile",
+      desc: "Only show what you want them to know.",
+    },
+    {
+      title: "Control Who Sees You",
+      desc: "Manage who you're seen by.",
+    },
+    {
+      title: "Hide Ads",
+      desc: null,
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#0a0a0c] text-white pb-28 max-w-md mx-auto px-5 py-4">
-      <div className="space-y-4">
-        {/* Header */}
-        <div className="text-center pt-1 pb-1 space-y-1">
-          <div className="w-10 h-10 mx-auto rounded-lg bg-gradient-to-tr from-amber-400 to-rose-500 flex items-center justify-center text-white mb-1.5 shadow-md shadow-rose-500/20">
-            <Crown className="w-5 h-5" />
-          </div>
-          <h1 className="text-xl font-black tracking-tight">TMD Memberships</h1>
-          <p className="text-xs text-zinc-400">
-            Real dates, genuine connections, and local events
-          </p>
+    <div className="min-h-screen bg-[#0d0d12] text-white pb-36 max-w-md mx-auto relative select-none">
+      {/* 1. TOP HEADER (Exact Screenshot Layout) */}
+      <div className="sticky top-0 inset-x-0 z-40 bg-[#0d0d12]/90 backdrop-blur-md px-5 py-3.5 flex items-center justify-between">
+        {/* Close Button */}
+        <button
+          type="button"
+          onClick={() => router.push("/")}
+          className="w-9 h-9 rounded-full bg-zinc-800/80 hover:bg-zinc-700 flex items-center justify-center text-zinc-300 hover:text-white transition active:scale-95 shadow"
+          title="Close"
+        >
+          <X className="w-5 h-5 stroke-[2.5]" />
+        </button>
+
+        {/* Center Logo Branding matching screenshot: TINDER GOLD -> TMD GOLD */}
+        <div className="flex items-center gap-1.5">
+          <span className="font-black text-xl tracking-wider text-white">TMD</span>
+          <span className="px-1.5 py-0.5 rounded text-[10px] font-black bg-[#d4af37] text-black">
+            GOLD
+          </span>
         </div>
 
-        {/* Success Banner */}
+        {/* Right spacer for symmetrical centering */}
+        <div className="w-9 h-9" />
+      </div>
+
+      <div className="px-5 pt-3 space-y-6">
+        {/* Success Alert */}
         {successMessage && (
-          <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs flex items-center gap-2 animate-in fade-in">
+          <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-2 animate-in fade-in">
             <Sparkles className="w-4 h-4 shrink-0" />
             <span>{successMessage}</span>
           </div>
         )}
 
-        {/* Unauthenticated Login Prompt Banner */}
-        {!user && (
-          <div className="p-3 rounded-lg bg-gradient-to-r from-rose-500/15 via-pink-500/10 to-purple-500/10 border border-rose-500/30 flex items-center justify-between text-xs animate-in fade-in">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-rose-400 shrink-0" />
-              <span className="text-zinc-300">Sign in to activate plans & unlock features</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setShowAuthModal(true)}
-              className="px-3 py-1 rounded-md bg-gradient-to-r from-rose-600 to-pink-600 text-white font-bold text-xs hover:opacity-95 shadow-md shadow-rose-600/20 shrink-0"
-            >
-              Sign In
-            </button>
-          </div>
-        )}
-
-        {/* Active Subscription Countdown Status - Only for Paid Plans */}
+        {/* Active Subscription Banner */}
         {subscription && subscription.planCode !== "FREE" && (
-          <div className="p-3.5 rounded-lg bg-zinc-900 border border-zinc-800 space-y-1.5">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-zinc-400">Current Subscription</span>
-              <Badge variant="verified">Active</Badge>
-            </div>
-            <div className="flex items-baseline justify-between">
-              <span className="font-extrabold text-sm text-white">{subscription.planName}</span>
-              <span className="text-xs font-semibold text-rose-400">
-                {subscription.daysRemaining} days left
+          <div className="p-3 rounded-2xl bg-[#171720] border border-amber-500/30 flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-zinc-300 font-semibold">
+                Active Plan: <span className="text-amber-300">{subscription.planName}</span>
               </span>
             </div>
-            <p className="text-[11px] text-zinc-500">
-              Valid until {new Date(subscription.endDate).toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" })}
-            </p>
+            <span className="text-[11px] text-zinc-400 font-medium">
+              {subscription.daysRemaining} days left
+            </span>
           </div>
         )}
 
-        {/* Plans List */}
-        <div className="space-y-3.5">
-          {isLoading ? (
-            <div className="flex justify-center py-10">
-              <div className="w-7 h-7 rounded-full border-2 border-rose-500 border-t-transparent animate-spin" />
-            </div>
-          ) : (
-            plans
-              .filter((p) => p.code !== "FREE" && p.priceInRupees > 0)
-              .map((p) => {
-              const isCurrent = p.isActive;
-
-              return (
-                <Card
-                  key={p.code}
-                  className={`relative p-4 rounded-lg transition-all ${
-                    p.isPro
-                      ? "border-rose-500/80 bg-gradient-to-b from-rose-950/20 via-zinc-950 to-zinc-900 shadow-xl shadow-rose-950/40"
-                      : isCurrent
-                      ? "border-emerald-500/60 bg-zinc-950"
-                      : "border-zinc-800 bg-zinc-950 hover:border-zinc-700"
-                  }`}
-                >
-                  {p.isPro && (
-                    <div className="absolute -top-3 left-4 px-2 py-0.5 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white text-[10px] font-extrabold tracking-wide uppercase shadow">
-                      ⭐ Best Value • Events Differentiator
-                    </div>
-                  )}
-
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <h3 className="font-extrabold text-base text-white">{p.name}</h3>
-                      <span className="text-xs text-zinc-400">
-                        {p.durationDays > 0 ? `${p.durationDays} Days Access` : "Free Tier"}
-                      </span>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-xl font-black text-white">
-                        {p.priceInRupees === 0 ? "Free" : `₹${p.priceInRupees}`}
-                      </div>
-                      <span className="text-[10px] text-zinc-500">
-                        {p.durationDays > 0 ? "one-time payment" : "standard"}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Feature Checklist */}
-                  <div className="space-y-1.5 py-2.5 border-t border-zinc-800/80 text-xs">
-                    {(Array.isArray(p.features) ? p.features : []).map((feature, idx) => (
-                      <div key={idx} className="flex items-center gap-2 text-zinc-300">
-                        <Check className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-                        <span>{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Action Button */}
-                  <div className="pt-2">
-                    {isCurrent ? (
-                      <div className="w-full py-2 rounded-lg bg-zinc-900 border border-emerald-500/40 text-emerald-400 text-xs font-bold text-center">
-                        ✓ Current Active Plan
-                      </div>
-                    ) : p.priceInRupees > 0 ? (
-                      <button
-                        type="button"
-                        onClick={() => handleInitiatePurchase(p)}
-                        className={`w-full py-2.5 rounded-lg font-bold text-xs text-white transition active:scale-[0.98] ${
-                          p.isPro
-                            ? "bg-gradient-to-r from-rose-600 via-pink-600 to-purple-600 hover:opacity-95 shadow-lg shadow-rose-600/30"
-                            : "bg-zinc-800 hover:bg-zinc-700"
-                        }`}
-                      >
-                        Upgrade to {p.name} (₹{p.priceInRupees})
-                      </button>
-                    ) : null}
-                  </div>
-                </Card>
-              );
-            })
-          )}
+        {/* 2. MAIN HEADLINE (Exact Screenshot Copy) */}
+        <div className="space-y-1">
+          <h1 className="text-[26px] font-black leading-tight text-white tracking-tight">
+            See Who Likes You and match with them instantly with TMD Gold™.
+          </h1>
         </div>
 
-        {/* Immediate Replacement Note */}
-        <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/60 flex items-start gap-2.5 text-[11px] text-zinc-400">
-          <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-          <p leading-relaxed>
-            <span className="text-zinc-200 font-medium">Immediate Replacement Policy:</span> Upgrading to a new plan takes effect immediately and supersedes any existing subscription. No recurring auto-charges.
-          </p>
+        {/* 3. SELECT A PLAN SECTION */}
+        <div className="space-y-3">
+          <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+            Select a plan
+          </h2>
+
+          {/* Plan Cards Row */}
+          <div className="grid grid-cols-3 gap-2.5">
+            {planPackages.map((pkg, idx) => {
+              const isSelected = selectedPlanCode === pkg.code;
+
+              return (
+                <div
+                  key={pkg.code}
+                  onClick={() => setSelectedPlanCode(pkg.code)}
+                  className={`relative p-3.5 rounded-2xl cursor-pointer transition-all flex flex-col justify-between min-h-[145px] ${
+                    isSelected
+                      ? "border-2 border-[#d4af37] bg-[#1a1815] shadow-xl shadow-amber-950/30"
+                      : "border border-zinc-800 bg-[#14141a] hover:border-zinc-700"
+                  }`}
+                >
+                  {/* Top Badge & Checkmark */}
+                  <div className="flex items-start justify-between min-h-[18px]">
+                    {pkg.badge ? (
+                      <span className="text-[11px] font-extrabold text-[#d4af37]">
+                        {pkg.badge}
+                      </span>
+                    ) : (
+                      <span />
+                    )}
+
+                    {isSelected && (
+                      <div className="text-[#d4af37]">
+                        <Check className="w-4 h-4 stroke-[3]" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Title */}
+                  <div className="py-2">
+                    <h3 className="text-lg font-black text-white tracking-tight leading-none">
+                      {pkg.title}
+                    </h3>
+                  </div>
+
+                  {/* Subtitle / Price rate */}
+                  <div>
+                    <span className="text-xs font-bold text-zinc-300">
+                      {pkg.subtitle}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Dots Indicator (Matches Screenshot) */}
+          <div className="flex items-center justify-center gap-1.5 pt-1">
+            {planPackages.map((pkg) => (
+              <div
+                key={pkg.code}
+                onClick={() => setSelectedPlanCode(pkg.code)}
+                className={`w-1.5 h-1.5 rounded-full cursor-pointer transition-all ${
+                  selectedPlanCode === pkg.code ? "bg-white w-2" : "bg-zinc-600"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* 4. INCLUDED WITH TINDER GOLD CARD (Matches Screenshot 1 & 2) */}
+        <div className="relative pt-3">
+          {/* Card Container */}
+          <div className="relative rounded-3xl bg-[#14141c] border border-zinc-800/90 p-5 pt-7 space-y-4 shadow-xl">
+            {/* Pill Header attached to top of card */}
+            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#1e1e28] border border-zinc-700 text-zinc-200 text-xs font-extrabold shadow whitespace-nowrap">
+              Included with TMD Gold
+            </div>
+
+            {/* Feature Checklist matching screenshots */}
+            <div className="space-y-4">
+              {goldFeatures.map((feat, idx) => (
+                <div key={idx} className="flex items-start gap-3">
+                  <div className="text-white shrink-0 mt-0.5">
+                    <Check className="w-5 h-5 stroke-[2.5]" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <h4 className="text-sm font-bold text-white leading-tight">
+                      {feat.title}
+                    </h4>
+                    {feat.desc && (
+                      <p className="text-xs text-zinc-400 leading-relaxed font-normal">
+                        {feat.desc}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Checkout Modal */}
-      {showCheckoutModal && selectedPlan && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in">
-          <div className="w-full max-w-sm rounded-3xl bg-zinc-950 border border-rose-500/40 p-6 space-y-5 shadow-2xl relative">
-            <div className="text-center space-y-1">
-              <div className="w-12 h-12 mx-auto rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 mb-2">
-                <Zap className="w-6 h-6" />
-              </div>
-              <h2 className="text-xl font-bold text-white">Upgrade to {selectedPlan.name}</h2>
-              <p className="text-xs text-zinc-400">
-                Secure one-time payment via Razorpay • No auto-renewal
-              </p>
-            </div>
+      {/* 5. FIXED BOTTOM PURCHASE BAR (Exact Screenshot Copy & Style) */}
+      <div className="fixed bottom-0 inset-x-0 z-40 bg-gradient-to-t from-black via-[#0d0d12] to-[#0d0d12]/95 backdrop-blur-md max-w-md mx-auto px-5 pt-3 pb-6 border-t border-zinc-900/80 space-y-3">
+        {/* Fine Print Legal Text */}
+        <p className="text-[10px] text-zinc-400 leading-tight">
+          Recurring billing. Cancel anytime. By tapping Continue, your payment will be charged, your subscription will auto-renew for the same price and package length until you cancel, at any time, via settings, and you agree to our{" "}
+          <span className="underline font-semibold text-zinc-300 cursor-pointer">Terms</span>.
+        </p>
 
-            <div className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-2 text-xs">
-              <div className="flex justify-between">
-                <span className="text-zinc-400">Plan Duration</span>
-                <span className="font-semibold text-white">{selectedPlan.durationDays} Days</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-zinc-400">Amount to Pay</span>
-                <span className="font-extrabold text-white text-sm">₹{selectedPlan.priceInRupees}</span>
-              </div>
-            </div>
+        {/* Continue Button */}
+        <button
+          type="button"
+          onClick={handleExecutePayment}
+          disabled={isProcessing}
+          className="w-full py-4 rounded-full bg-white hover:bg-zinc-100 text-black font-extrabold text-sm tracking-tight transition active:scale-[0.98] shadow-2xl flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          {isProcessing ? (
+            <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <span>Continue - ₹{currentSelectedPkg.totalPrice}.00 total</span>
+          )}
+        </button>
+      </div>
 
-            <div className="space-y-2 pt-1">
-              <button
-                type="button"
-                onClick={handleExecutePayment}
-                disabled={isProcessing}
-                className="w-full py-3.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 transition shadow-lg shadow-rose-600/30 disabled:opacity-50"
-              >
-                {isProcessing ? "Processing Payment..." : `Pay ₹${selectedPlan.priceInRupees} & Activate Instantly`}
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowCheckoutModal(false)}
-                disabled={isProcessing}
-                className="w-full py-2.5 rounded-xl font-semibold text-xs text-zinc-400 hover:text-white transition"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Auth Modal */}
+      {/* Auth Modal if unauthenticated */}
       {showAuthModal && (
         <AuthModal
           onSuccess={async () => {
             setShowAuthModal(false);
             await refreshUser();
             await refreshProfile();
-            if (selectedPlan) {
-              setShowCheckoutModal(true);
-            }
+            handleExecutePayment();
           }}
           onCancel={() => setShowAuthModal(false)}
         />
       )}
-
-      <BottomNav />
     </div>
   );
 }
