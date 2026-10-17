@@ -9,6 +9,7 @@ export async function GET(req: NextRequest) {
   try {
     const user = await getCurrentUser();
     const plans = await prisma.plan.findMany({
+      where: { priceInPaise: { gt: 0 } },
       orderBy: { priceInPaise: "asc" },
     });
 
@@ -77,22 +78,23 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       plans: formattedPlans,
       activePlanCode,
-      subscription: user?.activeSubscription
-        ? {
-            id: user.activeSubscription.id,
-            planCode: user.activeSubscription.plan.code,
-            planName: user.activeSubscription.plan.name,
-            startDate: user.activeSubscription.startDate,
-            endDate: user.activeSubscription.endDate,
-            daysRemaining: Math.max(
-              0,
-              Math.ceil(
-                (new Date(user.activeSubscription.endDate).getTime() - Date.now()) /
-                  (1000 * 60 * 60 * 24)
-              )
-            ),
-          }
-        : null,
+      subscription:
+        user?.activeSubscription && user.activeSubscription.plan.code !== "FREE"
+          ? {
+              id: user.activeSubscription.id,
+              planCode: user.activeSubscription.plan.code,
+              planName: user.activeSubscription.plan.name,
+              startDate: user.activeSubscription.startDate,
+              endDate: user.activeSubscription.endDate,
+              daysRemaining: Math.max(
+                0,
+                Math.ceil(
+                  (new Date(user.activeSubscription.endDate).getTime() - Date.now()) /
+                    (1000 * 60 * 60 * 24)
+                )
+              ),
+            }
+          : null,
     });
   } catch (error: any) {
     console.error("Plans GET error:", error);

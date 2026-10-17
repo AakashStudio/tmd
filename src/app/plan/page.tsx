@@ -168,8 +168,8 @@ export default function PlansPage() {
           </div>
         )}
 
-        {/* Active Subscription Countdown Status */}
-        {subscription && (
+        {/* Active Subscription Countdown Status - Only for Paid Plans */}
+        {subscription && subscription.planCode !== "FREE" && (
           <div className="p-3.5 rounded-lg bg-zinc-900 border border-zinc-800 space-y-1.5">
             <div className="flex items-center justify-between text-xs">
               <span className="text-zinc-400">Current Subscription</span>
@@ -194,7 +194,9 @@ export default function PlansPage() {
               <div className="w-7 h-7 rounded-full border-2 border-rose-500 border-t-transparent animate-spin" />
             </div>
           ) : (
-            plans.map((p) => {
+            plans
+              .filter((p) => p.code !== "FREE" && p.priceInRupees > 0)
+              .map((p) => {
               const isCurrent = p.isActive;
 
               return (
