@@ -71,7 +71,7 @@ export default function HomePage() {
   // 2. Authenticated but Incomplete Profile -> Onboarding Flow
   if (!hasProfile || !profile) {
     return (
-      <main className="min-h-screen bg-[#0a0a0c] text-white px-5 py-8 max-w-md mx-auto">
+      <main className="min-h-[100dvh] bg-[#0a0a0c] text-white px-4 sm:px-6 py-6 sm:py-10 max-w-md mx-auto flex flex-col justify-center box-border">
         <OnboardingWizard
           onCompleted={() => {
             refreshUser();

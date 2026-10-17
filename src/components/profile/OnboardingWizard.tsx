@@ -135,7 +135,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-5 rounded-lg bg-[#14141a] border border-[#24242e] shadow-2xl text-left">
+    <div className="w-full max-w-md mx-auto p-5 sm:p-6 rounded-2xl bg-[#14141a] border border-[#24242e] shadow-2xl text-left overflow-hidden box-border">
       <div className="flex items-center justify-between mb-4 border-b border-[#1e1e26] pb-3">
         <h2 className="text-base font-bold text-white tracking-tight">Create Your Profile</h2>
         <span className="text-xs font-semibold text-[#ff1475] bg-[#ff1475]/10 px-2.5 py-0.5 rounded-full border border-[#ff1475]/30">
@@ -151,7 +151,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
 
       {/* STEP 1: Core Identity & Mandatory 18+ Verification */}
       {step === 1 && (
-        <div className="space-y-4">
+        <div className="space-y-4 w-full box-border">
           <Input
             label="Full Name"
             placeholder="Your Name"
@@ -160,7 +160,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
             helperText="Name cannot be changed on Free plan"
           />
 
-          <div>
+          <div className="w-full box-border">
             <label className="text-xs font-semibold text-[#9e9ea8] uppercase tracking-wider block mb-1">
               Date of Birth (Mandatory)
             </label>
@@ -171,7 +171,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
                 setDobString(e.target.value);
                 setError(null);
               }}
-              className="w-full px-3.5 py-2.5 rounded-lg bg-[#14141a] border border-[#24242e] text-white text-sm focus:border-[#ff1475] focus:outline-none"
+              className="w-full block max-w-full box-border px-3.5 py-2.5 rounded-lg bg-[#14141a] border border-[#24242e] text-white text-sm focus:border-[#ff1475] focus:outline-none appearance-none"
             />
             <div className="mt-2 flex items-center justify-between">
               <span className="text-xs text-[#9e9ea8]">Calculated Age:</span>
@@ -187,7 +187,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
             </div>
           )}
 
-          <div className="p-3 rounded-lg bg-[#0e0e12] border border-[#1e1e26] space-y-2">
+          <div className="p-3 rounded-lg bg-[#0e0e12] border border-[#1e1e26] space-y-2 box-border">
             <label className="flex items-start gap-2.5 cursor-pointer">
               <input
                 type="checkbox"
@@ -201,15 +201,15 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
             </label>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
+          <div className="grid grid-cols-2 gap-3 w-full box-border">
+            <div className="w-full box-border">
               <label className="text-xs font-semibold text-[#9e9ea8] uppercase tracking-wider block mb-1">
                 Gender
               </label>
               <select
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-lg bg-[#14141a] border border-[#24242e] text-white text-sm focus:border-[#ff1475] focus:outline-none"
+                className="w-full block max-w-full box-border px-3 py-2.5 rounded-lg bg-[#14141a] border border-[#24242e] text-white text-sm focus:border-[#ff1475] focus:outline-none cursor-pointer"
               >
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
@@ -217,14 +217,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
               </select>
             </div>
 
-            <div>
+            <div className="w-full box-border">
               <label className="text-xs font-semibold text-[#9e9ea8] uppercase tracking-wider block mb-1">
                 Interested In
               </label>
               <select
                 value={interestedIn}
                 onChange={(e) => setInterestedIn(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-lg bg-[#14141a] border border-[#24242e] text-white text-sm focus:border-[#ff1475] focus:outline-none"
+                className="w-full block max-w-full box-border px-3 py-2.5 rounded-lg bg-[#14141a] border border-[#24242e] text-white text-sm focus:border-[#ff1475] focus:outline-none cursor-pointer"
               >
                 <option value="Female">Women</option>
                 <option value="Male">Men</option>
@@ -277,14 +277,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
             onChange={(e) => setEducation(e.target.value)}
           />
 
-          <div>
+          <div className="w-full box-border">
             <label className="text-xs font-semibold text-[#9e9ea8] uppercase tracking-wider block mb-1">
               Relationship Intention
             </label>
             <select
               value={relationshipIntention}
               onChange={(e) => setRelationshipIntention(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg bg-[#14141a] border border-[#24242e] text-white text-sm focus:border-[#ff1475] focus:outline-none"
+              className="w-full block max-w-full box-border px-3.5 py-2.5 rounded-lg bg-[#14141a] border border-[#24242e] text-white text-sm focus:border-[#ff1475] focus:outline-none cursor-pointer"
             >
               <option value="LONG_TERM">Long-term relationship</option>
               <option value="SHORT_TERM_CASUAL">Short-term / casual</option>
