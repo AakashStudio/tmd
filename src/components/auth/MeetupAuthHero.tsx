@@ -13,53 +13,61 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
   return (
     <div className="relative min-h-screen bg-[#111116] text-white flex flex-col justify-between overflow-hidden max-w-md mx-auto select-none">
       {/* Top Background Artwork Header */}
-      <div className="relative w-full h-[52vh] min-h-[340px] flex flex-col items-center justify-between pt-6 pb-4 overflow-hidden">
-        {/* Textured/Painterly Violet Background Layer */}
+      <div className="relative w-full h-[54vh] min-h-[350px] flex flex-col items-center justify-between pt-7 pb-4 overflow-hidden">
+        {/* Cinematic TMD Date Hero Artwork (No status bar, no phone icons) */}
         <div
           className="absolute inset-0 bg-cover bg-center pointer-events-none"
           style={{
-            backgroundImage: `url('/images/auth-hero.png')`,
-            backgroundPosition: "top center",
+            backgroundImage: `url('/images/tmd-auth-hero.jpg')`,
+            backgroundPosition: "center 25%",
             backgroundSize: "cover",
           }}
         />
 
-        {/* Soft dark vignette gradient towards bottom for seamless transition */}
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#111116] via-[#111116]/80 to-transparent pointer-events-none" />
+        {/* Smooth dark gradients for seamless blend into dark UI */}
+        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/70 via-black/30 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#111116] via-[#111116]/85 to-transparent pointer-events-none" />
 
-        {/* Top App Branding */}
-        <div className="relative z-10 flex items-center gap-2 mt-4 drop-shadow-md">
-          {/* Logo Icon */}
-          <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-lg">
-            <span className="font-black text-[#FF6079] text-xl italic font-serif">m</span>
+        {/* Top App Branding: Official TMD Logo */}
+        <div className="relative z-10 flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-black/45 backdrop-blur-md border border-white/10 shadow-2xl">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#FF3B69] via-[#FF6079] to-[#FFA0B2] flex items-center justify-center shadow-[0_0_15px_rgba(255,96,121,0.5)]">
+            <svg
+              className="w-4 h-4 text-white fill-current"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg>
           </div>
-          <span className="text-2xl font-black tracking-tight text-white drop-shadow">
-            meetup
-          </span>
+          <div className="flex flex-col text-left">
+            <span className="text-base font-black tracking-wider text-white leading-tight">
+              TMD
+            </span>
+            <span className="text-[8px] font-black tracking-[0.22em] text-pink-300 uppercase leading-none">
+              The Match Date
+            </span>
+          </div>
         </div>
 
-        {/* Floating Category Doodle Badges */}
-        <div className="absolute left-6 top-28 text-white/40 text-xl pointer-events-none">
-          💬
+        {/* Floating subtle proof tags */}
+        <div className="absolute left-4 bottom-14 z-10 flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/10 text-[11px] font-semibold text-white/90 shadow-lg">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse inline-block" />
+          <span>Real Dates Tonight</span>
         </div>
-        <div className="absolute right-8 top-32 text-white/40 text-xl pointer-events-none">
-          ✨
-        </div>
-        <div className="absolute left-6 bottom-20 text-white/40 text-xl pointer-events-none">
-          🎵
-        </div>
-        <div className="absolute right-6 bottom-24 text-white/40 text-xl pointer-events-none">
-          👤
+        <div className="absolute right-4 bottom-20 z-10 flex items-center gap-1 px-3 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/10 text-[11px] font-semibold text-pink-200 shadow-lg">
+          <span>✨ Verified Singles</span>
         </div>
       </div>
 
       {/* Bottom Content & Action Section */}
       <div className="relative z-10 px-5 pb-8 pt-0 flex flex-col justify-end space-y-4">
         {/* Hero Slogan */}
-        <div className="text-center mb-1">
-          <h1 className="text-[26px] font-black text-white tracking-tight">
-            The people platform
+        <div className="text-center mb-1 space-y-1">
+          <h1 className="text-[25px] font-black text-white tracking-tight leading-tight">
+            Real Dates. Real Chemistry.
           </h1>
+          <p className="text-xs text-zinc-400 font-medium">
+            Discover verified singles & real-world dating events
+          </p>
         </div>
 
         {/* Social & Primary Action Buttons */}

@@ -73,11 +73,10 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       {/* Footer Branding */}
       <div className="flex flex-col items-center gap-1.5 pb-4">
         <span className="text-[11px] tracking-wide text-zinc-400 font-medium">
-          Made with <span className="text-white inline-block">♥</span> by
+          Made with <span className="text-[#FF6079] inline-block">♥</span> for Singles
         </span>
-        <span className="text-sm font-black tracking-widest text-white uppercase flex items-center gap-1">
-          BENDING SP<span className="inline-block scale-110 font-mono">∞</span
-          >NS
+        <span className="text-xs font-black tracking-widest text-white uppercase flex items-center gap-1.5">
+          TMD <span className="text-zinc-600">•</span> THE MATCH DATE
         </span>
       </div>
     </div>
