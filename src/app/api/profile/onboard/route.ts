@@ -21,7 +21,7 @@ const onboardProfileSchema = z.object({
     .default("NOT_SURE_YET"),
   interestIds: z.array(z.string()).default([]),
   languageIds: z.array(z.string()).default([]),
-  photoUrls: z.array(z.string().url()).min(1, "At least one profile photo is required").max(6, "Maximum 6 photos allowed"),
+  photoUrls: z.array(z.string().min(1)).min(1, "At least one profile photo is required").max(6, "Maximum 6 photos allowed"),
 });
 
 export async function POST(req: NextRequest) {

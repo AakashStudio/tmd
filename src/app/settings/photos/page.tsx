@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useProfile } from "@/hooks/useProfile";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
-import { ArrowLeft, Trash2, Star, Plus, AlertCircle } from "lucide-react";
+import { ArrowLeft, Trash2, Star, Plus, AlertCircle, Image as ImageIcon } from "lucide-react";
 
 export default function PhotosManagerPage() {
   const router = useRouter();
@@ -15,8 +15,56 @@ export default function PhotosManagerPage() {
   const [photoUrlInput, setPhotoUrlInput] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const photos = profile?.photos || [];
+
+  const handleTriggerUpload = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (photos.length >= 6) {
+      setError("Maximum limit reached: You can upload a maximum of 6 photos.");
+      return;
+    }
+
+    if (file.size > 15 * 1024 * 1024) {
+      setError("Photo size must be less than 15MB");
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      setError(null);
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.url) {
+        throw new Error(data.error || "Failed to upload photo");
+      }
+
+      await addPhoto(data.url);
+    } catch (err: any) {
+      console.error("Gallery upload error:", err);
+      setError(err.message || "Failed to upload photo from gallery");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleAddPhoto = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,34 +184,66 @@ export default function PhotosManagerPage() {
           </div>
         ))}
 
-        {/* Empty Placeholder Slots */}
+        {/* Hidden File Input for Device Gallery / Camera */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileSelect}
+        />
+
+        {/* Empty Placeholder Slots (Clickable to Upload) */}
         {Array.from({ length: Math.max(0, 6 - photos.length) }).map((_, i) => (
-          <div
+          <button
             key={`empty_${i}`}
-            className="aspect-[3/4] rounded-lg border-2 border-dashed border-[#24242e] bg-[#0e0e12] flex flex-col items-center justify-center text-[#5e5e6e]"
+            type="button"
+            onClick={handleTriggerUpload}
+            disabled={isUploading}
+            className="aspect-[3/4] rounded-lg border-2 border-dashed border-[#24242e] hover:border-[#ff1475]/70 hover:bg-[#ff1475]/5 bg-[#0e0e12] flex flex-col items-center justify-center text-[#5e5e6e] group cursor-pointer transition-all"
           >
-            <Plus className="w-6 h-6 mb-1 opacity-50" />
-            <span className="text-[11px]">Slot {photos.length + i + 1}</span>
-          </div>
+            <div className="w-8 h-8 rounded-full bg-[#1b1b26] group-hover:bg-[#ff1475] text-[#ff1475] group-hover:text-white flex items-center justify-center mb-1 transition shadow-sm font-bold">
+              <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
+            </div>
+            <span className="text-[11px] group-hover:text-white transition">Slot {photos.length + i + 1}</span>
+          </button>
         ))}
       </div>
 
-      {/* Add Photo Form */}
+      {/* Upload Actions */}
       {photos.length < 6 && (
-        <form onSubmit={handleAddPhoto} className="p-4 rounded-lg bg-[#14141a] border border-[#24242e] space-y-3">
-          <h3 className="text-xs font-semibold text-white uppercase tracking-wider">
-            Add New Photo
-          </h3>
-          <Input
-            placeholder="Paste direct image URL (e.g. Unsplash, CDN)..."
-            value={photoUrlInput}
-            onChange={(e) => setPhotoUrlInput(e.target.value)}
+        <div className="space-y-3">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full flex items-center justify-center gap-2 py-3 bg-[#161620] hover:bg-[#1e1e2c] border-[#292938] text-white text-xs font-semibold rounded-xl"
+            onClick={handleTriggerUpload}
+            isLoading={isUploading}
             disabled={isUploading}
-          />
-          <Button type="submit" variant="primary" className="w-full" isLoading={isUploading}>
-            Upload to Profile
+          >
+            <ImageIcon className="w-4 h-4 text-[#ff1475]" />
+            <span>{isUploading ? "Uploading photo..." : "Upload from Phone Gallery / Camera"}</span>
           </Button>
-        </form>
+
+          {/* Fallback URL Input */}
+          <form onSubmit={handleAddPhoto} className="p-3.5 rounded-xl bg-[#14141a] border border-[#24242e] space-y-2">
+            <span className="text-[11px] font-semibold text-[#888898] uppercase tracking-wider block">
+              Or paste photo link
+            </span>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Paste direct image URL..."
+                value={photoUrlInput}
+                onChange={(e) => setPhotoUrlInput(e.target.value)}
+                disabled={isUploading}
+                className="text-xs"
+              />
+              <Button type="submit" variant="secondary" size="sm" isLoading={isUploading} className="shrink-0 text-xs">
+                Add
+              </Button>
+            </div>
+          </form>
+        </div>
       )}
     </div>
   );

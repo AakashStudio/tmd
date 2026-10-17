@@ -6,7 +6,7 @@ import { PhotoStatus } from "@prisma/client";
 import { z } from "zod";
 
 const addPhotoSchema = z.object({
-  url: z.string().url("Valid photo URL is required"),
+  url: z.string().min(1, "Valid photo URL is required"),
 });
 
 const reorderPhotosSchema = z.object({

@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { calculateAge } from "@/lib/validation";
+import { Camera, Image as ImageIcon, Plus, Trash2, Loader2 } from "lucide-react";
 
 interface OnboardingWizardProps {
   onCompleted: () => void;
@@ -37,11 +38,12 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
   const [selectedInterestIds, setSelectedInterestIds] = useState<string[]>([]);
   const [selectedLanguageIds, setSelectedLanguageIds] = useState<string[]>([]);
 
-  // Photos
-  const [photos, setPhotos] = useState<string[]>([
-    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800",
-  ]);
+  // Photos (up to 6)
+  const [photos, setPhotos] = useState<string[]>([]);
   const [photoInput, setPhotoInput] = useState("");
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [targetSlotIndex, setTargetSlotIndex] = useState<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Live calculated age
   const calculatedAge = dobString ? calculateAge(new Date(dobString)) : 0;
@@ -65,23 +67,72 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
       .catch((e) => console.error("Failed to load catalogs:", e));
   }, []);
 
+  const handleTriggerUpload = (slotIndex?: number) => {
+    setTargetSlotIndex(slotIndex !== undefined ? slotIndex : null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 15 * 1024 * 1024) {
+      setError("Photo size exceeds 15MB limit");
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      setError(null);
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.url) {
+        throw new Error(data.error || "Failed to upload photo");
+      }
+
+      setPhotos((prev) => {
+        if (targetSlotIndex !== null && targetSlotIndex < prev.length) {
+          const next = [...prev];
+          next[targetSlotIndex] = data.url;
+          return next;
+        } else {
+          if (prev.length >= 6) return prev;
+          return [...prev, data.url];
+        }
+      });
+    } catch (err: any) {
+      console.error("Upload failed:", err);
+      setError(err.message || "Failed to upload image. Please try again.");
+    } finally {
+      setIsUploading(false);
+      setTargetSlotIndex(null);
+    }
+  };
+
   const handleAddPhoto = () => {
     if (!photoInput.trim()) return;
     if (photos.length >= 6) {
       setError("Maximum 6 photos allowed");
       return;
     }
-    setPhotos([...photos, photoInput.trim()]);
+    setPhotos((prev) => [...prev, photoInput.trim()]);
     setPhotoInput("");
     setError(null);
   };
 
   const handleRemovePhoto = (index: number) => {
-    if (photos.length <= 1) {
-      setError("You must have at least 1 photo");
-      return;
-    }
-    setPhotos(photos.filter((_, i) => i !== index));
+    setPhotos((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async () => {
@@ -91,6 +142,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
     }
     if (!is18PlusConfirmed) {
       setError("You must explicitly confirm you are at least 18 years old.");
+      return;
+    }
+    if (photos.length === 0) {
+      setError("Please upload at least 1 photo to complete your profile.");
       return;
     }
 
@@ -393,51 +448,136 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
         </div>
       )}
 
-      {/* STEP 4: Photos (Max 6) */}
+      {/* STEP 4: Photos (6 Slots Dating App Grid) */}
       {step === 4 && (
         <div className="space-y-4">
           <div>
-            <label className="text-xs font-semibold text-[#9e9ea8] uppercase tracking-wider block mb-1">
-              Profile Photos ({photos.length}/6)
-            </label>
-            <p className="text-xs text-[#5e5e6e] mb-3">
-              The first photo will be your primary photo shown in discovery.
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs font-semibold text-[#9e9ea8] uppercase tracking-wider block">
+                Profile Photos ({photos.length}/6)
+              </label>
+              {photos.length === 0 && (
+                <span className="text-[11px] text-[#ff1475] font-medium animate-pulse">
+                  * 1 photo required
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-[#6e6e80] mb-3">
+              Add at least 1 photo. Tap any box to select from your phone gallery or camera. Slot 1 is your main discovery photo.
             </p>
 
-            <div className="grid grid-cols-3 gap-2 mb-3">
-              {photos.map((url, index) => (
-                <div key={index} className="relative aspect-[3/4] rounded-lg overflow-hidden border border-[#24242e] bg-[#0e0e12]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={url} alt={`Photo ${index + 1}`} className="w-full h-full object-cover" />
-                  {index === 0 && (
-                    <span className="absolute top-1 left-1 bg-gradient-to-r from-[#ff1475] to-[#ff6b8b] text-[10px] text-white font-black px-1.5 py-0.5 rounded shadow">
-                      Primary
-                    </span>
-                  )}
-                  {photos.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => handleRemovePhoto(index)}
-                      className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white text-xs flex items-center justify-center hover:bg-[#ef4444]"
+            {/* Hidden File Input for Device Gallery / Camera */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileSelect}
+            />
+
+            {/* 6 Dating App Photo Slots (3x2 Grid) */}
+            <div className="grid grid-cols-3 gap-2.5 mb-3.5">
+              {[0, 1, 2, 3, 4, 5].map((slotIdx) => {
+                const photoUrl = photos[slotIdx];
+                const isPrimary = slotIdx === 0;
+
+                if (photoUrl) {
+                  return (
+                    <div
+                      key={slotIdx}
+                      className="group relative aspect-[3/4] rounded-xl overflow-hidden border border-[#2e2e3d] bg-[#0e0e12] shadow-sm hover:border-[#ff1475]/60 transition-colors"
                     >
-                      ×
-                    </button>
-                  )}
-                </div>
-              ))}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={photoUrl}
+                        alt={`Profile photo ${slotIdx + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+
+                      {/* Primary badge for Slot 1 */}
+                      {isPrimary && (
+                        <span className="absolute top-1.5 left-1.5 bg-gradient-to-r from-[#ff1475] to-[#ff6b8b] text-[9px] text-white font-extrabold px-1.5 py-0.5 rounded shadow pointer-events-none">
+                          ★ Main
+                        </span>
+                      )}
+
+                      {/* Remove button */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemovePhoto(slotIdx);
+                        }}
+                        className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-black/75 hover:bg-[#ef4444] text-white text-xs flex items-center justify-center font-bold transition shadow"
+                        title="Remove photo"
+                      >
+                        ✕
+                      </button>
+
+                      {/* Tap to replace indicator */}
+                      <button
+                        type="button"
+                        onClick={() => handleTriggerUpload(slotIdx)}
+                        className="absolute bottom-1 right-1 p-1 rounded-md bg-black/70 hover:bg-[#ff1475] text-white opacity-80 sm:opacity-0 group-hover:opacity-100 transition text-[10px] flex items-center gap-0.5"
+                        title="Replace photo"
+                      >
+                        <Camera className="w-3 h-3" />
+                      </button>
+                    </div>
+                  );
+                }
+
+                return (
+                  <button
+                    key={slotIdx}
+                    type="button"
+                    onClick={() => handleTriggerUpload(slotIdx)}
+                    disabled={isUploading}
+                    className="aspect-[3/4] rounded-xl border-2 border-dashed border-[#262634] hover:border-[#ff1475]/70 hover:bg-[#ff1475]/5 bg-[#101016] flex flex-col items-center justify-center p-2 text-center transition group cursor-pointer focus:outline-none"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-[#1b1b26] group-hover:bg-[#ff1475] text-[#ff1475] group-hover:text-white flex items-center justify-center mb-1.5 transition font-bold shadow-sm">
+                      <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                    </div>
+                    <span className="text-[10px] font-semibold text-[#666678] group-hover:text-white transition">
+                      {isPrimary ? "+ Main" : `+ Slot ${slotIdx + 1}`}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
 
+            {/* Prominent Gallery Upload Button */}
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full flex items-center justify-center gap-2 py-2.5 bg-[#161620] hover:bg-[#1e1e2c] border-[#292938] text-white text-xs font-semibold rounded-xl"
+              onClick={() => handleTriggerUpload()}
+              isLoading={isUploading}
+              disabled={isUploading || photos.length >= 6}
+            >
+              <ImageIcon className="w-4 h-4 text-[#ff1475]" />
+              <span>{isUploading ? "Uploading..." : "Upload from Phone Gallery / Camera"}</span>
+            </Button>
+
+            {/* Optional Fallback URL input */}
             {photos.length < 6 && (
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Paste public photo URL..."
-                  value={photoInput}
-                  onChange={(e) => setPhotoInput(e.target.value)}
-                  className="text-xs"
-                />
-                <Button variant="secondary" size="sm" onClick={handleAddPhoto} className="shrink-0">
-                  Add Photo
-                </Button>
+              <div className="mt-3 pt-3 border-t border-[#1e1e28]">
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Or paste public photo URL..."
+                    value={photoInput}
+                    onChange={(e) => setPhotoInput(e.target.value)}
+                    className="text-xs"
+                  />
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleAddPhoto}
+                    className="shrink-0 text-xs"
+                  >
+                    Add
+                  </Button>
+                </div>
               </div>
             )}
           </div>
@@ -449,11 +589,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
             <Button
               variant="primary"
               className="flex-1"
-              isLoading={isLoading}
+              isLoading={isLoading || isUploading}
               disabled={photos.length === 0}
               onClick={handleSubmit}
             >
-              Complete Profile
+              Complete Profile ({photos.length}/6)
             </Button>
           </div>
         </div>
