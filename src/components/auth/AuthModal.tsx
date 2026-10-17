@@ -17,7 +17,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   initialProvider = "PHONE_OTP",
 }) => {
   const { sendOtp, verifyOtp } = useAuth();
-  const [provider, setProvider] = useState<"PHONE_OTP" | "EMAIL_OTP">(initialProvider);
   const [identifier, setIdentifier] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState<"REQUEST_OTP" | "VERIFY_OTP">("REQUEST_OTP");
@@ -39,14 +38,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!identifier.trim()) {
-      setError("Please enter your phone number or email");
+      setError("Please enter your mobile number");
       return;
     }
 
     try {
       setIsLoading(true);
       setError(null);
-      const res = await sendOtp(provider, identifier.trim());
+      const res = await sendOtp("PHONE_OTP", identifier.trim());
       if (res.devOtp) {
         setDevOtpHint(res.devOtp);
       }
@@ -69,7 +68,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     try {
       setIsLoading(true);
       setError(null);
-      const res = await verifyOtp(provider, identifier.trim(), otp.trim());
+      const res = await verifyOtp("PHONE_OTP", identifier.trim(), otp.trim());
       onSuccess(res.hasProfile);
     } catch (err: any) {
       setError(err.message || "Verification failed");
@@ -89,7 +88,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         </h2>
         <p className="text-xs text-[#9e9ea8]">
           {step === "REQUEST_OTP"
-            ? "Enter your details to sign up or log in"
+            ? "Enter your mobile number to sign up or log in"
             : `Enter the 6-digit code sent to ${identifier}`}
         </p>
       </div>
@@ -102,36 +101,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
       {step === "REQUEST_OTP" ? (
         <form onSubmit={handleSendOtp} className="space-y-3.5">
-          <div className="flex rounded-lg bg-[#0e0e12] p-1 border border-[#1e1e26]">
-            <button
-              type="button"
-              onClick={() => {
-                setProvider("PHONE_OTP");
-                setError(null);
-              }}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-colors ${
-                provider === "PHONE_OTP" ? "bg-[#ff1475] text-white font-bold" : "text-[#7a7a88] hover:text-white"
-              }`}
-            >
-              Phone Number
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setProvider("EMAIL_OTP");
-                setError(null);
-              }}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-colors ${
-                provider === "EMAIL_OTP" ? "bg-[#ff1475] text-white font-bold" : "text-[#7a7a88] hover:text-white"
-              }`}
-            >
-              Email Address
-            </button>
-          </div>
-
           <Input
-            label={provider === "PHONE_OTP" ? "Mobile Number" : "Email"}
-            placeholder={provider === "PHONE_OTP" ? "+91 9876543210" : "you@example.com"}
+            label="Mobile Number"
+            placeholder="+91 9876543210"
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value)}
             disabled={isLoading}
