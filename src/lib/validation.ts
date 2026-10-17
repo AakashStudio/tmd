@@ -150,6 +150,7 @@ export const createEventSchema = z.object({
   entryFee: z.number().int().min(0).default(0),
   requireLinkedin: z.boolean().default(false),
   isLinkedinMandatory: z.boolean().default(false),
+  organizerLinkedin: z.string().trim().url("Please enter a valid LinkedIn URL").optional().nullable().or(z.literal("")),
   attendanceMode: z.enum(["OPEN_JOIN", "REQUEST_APPROVAL"]).default("REQUEST_APPROVAL"),
 }).refine((data) => data.endDateTime > data.startDateTime, {
   message: "Event end time must be after the start time",

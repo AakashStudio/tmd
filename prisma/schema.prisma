@@ -489,6 +489,7 @@ model Event {
   entryFee            Int            @default(0)
   requireLinkedin     Boolean        @default(false)
   isLinkedinMandatory Boolean        @default(false)
+  organizerLinkedin   String?
   attendanceMode      AttendanceMode @default(REQUEST_APPROVAL)
   status              EventStatus    @default(ACTIVE)
   createdAt           DateTime       @default(now())

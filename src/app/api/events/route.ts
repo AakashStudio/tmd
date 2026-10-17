@@ -123,6 +123,7 @@ export async function GET(req: NextRequest) {
           entryFee: event.entryFee || Math.round(event.feeInPaise / 100),
           requireLinkedin: event.requireLinkedin,
           isLinkedinMandatory: event.isLinkedinMandatory,
+          organizerLinkedin: event.organizerLinkedin,
           attendanceMode: event.attendanceMode,
           organizer: {
             id: event.organizer.id,
@@ -219,6 +220,7 @@ export async function POST(req: NextRequest) {
         entryFee: data.entryFee || Math.round(data.feeInPaise / 100),
         requireLinkedin: data.requireLinkedin || data.isLinkedinMandatory,
         isLinkedinMandatory: data.isLinkedinMandatory,
+        organizerLinkedin: data.organizerLinkedin || null,
         attendanceMode: "REQUEST_APPROVAL",
         status: "ACTIVE",
         attendees: {

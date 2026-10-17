@@ -44,6 +44,7 @@ interface EventItem {
   entryFee: number;
   requireLinkedin: boolean;
   isLinkedinMandatory: boolean;
+  organizerLinkedin?: string | null;
   attendanceMode: string;
   organizer: {
     id: string;
@@ -85,6 +86,7 @@ export default function MapPage() {
   const [newDesc, setNewDesc] = useState("");
   const [newIsPaid, setNewIsPaid] = useState<boolean>(false);
   const [newEntryFee, setNewEntryFee] = useState<string>("299");
+  const [newOrganizerLinkedin, setNewOrganizerLinkedin] = useState<string>("");
   const [newRequireLinkedin, setNewRequireLinkedin] = useState<boolean>(false);
   const [newIsLinkedinMandatory, setNewIsLinkedinMandatory] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -270,6 +272,7 @@ export default function MapPage() {
           feeInPaise: parsedFee * 100,
           requireLinkedin: newRequireLinkedin,
           isLinkedinMandatory: newRequireLinkedin && newIsLinkedinMandatory,
+          organizerLinkedin: newOrganizerLinkedin.trim() || undefined,
         }),
       });
 
@@ -287,6 +290,7 @@ export default function MapPage() {
       setNewDesc("");
       setNewIsPaid(false);
       setNewEntryFee("299");
+      setNewOrganizerLinkedin("");
       setNewRequireLinkedin(false);
       setNewIsLinkedinMandatory(false);
       await fetchEvents();
@@ -678,6 +682,21 @@ export default function MapPage() {
                     </div>
                   )}
 
+                  {selectedPinEvent.organizerLinkedin && (
+                    <div className="flex items-center gap-2 pt-1 border-t border-zinc-900">
+                      <span className="text-zinc-400 text-[11px]">Host:</span>
+                      <a
+                        href={selectedPinEvent.organizerLinkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 hover:text-blue-300 text-[10px] font-semibold transition"
+                      >
+                        <span>View Host LinkedIn</span>
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    </div>
+                  )}
+
                   <p className="text-zinc-400 text-[11px] line-clamp-2">
                     {selectedPinEvent.description}
                   </p>
@@ -842,9 +861,23 @@ export default function MapPage() {
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      <span className="text-zinc-400 text-[11px]">
-                        Hosted by <span className="text-white font-semibold">{event.organizer.name}</span>
-                      </span>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-zinc-400 text-[11px]">
+                          Hosted by <span className="text-white font-semibold">{event.organizer.name}</span>
+                        </span>
+                        {event.organizerLinkedin && (
+                          <a
+                            href={event.organizerLinkedin}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 hover:text-blue-300 text-[9px] font-semibold transition"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <span>LinkedIn</span>
+                            <ExternalLink className="w-2.5 h-2.5" />
+                          </a>
+                        )}
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-1 text-[11px] text-zinc-400">
@@ -1248,50 +1281,72 @@ export default function MapPage() {
                 )}
               </div>
 
-              {/* LinkedIn Verification Requirement */}
-              <div className="p-3 rounded-xl bg-zinc-900/60 border border-blue-500/30 space-y-2">
-                <div className="flex items-start gap-2.5">
+              {/* LinkedIn Section */}
+              <div className="p-3.5 rounded-2xl bg-zinc-900/60 border border-blue-500/30 space-y-3">
+                <div>
+                  <label className="text-zinc-300 block mb-1 font-semibold flex items-center justify-between text-xs">
+                    <span className="flex items-center gap-1.5 text-blue-400">
+                      <span>🔗</span>
+                      <span>Host LinkedIn Profile Link</span>
+                    </span>
+                    <span className="text-[10px] text-zinc-500 font-normal">Optional</span>
+                  </label>
                   <input
-                    type="checkbox"
-                    id="requireLinkedin"
-                    checked={newRequireLinkedin}
-                    onChange={(e) => {
-                      setNewRequireLinkedin(e.target.checked);
-                      if (!e.target.checked) setNewIsLinkedinMandatory(false);
-                    }}
-                    className="mt-0.5 rounded bg-zinc-900 border-zinc-700 text-blue-500 focus:ring-blue-500"
+                    type="url"
+                    value={newOrganizerLinkedin}
+                    onChange={(e) => setNewOrganizerLinkedin(e.target.value)}
+                    placeholder="https://www.linkedin.com/in/yourname"
+                    className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 text-xs"
                   />
-                  <div>
-                    <label htmlFor="requireLinkedin" className="text-white font-medium block">
-                      Require LinkedIn Profile Link
-                    </label>
-                    <p className="text-[11px] text-zinc-400">
-                      Collect LinkedIn profile from attendees to verify background.
-                    </p>
-                  </div>
+                  <p className="text-[10px] text-zinc-400 mt-1">
+                    Apna LinkedIn link yaha dalein taki event dekhne wale guests aapki verified profile dekh sakein.
+                  </p>
                 </div>
 
-                {newRequireLinkedin && (
-                  <div className="pl-6 pt-1 border-t border-zinc-800/80 animate-in fade-in">
-                    <div className="flex items-start gap-2">
-                      <input
-                        type="checkbox"
-                        id="isLinkedinMandatory"
-                        checked={newIsLinkedinMandatory}
-                        onChange={(e) => setNewIsLinkedinMandatory(e.target.checked)}
-                        className="mt-0.5 rounded bg-zinc-900 border-zinc-700 text-rose-500 focus:ring-rose-500"
-                      />
-                      <div>
-                        <label htmlFor="isLinkedinMandatory" className="text-rose-400 font-semibold block text-xs">
-                          Mark as Mandatory (Required)
-                        </label>
-                        <p className="text-[10px] text-zinc-400">
-                          Bina LinkedIn link ke applicant request nahi bhej payega.
-                        </p>
-                      </div>
+                <div className="pt-2.5 border-t border-zinc-800/80 space-y-2">
+                  <div className="flex items-start gap-2.5">
+                    <input
+                      type="checkbox"
+                      id="requireLinkedin"
+                      checked={newRequireLinkedin}
+                      onChange={(e) => {
+                        setNewRequireLinkedin(e.target.checked);
+                        if (!e.target.checked) setNewIsLinkedinMandatory(false);
+                      }}
+                      className="mt-0.5 rounded bg-zinc-900 border-zinc-700 text-blue-500 focus:ring-blue-500"
+                    />
+                    <div>
+                      <label htmlFor="requireLinkedin" className="text-white font-medium block">
+                        Require Attendees to submit LinkedIn link
+                      </label>
+                      <p className="text-[11px] text-zinc-400">
+                        Joining request bhejne se pehle guests se unka LinkedIn profile link maangein.
+                      </p>
                     </div>
                   </div>
-                )}
+
+                  {newRequireLinkedin && (
+                    <div className="pl-6 pt-1 border-t border-zinc-800/60 animate-in fade-in">
+                      <div className="flex items-start gap-2">
+                        <input
+                          type="checkbox"
+                          id="isLinkedinMandatory"
+                          checked={newIsLinkedinMandatory}
+                          onChange={(e) => setNewIsLinkedinMandatory(e.target.checked)}
+                          className="mt-0.5 rounded bg-zinc-900 border-zinc-700 text-rose-500 focus:ring-rose-500"
+                        />
+                        <div>
+                          <label htmlFor="isLinkedinMandatory" className="text-rose-400 font-semibold block text-xs">
+                            Mark as Mandatory (Required)
+                          </label>
+                          <p className="text-[10px] text-zinc-400">
+                            Bina LinkedIn link ke applicant request nahi bhej payega.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div>
@@ -1302,7 +1357,7 @@ export default function MapPage() {
                   value={newVenue}
                   onChange={(e) => setNewVenue(e.target.value)}
                   placeholder="e.g. The Rooftop Lounge"
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-rose-500"
+                  className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-rose-500"
                 />
               </div>
 
@@ -1314,7 +1369,7 @@ export default function MapPage() {
                   value={newAddress}
                   onChange={(e) => setNewAddress(e.target.value)}
                   placeholder="e.g. 102 Arera Hills, Bhopal"
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-rose-500"
+                  className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-rose-500"
                 />
               </div>
 
@@ -1331,25 +1386,35 @@ export default function MapPage() {
                 </label>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              {/* Start & End Time - Fixed height, spacious and dark-mode styled */}
+              <div className="space-y-3">
                 <div>
-                  <label className="text-zinc-400 block mb-1">Start Time *</label>
+                  <label className="text-zinc-300 block mb-1.5 font-medium flex items-center gap-1.5 text-xs">
+                    <Calendar className="w-4 h-4 text-rose-500 shrink-0" />
+                    <span>Start Date &amp; Time *</span>
+                  </label>
                   <input
                     type="datetime-local"
                     required
                     value={newStart}
                     onChange={(e) => setNewStart(e.target.value)}
-                    className="w-full px-2 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-rose-500 text-[11px]"
+                    style={{ colorScheme: "dark" }}
+                    className="w-full h-12 px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-rose-500 text-sm font-medium"
                   />
                 </div>
+
                 <div>
-                  <label className="text-zinc-400 block mb-1">End Time *</label>
+                  <label className="text-zinc-300 block mb-1.5 font-medium flex items-center gap-1.5 text-xs">
+                    <Clock className="w-4 h-4 text-rose-500 shrink-0" />
+                    <span>End Date &amp; Time *</span>
+                  </label>
                   <input
                     type="datetime-local"
                     required
                     value={newEnd}
                     onChange={(e) => setNewEnd(e.target.value)}
-                    className="w-full px-2 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-rose-500 text-[11px]"
+                    style={{ colorScheme: "dark" }}
+                    className="w-full h-12 px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-rose-500 text-sm font-medium"
                   />
                 </div>
               </div>
