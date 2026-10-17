@@ -5,16 +5,21 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { calculateAge } from "@/lib/validation";
-import { Camera, Image as ImageIcon, Plus, Trash2, Loader2 } from "lucide-react";
+import { Camera, Image as ImageIcon, Plus, Trash2, Loader2, MapPin, ChevronDown, ChevronUp } from "lucide-react";
 
 interface OnboardingWizardProps {
   onCompleted: () => void;
 }
 
 export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted }) => {
-  const [step, setStep] = useState<number>(1);
+  const [step, setStep] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Location Permission Step 0 State
+  const [showLocationInfo, setShowLocationInfo] = useState<boolean>(false);
+  const [showLocationPopup, setShowLocationPopup] = useState<boolean>(false);
+  const [locationPermission, setLocationPermission] = useState<string | null>(null);
 
   // Form Fields
   const [name, setName] = useState("");
@@ -188,6 +193,148 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
       setIsLoading(false);
     }
   };
+
+  const handlePermissionChoice = (choice: "WHILE_USING" | "THIS_TIME" | "DENIED") => {
+    setLocationPermission(choice);
+    try {
+      localStorage.setItem("tmd_location_permission", choice);
+    } catch (e) {}
+
+    if (choice !== "DENIED" && typeof navigator !== "undefined" && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          console.log("Location detected:", pos.coords.latitude, pos.coords.longitude);
+        },
+        () => {},
+        { timeout: 5000 }
+      );
+    }
+
+    setShowLocationPopup(false);
+    setStep(1);
+  };
+
+  /* ================= STEP 0: MANDATORY LOCATION PERMISSION ================= */
+  if (step === 0) {
+    return (
+      <div className="fixed inset-0 z-50 bg-[#0a0a0c] text-white flex flex-col justify-between max-w-md mx-auto w-full h-[100dvh] px-6 py-10 overflow-y-auto animate-in fade-in duration-200">
+        {/* Top Header Section */}
+        <div className="text-center pt-6 space-y-3">
+          <h1 className="text-2xl sm:text-[30px] font-black tracking-tight text-white leading-tight">
+            So, are you from<br />around here?
+          </h1>
+          <p className="text-xs text-zinc-400 font-medium leading-relaxed max-w-xs mx-auto">
+            Set your location to see who&apos;s in your neighborhood or beyond. You won&apos;t be able to match with people otherwise.
+          </p>
+        </div>
+
+        {/* Center Graphic: Large White Circular Badge with Pin */}
+        <div className="my-auto py-8 flex flex-col items-center justify-center">
+          <div className="w-36 h-36 rounded-full bg-white flex items-center justify-center shadow-[0_0_60px_rgba(255,255,255,0.12)]">
+            <svg
+              className="w-16 h-16 text-zinc-500 stroke-[1.5]"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 21c-4.97-4.97-8-8.5-8-12a8 8 0 1116 0c0 3.5-3.03 7.03-8 12z"
+              />
+              <circle cx="12" cy="9" r="2.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Bottom Actions Section */}
+        <div className="space-y-4 pb-4">
+          {/* Continue Button */}
+          <button
+            type="button"
+            onClick={() => setShowLocationPopup(true)}
+            className="w-full py-4 px-6 rounded-full bg-white hover:bg-zinc-100 text-black font-black text-sm tracking-wide shadow-xl active:scale-[0.98] transition cursor-pointer"
+          >
+            Continue
+          </button>
+
+          {/* How is my location used toggle */}
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => setShowLocationInfo((prev) => !prev)}
+              className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white font-bold transition cursor-pointer"
+            >
+              <span>How is my location used?</span>
+              <ChevronDown
+                className={`w-4 h-4 transition-transform duration-200 ${
+                  showLocationInfo ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* Expandable Explanation Drawer / Sheet */}
+          {showLocationInfo && (
+            <div className="p-4 rounded-2xl bg-zinc-900/90 border border-zinc-800 text-left animate-in slide-in-from-bottom-2 fade-in duration-200 space-y-1.5">
+              <div className="flex items-center gap-2">
+                <ChevronUp className="w-4 h-4 text-[#ff1475]" />
+                <h4 className="text-sm font-black text-white">Don&apos;t worry—</h4>
+              </div>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Your location helps us show potential matches nearby or slightly further away. Your exact location is never shared.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Location Permission System Popup Modal */}
+        {showLocationPopup && (
+          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-150">
+            <div className="w-full max-w-[290px] rounded-3xl bg-[#1c1c24] border border-white/10 p-6 text-center shadow-2xl animate-in zoom-in-95 duration-150">
+              <div className="w-12 h-12 mx-auto mb-3.5 rounded-full bg-[#ff1475]/15 border border-[#ff1475]/30 flex items-center justify-center text-[#ff1475]">
+                <MapPin className="w-6 h-6" />
+              </div>
+
+              <h3 className="text-sm font-bold text-white mb-2 leading-snug">
+                Allow TMD to access this device&apos;s location?
+              </h3>
+
+              <p className="text-[11px] text-zinc-400 mb-5 leading-relaxed">
+                TMD uses location to show nearby singles, local events, and distance accuracy.
+              </p>
+
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  onClick={() => handlePermissionChoice("WHILE_USING")}
+                  className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#FF1475] to-[#FF6079] text-white font-bold text-xs shadow-md active:scale-95 transition cursor-pointer"
+                >
+                  While using the app
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handlePermissionChoice("THIS_TIME")}
+                  className="w-full py-2.5 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs active:scale-95 transition cursor-pointer"
+                >
+                  Only this time
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handlePermissionChoice("DENIED")}
+                  className="w-full py-2 px-3 rounded-xl text-zinc-400 hover:text-white font-medium text-xs transition cursor-pointer"
+                >
+                  Don&apos;t allow
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md mx-auto p-5 sm:p-6 rounded-2xl bg-[#14141a] border border-[#24242e] shadow-2xl text-left overflow-hidden box-border">
