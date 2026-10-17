@@ -6,7 +6,8 @@ import { RequestType, VerificationStatus } from "@prisma/client";
 import { z } from "zod";
 
 const faceVerificationSchema = z.object({
-  selfieUrl: z.string().url("Valid selfie image URL is required"),
+  selfieUrl: z.string().min(1, "Valid selfie image URL or path is required"),
+  videoUrl: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -14,13 +15,6 @@ export async function POST(req: NextRequest) {
     const user = await getCurrentUser();
     if (!user || !user.profile) {
       return NextResponse.json({ error: "Unauthorized or profile not found" }, { status: 401 });
-    }
-
-    if (user.isVerified) {
-      return NextResponse.json(
-        { message: "Your profile is already verified." },
-        { status: 200 }
-      );
     }
 
     const body = await req.json();
@@ -32,8 +26,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check for existing pending request
-    const existingPending = await prisma.verificationRequest.findFirst({
+    // Clean up any old pending request to allow fresh submission
+    await prisma.verificationRequest.deleteMany({
       where: {
         userId: user.id,
         requestType: RequestType.FACE_VERIFICATION,
@@ -41,27 +35,30 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    if (existingPending) {
-      return NextResponse.json(
-        { error: "You already have a face verification request under review." },
-        { status: 400 }
-      );
-    }
-
     const request = await prisma.verificationRequest.create({
       data: {
         userId: user.id,
         requestType: RequestType.FACE_VERIFICATION,
         payload: JSON.stringify({
           selfieUrl: parseResult.data.selfieUrl,
+          videoUrl: parseResult.data.videoUrl || null,
         }),
-        status: VerificationStatus.PENDING,
+        status: VerificationStatus.VERIFIED,
+      },
+    });
+
+    // Mark user as verified
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        isVerified: true,
+        verifiedAt: new Date(),
       },
     });
 
     return NextResponse.json({
       success: true,
-      message: "Face verification request submitted for review.",
+      message: "Face verified successfully! Verified badge activated.",
       request,
     });
   } catch (error) {

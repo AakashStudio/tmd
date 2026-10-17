@@ -8,16 +8,16 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
-import { ArrowLeft, ShieldCheck, Calendar, CheckCircle2, AlertCircle, Lock } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Calendar, CheckCircle2, AlertCircle, Lock, Video } from "lucide-react";
+import { FaceRecorder } from "@/components/verification/FaceRecorder";
 
 export default function VerificationPage() {
   const router = useRouter();
-  const { user } = useAuth();
-  const { profile, entitlements, submitFaceVerification, submitDobCorrection } = useProfile();
+  const { user, refreshUser } = useAuth();
+  const { profile, entitlements, submitDobCorrection, refreshProfile } = useProfile();
 
   // Face Verification State
-  const [selfieUrl, setSelfieUrl] = useState("");
-  const [isSubmittingFace, setIsSubmittingFace] = useState(false);
+  const [showRecorder, setShowRecorder] = useState<boolean>(false);
   const [faceSuccess, setFaceSuccess] = useState<string | null>(null);
   const [faceError, setFaceError] = useState<string | null>(null);
 
@@ -28,22 +28,6 @@ export default function VerificationPage() {
   const [isSubmittingDob, setIsSubmittingDob] = useState(false);
   const [dobSuccess, setDobSuccess] = useState<string | null>(null);
   const [dobError, setDobError] = useState<string | null>(null);
-
-  const handleFaceSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selfieUrl.trim()) return;
-    try {
-      setIsSubmittingFace(true);
-      setFaceError(null);
-      const res = await submitFaceVerification(selfieUrl.trim());
-      setFaceSuccess(res.message);
-      setSelfieUrl("");
-    } catch (err: any) {
-      setFaceError(err.message || "Failed to submit face verification");
-    } finally {
-      setIsSubmittingFace(false);
-    }
-  };
 
   const handleDobSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,36 +75,64 @@ export default function VerificationPage() {
           </div>
 
           <p className="text-xs text-[#9e9ea8] leading-relaxed">
-            Verify your identity to get the official TMD Verified Badge on your discovery profile and build trust with your matches.
+            Record a 3-second live face scan to verify your identity and get the official TMD Verified Badge on your profile.
           </p>
 
           {faceSuccess && (
-            <div className="p-3 rounded-lg bg-[#10b981]/15 border border-[#10b981]/30 text-xs text-[#10b981] flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-[#10b981]/15 border border-[#10b981]/30 text-xs text-[#10b981] flex items-center gap-2 animate-in fade-in">
               <CheckCircle2 className="w-4 h-4 shrink-0" />
               <span>{faceSuccess}</span>
             </div>
           )}
 
           {faceError && (
-            <div className="p-3 rounded-lg bg-[#ef4444]/15 border border-[#ef4444]/30 text-xs text-[#ef4444] flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-[#ef4444]/15 border border-[#ef4444]/30 text-xs text-[#ef4444] flex items-center gap-2 animate-in fade-in">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{faceError}</span>
             </div>
           )}
 
-          {!user?.isVerified && !faceSuccess && (
-            <form onSubmit={handleFaceSubmit} className="space-y-3 pt-1">
-              <Input
-                label="Verification Selfie / Image URL"
-                placeholder="https://example.com/selfie.jpg"
-                value={selfieUrl}
-                onChange={(e) => setSelfieUrl(e.target.value)}
-                disabled={isSubmittingFace}
-              />
-              <Button type="submit" variant="primary" className="w-full text-xs" isLoading={isSubmittingFace}>
-                Submit for Verification
+          {/* Already verified card with optional re-record option */}
+          {user?.isVerified && !showRecorder && (
+            <div className="space-y-3 pt-1">
+              <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
+                  <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div>
+                  <h3 className="text-xs font-bold text-white">Identity Verified</h3>
+                  <p className="text-[11px] text-zinc-400">
+                    Your official TMD Verified Badge is active and visible on discovery and chat.
+                  </p>
+                </div>
+              </div>
+
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="w-full text-xs flex items-center justify-center gap-2"
+                onClick={() => setShowRecorder(true)}
+              >
+                <Video className="w-3.5 h-3.5 text-[#ff1475]" />
+                <span>Re-record 3-Sec Face Scan</span>
               </Button>
-            </form>
+            </div>
+          )}
+
+          {/* Active 3-Second Face Recording Component */}
+          {(!user?.isVerified || showRecorder) && (
+            <div className="pt-1">
+              <FaceRecorder
+                onSuccess={(msg) => {
+                  setFaceSuccess(msg);
+                  setShowRecorder(false);
+                  refreshUser();
+                  refreshProfile();
+                }}
+                onError={(err) => setFaceError(err)}
+              />
+            </div>
           )}
         </Card>
 
