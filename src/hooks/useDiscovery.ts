@@ -52,6 +52,10 @@ export function useDiscovery() {
   const [swipeLimitInfo, setSwipeLimitInfo] = useState<SwipeLimitInfo | null>(null);
   const [isSwiping, setIsSwiping] = useState<boolean>(false);
   const [canRewind, setCanRewind] = useState<boolean>(false);
+  const [swipeCount, setSwipeCount] = useState<number>(0);
+  const [swipesRemaining, setSwipesRemaining] = useState<number | null>(null);
+  const [totalLimit, setTotalLimit] = useState<number | null>(null);
+  const [showLearningReminder, setShowLearningReminder] = useState<boolean>(false);
 
   const fetchFeed = useCallback(async () => {
     setIsLoading(true);
@@ -65,6 +69,15 @@ export function useDiscovery() {
       const data = await res.json();
       setCandidates(data.candidates || []);
       setCurrentIndex(0);
+
+      if (typeof data.swipeCount === "number") {
+        setSwipeCount(data.swipeCount);
+        if (data.swipeCount > 0 && data.swipeCount % 5 === 0 && (data.swipesRemaining ?? 0) > 0) {
+          setShowLearningReminder(true);
+        }
+      }
+      if (data.swipesRemaining !== undefined) setSwipesRemaining(data.swipesRemaining);
+      if (data.totalLimit !== undefined) setTotalLimit(data.totalLimit);
     } catch (err: any) {
       setError(err.message || "Failed to load feed");
     } finally {
@@ -107,6 +120,16 @@ export function useDiscovery() {
       }
 
       const data = await res.json();
+
+      // Track swipe counts and 5-like milestone reminder
+      if (typeof data.swipeCount === "number") {
+        setSwipeCount(data.swipeCount);
+        if (data.swipeCount % 5 === 0 && (data.swipesRemaining ?? 0) > 0) {
+          setShowLearningReminder(true);
+        }
+      }
+      if (data.swipesRemaining !== undefined) setSwipesRemaining(data.swipesRemaining);
+      if (data.totalLimit !== undefined) setTotalLimit(data.totalLimit);
 
       // If matched, show celebration modal
       if (data.isMatch && data.match) {
@@ -180,5 +203,10 @@ export function useDiscovery() {
     swipe,
     rewind,
     refresh: fetchFeed,
+    swipeCount,
+    swipesRemaining,
+    totalLimit,
+    showLearningReminder,
+    setShowLearningReminder,
   };
 }

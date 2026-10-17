@@ -39,6 +39,11 @@ export default function HomePage() {
     swipe,
     rewind,
     refresh,
+    swipeCount,
+    swipesRemaining,
+    totalLimit,
+    showLearningReminder,
+    setShowLearningReminder,
   } = useDiscovery();
 
   if (showSplash) {
@@ -123,6 +128,35 @@ export default function HomePage() {
           </div>
         ) : hasMore && currentCandidate ? (
           <div className="w-full flex flex-col items-center space-y-2">
+            {/* Top 5-Likes Milestone Reminder Pill (Learning your type) */}
+            {showLearningReminder && swipesRemaining !== null && swipesRemaining > 0 && (
+              <div className="w-full max-w-sm mx-auto mb-1 animate-in slide-in-from-top-2 fade-in duration-300">
+                <div className="w-full bg-white text-black rounded-full px-4 py-2.5 flex items-center justify-between shadow-2xl shadow-black/50 border border-white/20 select-none">
+                  <div className="flex items-center gap-3">
+                    <div className="w-7 h-7 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center shrink-0">
+                      <Heart className="w-3.5 h-3.5 fill-[#ff1475] text-[#ff1475] animate-pulse" />
+                    </div>
+                    <div className="flex flex-col text-left">
+                      <span className="text-xs font-black text-zinc-900 leading-tight">
+                        Learning your type
+                      </span>
+                      <span className="text-[11px] font-semibold text-zinc-600 leading-tight">
+                        Send {swipesRemaining} more Likes to get started
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowLearningReminder(false)}
+                    className="w-5 h-5 rounded-full text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 flex items-center justify-center text-[10px] font-bold transition ml-2 shrink-0 cursor-pointer"
+                    aria-label="Dismiss"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Card Deck */}
             <DiscoveryCard candidate={currentCandidate} />
 

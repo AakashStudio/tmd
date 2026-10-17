@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
       switch (p.code) {
         case "FREE":
           featuresList = [
-            "10 swipes per 12 hours",
+            "25 likes per 12 hours",
             "Ads enabled",
             "Current city discovery",
             "No rewind",

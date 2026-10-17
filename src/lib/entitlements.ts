@@ -26,7 +26,7 @@ export const PLAN_ENTITLEMENT_MATRIX: Record<PlanCode, UserEntitlements> = {
     planName: "Free",
     isPaid: false,
     isPro: false,
-    swipesLimitPerWindow: 10,
+    swipesLimitPerWindow: 25,
     canRewind: false,
     whoLikedYouLimit: 0,
     canSelectCity: false,

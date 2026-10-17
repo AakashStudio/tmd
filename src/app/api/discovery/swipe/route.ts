@@ -61,8 +61,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    let swipeCount = 0;
+    const totalLimit = user.entitlements.swipesLimitPerWindow;
+    let swipesRemaining: number | null = null;
+
     // Enforce 12-hour swipe limits for Free tier
-    if (user.entitlements.swipesLimitPerWindow !== null) {
+    if (totalLimit !== null) {
       const windowPeriod = getCurrentSwipeWindow();
 
       // Find or create current window record
@@ -81,10 +85,10 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      if (swipeRecord.count >= user.entitlements.swipesLimitPerWindow) {
+      if (swipeRecord.count >= totalLimit) {
         return NextResponse.json(
           {
-            error: "You have reached your 10 free swipes for this 12-hour window. Upgrade for unlimited swipes!",
+            error: `You have reached your ${totalLimit} free likes for this 12-hour window. Upgrade for unlimited swipes!`,
             limitReached: true,
             resetAt: windowPeriod.windowEnd.toISOString(),
             secondsUntilReset: windowPeriod.secondsUntilReset,
@@ -95,10 +99,12 @@ export async function POST(req: NextRequest) {
       }
 
       // Increment swipe count
-      await prisma.swipeWindow.update({
+      const updatedWindow = await prisma.swipeWindow.update({
         where: { id: swipeRecord.id },
         data: { count: { increment: 1 } },
       });
+      swipeCount = updatedWindow.count;
+      swipesRemaining = Math.max(0, totalLimit - swipeCount);
     }
 
     if (action === "PASS") {
@@ -120,6 +126,9 @@ export async function POST(req: NextRequest) {
         success: true,
         action: "PASS",
         isMatch: false,
+        swipeCount,
+        swipesRemaining,
+        totalLimit,
       });
     }
 
@@ -193,6 +202,9 @@ export async function POST(req: NextRequest) {
             photoUrl: targetUser.profile.photos[0]?.url || null,
           },
         },
+        swipeCount,
+        swipesRemaining,
+        totalLimit,
       });
     }
 
@@ -200,6 +212,9 @@ export async function POST(req: NextRequest) {
       success: true,
       action: "LIKE",
       isMatch: false,
+      swipeCount,
+      swipesRemaining,
+      totalLimit,
     });
   } catch (error: any) {
     console.error("Swipe API error:", error);

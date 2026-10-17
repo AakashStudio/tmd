@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { getDiscoveryFeed } from "@/services/discoveryService";
+import { prisma } from "@/lib/db";
+import { getCurrentSwipeWindow } from "@/lib/swipe-window";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +37,25 @@ export async function GET(req: NextRequest) {
       limit,
     });
 
-    return NextResponse.json(result);
+    const windowPeriod = getCurrentSwipeWindow();
+    const swipeRecord = await prisma.swipeWindow.findUnique({
+      where: {
+        userId_windowStart: {
+          userId: user.id,
+          windowStart: windowPeriod.windowStart,
+        },
+      },
+    });
+    const swipeCount = swipeRecord?.count || 0;
+    const totalLimit = user.entitlements.swipesLimitPerWindow;
+    const swipesRemaining = totalLimit !== null ? Math.max(0, totalLimit - swipeCount) : null;
+
+    return NextResponse.json({
+      ...result,
+      swipeCount,
+      swipesRemaining,
+      totalLimit,
+    });
   } catch (error: any) {
     console.error("Discovery feed error:", error);
     if (error.message === "PROFILE_REQUIRED") {

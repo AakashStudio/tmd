@@ -34,7 +34,7 @@ export function SwipeLimitModal({ info, onClose }: SwipeLimitModalProps) {
         <div className="space-y-1">
           <h2 className="text-xl font-bold text-white">Out of Swipes!</h2>
           <p className="text-xs text-zinc-400">
-            Free accounts receive 10 swipes every 12-hour window. Your swipes will reset in:
+            Free accounts receive 25 free likes every 12-hour window. Your likes will reset in:
           </p>
         </div>
 
