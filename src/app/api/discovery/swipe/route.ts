@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { targetUserId, action } = parseResult.data;
+    const { targetUserId, action, comment, replyType, replyContext } = parseResult.data;
 
     if (targetUserId === user.id) {
       return NextResponse.json(
@@ -140,10 +140,19 @@ export async function POST(req: NextRequest) {
           toUserId: targetUserId,
         },
       },
-      update: {},
+      update: {
+        comment: comment || undefined,
+        replyType: replyType || undefined,
+        replyContext: replyContext || undefined,
+        status: "PENDING",
+      },
       create: {
         fromUserId: user.id,
         toUserId: targetUserId,
+        comment: comment || null,
+        replyType: replyType || null,
+        replyContext: replyContext || null,
+        status: "PENDING",
       },
     });
 
@@ -188,6 +197,28 @@ export async function POST(req: NextRequest) {
           matchId: match.id,
         },
       });
+
+      // If either user sent a pre-match comment, insert into conversation
+      if (reciprocalLike.comment) {
+        await prisma.message.create({
+          data: {
+            conversationId: conversation.id,
+            senderId: targetUserId,
+            content: reciprocalLike.comment,
+            status: "SENT",
+          },
+        }).catch(() => null);
+      }
+      if (comment) {
+        await prisma.message.create({
+          data: {
+            conversationId: conversation.id,
+            senderId: user.id,
+            content: comment,
+            status: "SENT",
+          },
+        }).catch(() => null);
+      }
 
       return NextResponse.json({
         success: true,

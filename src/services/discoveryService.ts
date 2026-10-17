@@ -34,6 +34,11 @@ export interface CandidateCard {
     name: string;
     icon: string | null;
   }>;
+  promptQuestion?: string | null;
+  promptAnswer?: string | null;
+  anthemTitle?: string | null;
+  anthemArtist?: string | null;
+  anthemCoverUrl?: string | null;
 }
 
 export interface DiscoveryFeedResult {
@@ -136,6 +141,11 @@ export async function getDiscoveryFeed(
           education: true,
           height: true,
           relationshipIntention: true,
+          promptQuestion: true,
+          promptAnswer: true,
+          anthemTitle: true,
+          anthemArtist: true,
+          anthemCoverUrl: true,
           photos: {
             where: { status: "APPROVED" },
             orderBy: { order: "asc" },
@@ -170,10 +180,26 @@ export async function getDiscoveryFeed(
     itemsToReturn = candidates.slice(0, takeAmount);
   }
 
+  const defaultPrompts = [
+    { question: "I feel happiest when...", answer: "I'm around dogs and away from drama." },
+    { question: "Together, we could...", answer: "Explore cute cozy cafes and debate who has better music taste." },
+    { question: "The key to my heart is...", answer: "Warm banter, thoughtful gestures, and spontaneous road trips." },
+    { question: "I'm looking for someone who...", answer: "Knows how to communicate with honesty and isn't afraid to laugh at themselves." },
+  ];
+
+  const defaultAnthems = [
+    { title: "Tum Ho Toh (From \"Saiyaara\")", artist: "Vishal Mishra · Spotify", coverUrl: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200" },
+    { title: "Kesariya (From \"Brahmastra\")", artist: "Arijit Singh · Spotify", coverUrl: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=200" },
+    { title: "Apna Bana Le", artist: "Arijit Singh, Sachin-Jigar · Spotify", coverUrl: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=200" },
+  ];
+
   const feed: CandidateCard[] = itemsToReturn
     .filter((c) => c.profile !== null)
-    .map((c) => {
+    .map((c, index) => {
       const p = c.profile!;
+      const promptFallback = defaultPrompts[index % defaultPrompts.length];
+      const anthemFallback = defaultAnthems[index % defaultAnthems.length];
+
       return {
         userId: c.id,
         name: p.name,
@@ -188,6 +214,11 @@ export async function getDiscoveryFeed(
         isVerified: c.isVerified,
         photos: p.photos,
         interests: p.interests.map((pi) => pi.interest),
+        promptQuestion: p.promptQuestion || promptFallback.question,
+        promptAnswer: p.promptAnswer || promptFallback.answer,
+        anthemTitle: p.anthemTitle || anthemFallback.title,
+        anthemArtist: p.anthemArtist || anthemFallback.artist,
+        anthemCoverUrl: p.anthemCoverUrl || anthemFallback.coverUrl,
       };
     });
 

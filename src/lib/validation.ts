@@ -79,6 +79,11 @@ export const updateProfileSchema = z.object({
     .optional(),
   latitude: z.number().min(-90).max(90).optional().nullable(),
   longitude: z.number().min(-180).max(180).optional().nullable(),
+  promptQuestion: z.string().trim().max(200).optional().nullable(),
+  promptAnswer: z.string().trim().max(500).optional().nullable(),
+  anthemTitle: z.string().trim().max(200).optional().nullable(),
+  anthemArtist: z.string().trim().max(200).optional().nullable(),
+  anthemCoverUrl: z.string().trim().url().optional().nullable(),
 });
 
 export const dobCorrectionRequestSchema = z.object({
@@ -98,6 +103,9 @@ export const dobCorrectionRequestSchema = z.object({
 export const swipeActionSchema = z.object({
   targetUserId: z.string().min(1, "Target user ID is required"),
   action: z.enum(["LIKE", "PASS"]),
+  comment: z.string().trim().max(500).optional().nullable(),
+  replyType: z.string().trim().max(50).optional().nullable(),
+  replyContext: z.string().trim().max(500).optional().nullable(),
 });
 
 export const preferenceFilterSchema = z.object({

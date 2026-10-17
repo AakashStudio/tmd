@@ -121,6 +121,11 @@ model Profile {
   relationshipIntention RelationshipIntention @default(NOT_SURE_YET)
   isNameLocked          Boolean               @default(true)
   locationChangeCount   Int                   @default(0)
+  promptQuestion        String?
+  promptAnswer          String?
+  anthemTitle           String?
+  anthemArtist          String?
+  anthemCoverUrl        String?
   createdAt             DateTime              @default(now())
   updatedAt             DateTime              @updatedAt
 
@@ -227,10 +232,14 @@ model ProfileLanguage {
 // ==========================================
 
 model Like {
-  id         String   @id @default(cuid())
-  fromUserId String
-  toUserId   String
-  createdAt  DateTime @default(now())
+  id           String   @id @default(cuid())
+  fromUserId   String
+  toUserId     String
+  comment      String?
+  replyType    String?
+  replyContext String?
+  status       String   @default("PENDING") // PENDING, ACCEPTED, DECLINED
+  createdAt    DateTime @default(now())
 
   fromUser User @relation("LikesGiven", fields: [fromUserId], references: [id], onDelete: Cascade)
   toUser   User @relation("LikesReceived", fields: [toUserId], references: [id], onDelete: Cascade)

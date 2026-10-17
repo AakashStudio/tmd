@@ -25,6 +25,11 @@ export interface DiscoveryCandidate {
     name: string;
     icon: string | null;
   }>;
+  promptQuestion?: string | null;
+  promptAnswer?: string | null;
+  anthemTitle?: string | null;
+  anthemArtist?: string | null;
+  anthemCoverUrl?: string | null;
 }
 
 export interface MatchCelebration {
@@ -91,7 +96,10 @@ export function useDiscovery() {
 
   const currentCandidate = candidates[currentIndex] || null;
 
-  const swipe = async (action: "LIKE" | "PASS") => {
+  const swipe = async (
+    action: "LIKE" | "PASS",
+    options?: { comment?: string; replyType?: string; replyContext?: string }
+  ) => {
     if (!currentCandidate || isSwiping) return;
 
     setIsSwiping(true);
@@ -101,7 +109,13 @@ export function useDiscovery() {
       const res = await fetch("/api/discovery/swipe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ targetUserId, action }),
+        body: JSON.stringify({
+          targetUserId,
+          action,
+          comment: options?.comment,
+          replyType: options?.replyType,
+          replyContext: options?.replyContext,
+        }),
       });
 
       if (res.status === 429) {

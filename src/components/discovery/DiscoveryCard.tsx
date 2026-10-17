@@ -5,11 +5,11 @@ import { DiscoveryCandidate } from "@/hooks/useDiscovery";
 
 interface DiscoveryCardProps {
   candidate: DiscoveryCandidate;
+  onOpenProfile?: () => void;
 }
 
-export function DiscoveryCard({ candidate }: DiscoveryCardProps) {
+export function DiscoveryCard({ candidate, onOpenProfile }: DiscoveryCardProps) {
   const [photoIndex, setPhotoIndex] = useState(0);
-  const [showFullDetails, setShowFullDetails] = useState(false);
 
   const photos = candidate.photos.length > 0
     ? candidate.photos
@@ -62,7 +62,10 @@ export function DiscoveryCard({ candidate }: DiscoveryCardProps) {
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none" />
 
       {/* Content Area */}
-      <div className="relative z-20 p-5 text-white space-y-3">
+      <div
+        onClick={onOpenProfile}
+        className="relative z-20 p-5 text-white space-y-3 cursor-pointer"
+      >
         {/* Name, Age, Verification */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -82,11 +85,15 @@ export function DiscoveryCard({ candidate }: DiscoveryCardProps) {
             )}
           </div>
           <button
-            onClick={() => setShowFullDetails((prev) => !prev)}
-            className="p-2 rounded-full bg-white/20 backdrop-blur-md hover:bg-white/30 transition text-sm"
-            title="Toggle Details"
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenProfile?.();
+            }}
+            className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-md hover:bg-white/30 flex items-center justify-center transition text-sm text-white"
+            title="View Full Profile & Send Note"
           >
-            {showFullDetails ? "▲" : "▼"}
+            ▼
           </button>
         </div>
 
@@ -118,40 +125,31 @@ export function DiscoveryCard({ candidate }: DiscoveryCardProps) {
 
         {/* Bio */}
         {candidate.bio && (
-          <p
-            className={`text-sm text-zinc-200 leading-relaxed drop-shadow ${
-              showFullDetails ? "" : "line-clamp-2"
-            }`}
-          >
+          <p className="text-sm text-zinc-200 leading-relaxed drop-shadow line-clamp-2">
             {candidate.bio}
           </p>
         )}
 
-        {/* Expandable Details & Interests */}
-        {showFullDetails && (
-          <div className="pt-2 space-y-3 border-t border-white/20 text-xs animate-in fade-in duration-200">
-            {candidate.education && (
-              <p className="text-zinc-300">🎓 {candidate.education}</p>
-            )}
+        {/* Interests & Quick Hint */}
+        <div className="flex items-center justify-between pt-1">
+          {candidate.interests.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5">
+              {candidate.interests.slice(0, 3).map((interest) => (
+                <span
+                  key={interest.id}
+                  className="px-2 py-0.5 rounded-md bg-zinc-800/80 border border-zinc-700/60 text-[11px] text-zinc-200 backdrop-blur-md"
+                >
+                  {interest.icon ? `${interest.icon} ` : ""}
+                  {interest.name}
+                </span>
+              ))}
+            </div>
+          ) : <div />}
 
-            {candidate.interests.length > 0 && (
-              <div>
-                <p className="font-semibold text-zinc-300 mb-1.5">Interests</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {candidate.interests.map((interest) => (
-                    <span
-                      key={interest.id}
-                      className="px-2.5 py-1 rounded-lg bg-zinc-800/80 border border-zinc-700/60 text-zinc-200 backdrop-blur-md"
-                    >
-                      {interest.icon ? `${interest.icon} ` : ""}
-                      {interest.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+          <span className="text-[11px] text-rose-300 font-semibold flex items-center gap-1 group-hover:underline">
+            View Profile & Reply ✈
+          </span>
+        </div>
       </div>
     </div>
   );

@@ -19,11 +19,13 @@ import Link from "next/link";
 
 import { SplashScreen } from "@/components/auth/SplashScreen";
 import { MeetupAuthHero } from "@/components/auth/MeetupAuthHero";
+import { ProfileDetailSheet } from "@/components/discovery/ProfileDetailSheet";
 
 export default function HomePage() {
   const { user, isLoading: authLoading, hasProfile, refreshUser } = useAuth();
   const { profile, entitlements, isLoading: profileLoading, refreshProfile } = useProfile();
   const [showSplash, setShowSplash] = useState<boolean>(true);
+  const [isProfileSheetOpen, setIsProfileSheetOpen] = useState<boolean>(false);
 
   const {
     candidates,
@@ -158,7 +160,10 @@ export default function HomePage() {
             )}
 
             {/* Card Deck */}
-            <DiscoveryCard candidate={currentCandidate} />
+            <DiscoveryCard
+              candidate={currentCandidate}
+              onOpenProfile={() => setIsProfileSheetOpen(true)}
+            />
 
             {/* Bottom Swipe Action Controls */}
             <SwipeControls
@@ -167,6 +172,15 @@ export default function HomePage() {
               onRewind={rewind}
               disabled={isSwiping}
               canRewind={Boolean(canRewind && entitlements?.canRewind)}
+            />
+
+            {/* Full Profile Details Sheet (Matches User Reference Screenshots) */}
+            <ProfileDetailSheet
+              candidate={currentCandidate}
+              isOpen={isProfileSheetOpen}
+              onClose={() => setIsProfileSheetOpen(false)}
+              onLike={(options) => swipe("LIKE", options)}
+              onPass={() => swipe("PASS")}
             />
           </div>
         ) : (
