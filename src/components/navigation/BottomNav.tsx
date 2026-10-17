@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Flame, MapPin, MessageCircle, Crown, Settings } from "lucide-react";
+import { Flame, MapPin, MessageCircle, Crown, User } from "lucide-react";
 
 export const BottomNav: React.FC = () => {
   const pathname = usePathname();
@@ -13,7 +13,7 @@ export const BottomNav: React.FC = () => {
     { label: "Map", href: "/map", icon: MapPin },
     { label: "Chat", href: "/chat", icon: MessageCircle },
     { label: "Plan", href: "/plan", icon: Crown },
-    { label: "Settings", href: "/settings", icon: Settings },
+    { label: "Profile", href: "/settings", icon: User },
   ];
 
   return (

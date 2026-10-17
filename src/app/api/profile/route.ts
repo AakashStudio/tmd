@@ -130,6 +130,11 @@ export async function PUT(req: NextRequest) {
         ...(data.relationshipIntention
           ? { relationshipIntention: data.relationshipIntention as RelationshipIntention }
           : {}),
+        ...(data.promptQuestion !== undefined ? { promptQuestion: data.promptQuestion } : {}),
+        ...(data.promptAnswer !== undefined ? { promptAnswer: data.promptAnswer } : {}),
+        ...(data.anthemTitle !== undefined ? { anthemTitle: data.anthemTitle } : {}),
+        ...(data.anthemArtist !== undefined ? { anthemArtist: data.anthemArtist } : {}),
+        ...(data.anthemCoverUrl !== undefined ? { anthemCoverUrl: data.anthemCoverUrl } : {}),
       },
     });
 

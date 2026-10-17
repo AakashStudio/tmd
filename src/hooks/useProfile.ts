@@ -26,6 +26,11 @@ export interface ProfileData {
   }>;
   interests: Array<{ interest: { id: string; name: string; slug: string; icon: string | null } }>;
   languages: Array<{ language: { id: string; name: string; code: string } }>;
+  promptQuestion?: string | null;
+  promptAnswer?: string | null;
+  anthemTitle?: string | null;
+  anthemArtist?: string | null;
+  anthemCoverUrl?: string | null;
 }
 
 export function useProfile() {
