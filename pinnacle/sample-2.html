@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full antialiased">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Pinnacle (Emerald Wealth Edition) — Move. Support. Progress.</title>
+  <link rel="icon" href="/assets/images/pinnacle.png"/>
+  <link rel="stylesheet" href="/assets/css/emerald.css?v=2.0"/>
+  <link rel="stylesheet" href="/assets/css/app.css?v=2.0"/>
+  
+  <style>
+    /* ==========================================================================
+       SAMPLE 2 — HIGH-IMPACT EMERALD & GOLD WEALTH EDITION
+       Visually 100% distinct from Sample 1
+       ========================================================================== */
+    :root, html, body {
+      --bg: #030a12 !important;
+      --surface: #071524 !important;
+      --surface-muted: #0c1e33 !important;
+      --border: #133328 !important;
+      --accent: #10b981 !important;
+      --accent-soft: rgba(16, 185, 129, 0.15) !important;
+      --success: #10b981 !important;
+      --text: #f0fdf4 !important;
+      --text-muted: #93c5aa !important;
+      --text-faint: #52806b !important;
+    }
+
+    body {
+      background: #030a12 !important;
+      color: #f0fdf4 !important;
+    }
+
+    /* Ambient Rich Emerald Glow Mesh */
+    .bg-mesh {
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.25) 0%, transparent 45%),
+        radial-gradient(circle at 90% 15%, rgba(5, 150, 105, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.15) 0%, transparent 55%) !important;
+      opacity: 1 !important;
+    }
+
+
+    /* Header in Deep Forest Slate */
+    .ff-header {
+      background: rgba(3, 10, 18, 0.95) !important;
+      border-bottom: 1px solid #133328 !important;
+    }
+    .ff-public-nav a:hover, .ff-public-nav a.active {
+      color: #10b981 !important;
+    }
+    .ff-public-nav a:after {
+      background: #10b981 !important;
+    }
+
+    /* Pixel-perfect Header & Content Alignment */
+    .ff-header-inner {
+      max-width: 1240px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      padding-left: 24px !important;
+      padding-right: 24px !important;
+      width: 100% !important;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+    }
+
+    .home-shell {
+      max-width: 1240px !important;
+      width: 100% !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      padding-left: 24px !important;
+      padding-right: 24px !important;
+    }
+
+    /* Logo & Brand text alignment */
+    .ff-brand {
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+      text-decoration: none !important;
+    }
+
+    /* Strict 8px Button Radius & Sizing */
+    button, 
+    .ff-button, 
+    .home-primary-cta, 
+    .home-secondary-cta, 
+    .home-slider-arrow, 
+    .home-story-tabs button, 
+    .ff-header-actions button,
+    .ff-header-actions a.ff-button {
+      border-radius: 8px !important;
+    }
+
+    .home-primary-cta {
+      border-radius: 8px !important;
+      padding: 0 24px !important;
+      min-height: 48px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-weight: 700 !important;
+      letter-spacing: -0.01em !important;
+    }
+
+    .home-secondary-cta {
+      border-radius: 8px !important;
+      padding: 0 20px !important;
+      min-height: 48px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-weight: 600 !important;
+    }
+
+    .ff-button.ff-nav-login {
+      border-radius: 8px !important;
+      padding: 7px 16px !important;
+      min-height: 36px !important;
+      font-weight: 700 !important;
+    }
+
+    .home-slider-arrow {
+      border-radius: 8px !important;
+    }
+
+    /* Primary CTAs in Vivid Emerald Gradient */
+    .home-primary-cta, .ff-button.ff-nav-login {
+      background: linear-gradient(135deg, #10b981 0%, #047857 100%) !important;
+      color: #ffffff !important;
+      border: 1px solid #34d399 !important;
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.35) !important;
+      font-weight: 700 !important;
+    }
+    .home-primary-cta:hover, .ff-button.ff-nav-login:hover {
+      background: linear-gradient(135deg, #34d399 0%, #059669 100%) !important;
+      box-shadow: 0 12px 35px rgba(16, 185, 129, 0.5) !important;
+    }
+
+    /* Secondary CTA */
+    .home-secondary-cta {
+      background: #081c15 !important;
+      border: 1px solid #134e38 !important;
+      color: #a7f3d0 !important;
+    }
+    .home-secondary-cta:hover {
+      border-color: #10b981 !important;
+      background: #0d281e !important;
+      color: #ffffff !important;
+    }
+
+    /* Hero Kicker Badge */
+    .home-kicker {
+      background: rgba(16, 185, 129, 0.15) !important;
+      color: #34d399 !important;
+      border: 1px solid #10b981 !important;
+    }
+    .home-kicker span {
+      background: #10b981 !important;
+      box-shadow: 0 0 14px #10b981 !important;
+    }
+
+    /* Hero Headline Gradient text */
+    .home-hero h1 em, .home-section-heading h2 em {
+      background: linear-gradient(110deg, #34d399 0%, #10b981 50%, #f59e0b 100%) !important;
+      -webkit-text-fill-color: transparent !important;
+      -webkit-background-clip: text !important;
+      background-clip: text !important;
+      font-style: normal !important;
+    }
+
+    /* Floating Status Icons */
+    .home-float-card {
+      background: rgba(7, 21, 36, 0.95) !important;
+      border: 1px solid #164e3b !important;
+    }
+    .home-float-icon {
+      background: #10b981 !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.5) !important;
+    }
+    .home-float-icon.gold {
+      background: #f59e0b !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.5) !important;
+    }
+
+    /* Bento Cards */
+    .home-bento, .home-bento-wide {
+      position: relative !important;
+    }
+    .ff-panel, .home-bento-card, .home-bento-featured, .home-bento-journey {
+      position: relative !important;
+      background: #071524 !important;
+      border: 1px solid #143527 !important;
+    }
+    .home-bento-featured {
+      background: radial-gradient(circle at 85% 15%, rgba(16, 185, 129, 0.25), transparent 45%), #071524 !important;
+      border-color: #10b981 !important;
+      box-shadow: 0 10px 40px rgba(16, 185, 129, 0.1) !important;
+      min-height: 270px !important;
+      padding-bottom: 70px !important;
+      overflow: hidden !important;
+    }
+    .home-bento-featured > a {
+      position: absolute !important;
+      bottom: 24px !important;
+      left: 28px !important;
+      z-index: 2 !important;
+    }
+    .home-allocation-bars {
+      position: absolute !important;
+      bottom: 26px !important;
+      right: 28px !important;
+      z-index: 2 !important;
+    }
+    .home-card-icon.cyan {
+      background: rgba(16, 185, 129, 0.2) !important;
+      border-color: #10b981 !important;
+      color: #34d399 !important;
+    }
+    .home-bento-card:hover {
+      border-color: #10b981 !important;
+      box-shadow: 0 20px 50px rgba(16, 185, 129, 0.2) !important;
+    }
+    .home-mini-levels span.lit {
+      background: linear-gradient(135deg, #10b981 0%, #047857 100%) !important;
+      border-color: #34d399 !important;
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3) !important;
+      color: #ffffff !important;
+    }
+
+    /* Level Cards */
+    .home-level-card {
+      background: #071524 !important;
+      border: 1px solid #143527 !important;
+    }
+    .home-level-card:hover {
+      border-color: #10b981 !important;
+      box-shadow: 0 15px 40px rgba(16, 185, 129, 0.2) !important;
+    }
+    .home-level-number {
+      background: linear-gradient(135deg, #10b981 0%, #065f46 100%) !important;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+    }
+    .home-level-card b {
+      color: #34d399 !important;
+    }
+    .home-level-card.featured {
+      background: #091e16 !important;
+      border: 1.5px solid #10b981 !important;
+      box-shadow: 0 15px 50px rgba(16, 185, 129, 0.3) !important;
+    }
+    .home-level-popular {
+      background: #10b981 !important;
+    }
+    .home-level-card:last-child {
+      border: 1.5px solid #f59e0b !important;
+      background: radial-gradient(circle at 90% 10%, rgba(245, 158, 11, 0.15), transparent 50%), #071524 !important;
+    }
+    .home-level-card:last-child .home-level-number {
+      background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%) !important;
+    }
+    .home-level-card:last-child b {
+      color: #fbbf24 !important;
+    }
+
+    /* Counter Band */
+    .home-counter-band {
+      background: #040e17 !important;
+      border-color: #143527 !important;
+    }
+    .home-counters > div {
+      background: #071524 !important;
+      border-color: #143527 !important;
+    }
+    .home-counters strong {
+      color: #10b981 !important;
+    }
+
+    /* Final CTA */
+    .home-final-card {
+      background: radial-gradient(circle at 85% 20%, rgba(16, 185, 129, 0.2), transparent 45%), linear-gradient(135deg, #071524, #050d18) !important;
+      border: 1px solid #10b981 !important;
+      box-shadow: 0 25px 80px rgba(16, 185, 129, 0.15) !important;
+    }
+
+    /* Instant display */
+    .home-hero-copy, .home-section-heading, .home-bento-wide, .home-story, .home-level-grid > div, .home-counters > div, .home-final-card, .home-slider-wrap, .home-story-content {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  </style>
+</head>
+<body class="min-h-full flex flex-col">
+  <div class="bg-mesh" aria-hidden="true"></div>
+  <div class="bg-noise" aria-hidden="true"></div>
+
+
+  <!-- Header -->
+  <header class="ff-header">
+    <div class="ff-header-inner">
+      <a class="ff-brand" href="/sample-2.html">
+        <div style="width:36px;height:36px;background:linear-gradient(135deg,#10b981,#047857);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:18px;box-shadow:0 0 16px rgba(16,185,129,0.5);">
+          ▲
+        </div>
+        <span><strong>Pinnacle</strong><small style="color:#34d399;">Move. Support. Progress.</small></span>
+      </a>
+      <nav class="ff-public-nav" aria-label="Public navigation">
+        <a href="#how-it-works">How it works</a>
+        <a href="#levels">Levels</a>
+        <a href="/transparency.html">Transparency</a>
+      </nav>
+      <div class="ff-header-actions">
+        <button type="button" aria-label="Open command palette" class="hidden items-center gap-2 rounded-lg border border-[var(--border)] px-2.5 py-1.5 text-xs font-medium text-[var(--text-faint)] transition-colors hover:bg-[var(--surface-muted)] hover:text-[var(--text-muted)] sm:inline-flex cursor-pointer" onclick="alert('Pinnacle Search Active')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="m21 21-4.3-4.3" stroke-linecap="round"></path>
+          </svg>
+          Search
+          <kbd class="rounded border border-[var(--border)] bg-[var(--surface-muted)] px-1.5 py-0.5 font-sans text-[10px]">⌘K</kbd>
+        </button>
+        <a class="ff-button ff-nav-login" href="/login.html?sample=2">
+          Log in 
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14m-6-6 6 6-6 6"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View -->
+  <div class="mx-auto flex w-full max-w-[1750px] flex-1">
+    <main class="min-w-0 flex-1">
+      <div class="home-page">
+        
+        <!-- Hero Section -->
+        <section class="home-hero" aria-labelledby="home-title">
+          <div class="home-hero-glow home-hero-glow-one" style="background:radial-gradient(circle, rgba(16,185,129,0.3) 0%, transparent 70%);"></div>
+          <div class="home-hero-glow home-hero-glow-two" style="background:radial-gradient(circle, rgba(245,158,11,0.2) 0%, transparent 70%);"></div>
+          <div class="home-shell home-hero-grid">
+            
+            <div class="home-hero-copy">
+              <div class="home-kicker"><span></span> Transparent by design</div>
+              <h1 id="home-title">A clearer way to <em>move forward</em> together.</h1>
+              <p>Pinnacle turns community support into a visible, seven-level journey. Choose where to begin, understand every allocation, and follow your progress without recruiting.</p>
+              <div class="home-hero-actions">
+                <a class="home-primary-cta" href="/register.html">Start your journey <span>↗</span></a>
+                <a class="home-secondary-cta" href="/transparency.html"><span class="home-play" style="color:#10b981;background:rgba(16,185,129,0.15);">▶</span> See how the flow works</a>
+              </div>
+              <div class="home-proof-row" aria-label="Pinnacle highlights" style="border-color:#143527;">
+                <div style="border-color:#143527;"><strong style="color:#ffffff;">7</strong><span>clear levels</span></div>
+                <div style="border-color:#143527;"><strong style="color:#ffffff;">8</strong><span>contributors per payout</span></div>
+                <div><strong style="color:#34d399;">0</strong><span>referrals required</span></div>
+              </div>
+            </div>
+
+            <!-- Image Slider & Cards -->
+            <div class="home-slider-wrap">
+              <div class="home-slider" style="border: 1px solid #1b4938; box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(16,185,129,0.15);">
+                <div class="home-slide-skeleton skeleton" aria-hidden="true"></div>
+                <div class="home-slide" id="hero-slider-slide" draggable="false" style="opacity:1;transform:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:pan-y">
+                  <img id="hero-slider-img" alt="Community collaborating around a circular table in Kigali" width="960" height="600" fetchpriority="high" loading="eager" decoding="async" style="position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;object-fit:cover;transition:opacity 0.25s ease;" src="/assets/images/community-flow.webp"/>
+                  <div class="home-slide-shade" style="background:linear-gradient(#0000 45%, #030a12f5);"></div>
+                  <div class="home-slide-caption">
+                    <span id="slider-kicker" style="color:#34d399;">Community powered</span>
+                    <strong id="slider-title">Progress is better when it moves together.</strong>
+                  </div>
+                </div>
+                <button class="home-slider-arrow prev" aria-label="Previous picture" onclick="changeSlide(-1)">←</button>
+                <button class="home-slider-arrow next" aria-label="Next picture" onclick="changeSlide(1)">→</button>
+                <div class="home-slider-dots" role="tablist" aria-label="Choose picture">
+                  <button role="tab" id="dot-0" aria-selected="true" onclick="setSlide(0)"><span></span></button>
+                  <button role="tab" id="dot-1" aria-selected="false" onclick="setSlide(1)"><span></span></button>
+                  <button role="tab" id="dot-2" aria-selected="false" onclick="setSlide(2)"><span></span></button>
+                </div>
+              </div>
+              
+              <div class="home-float-card home-float-card-top">
+                <span class="home-float-icon">✓</span>
+                <div>
+                  <small style="color:#93c5aa;">Flow status</small>
+                  <strong>Clear &amp; visible</strong>
+                </div>
+              </div>
+              
+              <div class="home-float-card home-float-card-bottom">
+                <span class="home-float-icon gold">7</span>
+                <div>
+                  <small style="color:#93c5aa;">Your journey</small>
+                  <strong>Choose any level</strong>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Trust Strip -->
+        <section class="home-trust-strip" aria-label="Platform principles" style="background:#05121e;border-color:#143527;">
+          <div class="home-shell">
+            <span><i style="color:#10b981;background:rgba(16,185,129,0.15);">✓</i> Transparent allocations</span>
+            <span><i style="color:#10b981;background:rgba(16,185,129,0.15);">✓</i> No referral requirement</span>
+            <span><i style="color:#10b981;background:rgba(16,185,129,0.15);">✓</i> Clear FIFO ordering</span>
+            <span><i style="color:#10b981;background:rgba(16,185,129,0.15);">✓</i> Automatic progression</span>
+          </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="home-section" id="how-it-works">
+          <div class="home-shell">
+            <div class="home-section-heading">
+              <span class="home-eyebrow" style="color:#34d399;">Designed for clarity</span>
+              <h2>Everything important, <em>visible at a glance.</em></h2>
+              <p>From your first reservation to the final split, Pinnacle keeps the journey understandable.</p>
+            </div>
+            
+            <div class="home-bento">
+              <div class="home-bento-wide">
+                <div class="ff-panel home-bento-card home-bento-featured">
+                  <div class="home-card-icon cyan">◎</div>
+                  <span class="home-eyebrow" style="color:#34d399;">One shared source of truth</span>
+                  <h3>Know where every amount goes.</h3>
+                  <p>Entries, support, progression, and member cash all come from the same live level configuration—not disconnected promises.</p>
+                  <div class="home-allocation-bars" aria-hidden="true">
+                    <i style="background:#10b981;"></i><i style="background:#059669;"></i><i style="background:#f59e0b;"></i>
+                  </div>
+                  <a href="/transparency.html" style="color:#34d399;">Explore the transparent model <span>→</span></a>
+                </div>
+              </div>
+
+              <div>
+                <div class="ff-panel home-bento-card home-stat-card">
+                  <span class="home-eyebrow" style="color:#34d399;">Start accessibly</span>
+                  <strong><span class="tabular">$100.00</span></strong>
+                  <p>Entry at the first level. You can also choose any other open level that fits.</p>
+                </div>
+              </div>
+
+              <div>
+                <div class="ff-panel home-bento-card home-stat-card emerald">
+                  <span class="home-eyebrow" style="color:#34d399;">Recruiting needed</span>
+                  <strong><span class="tabular" style="color:#10b981;">0</span></strong>
+                  <p>Your position never depends on inviting friends or building a downline.</p>
+                </div>
+              </div>
+
+              <div class="home-bento-wide">
+                <div class="ff-panel home-bento-card home-bento-journey">
+                  <div>
+                    <span class="home-eyebrow" style="color:#34d399;">Progress with context</span>
+                    <h3>Seven levels. One connected journey.</h3>
+                    <p>See your balance, eligibility, position, current funding group, and next step without losing the bigger picture.</p>
+                  </div>
+                  <div class="home-mini-levels" aria-label="Pinnacle levels">
+                    <span class="lit">L0</span>
+                    <span class="lit">L1</span>
+                    <span class="lit">L2</span>
+                    <span>L3</span>
+                    <span>L4</span>
+                    <span>L5</span>
+                    <span>L6</span>
+                    <span>L7</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Interactive Story Tabs -->
+        <section class="home-section home-story-section">
+          <div class="home-shell">
+            <div class="home-story" style="background:#071524;border-color:#143527;">
+              <div class="home-story-tabs" role="tablist" aria-label="How Pinnacle works">
+                <button role="tab" id="story-tab-0" aria-selected="true" onclick="setStory(0)" style="color:#10b981;">
+                  <span style="border-color:#143527;background:#0d241c;"></span><b>01 · Choose</b>
+                </button>
+                <button role="tab" id="story-tab-1" aria-selected="false" onclick="setStory(1)">
+                  <span></span><b>02 · Support</b>
+                </button>
+                <button role="tab" id="story-tab-2" aria-selected="false" onclick="setStory(2)">
+                  <span></span><b>03 · Progress</b>
+                </button>
+              </div>
+              <div class="home-story-content" id="story-content" style="background:#05111d;">
+                <div>
+                  <span class="home-eyebrow" id="story-eyebrow" style="color:#34d399;">How the flow works</span>
+                  <h3 id="story-title">Start at the level that fits you.</h3>
+                  <p id="story-desc">Every level shows its entry, gross target, support allocation, next-level amount, and member cash before you join.</p>
+                </div>
+                <div class="home-story-metric" style="background:radial-gradient(circle at 50% 10%, rgba(16,185,129,0.3), transparent 70%);border-color:#143527;">
+                  <strong id="story-metric" style="color:#34d399;">L1–L7</strong>
+                  <span id="story-metric-label">flexible entry points</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Levels Matrix Section -->
+        <section class="home-section" id="levels">
+          <div class="home-shell">
+            <div class="home-section-heading split">
+              <div>
+                <span class="home-eyebrow" style="color:#34d399;">The level map</span>
+                <h2>Choose your starting point.</h2>
+              </div>
+              <p>Every level uses the same visible rules. Higher levels change the amounts—not the clarity.</p>
+            </div>
+
+            <div class="home-level-grid">
+              
+              <!-- L0 -->
+              <div>
+                <a class="home-level-card" href="/register.html?level=L0">
+                  <span class="home-level-number tone-0">L0</span>
+                  <div>
+                    <small>Entry</small>
+                    <strong><span class="tabular">$100.00</span></strong>
+                  </div>
+                  <div class="home-level-divider" style="background:#143527;"></div>
+                  <div>
+                    <small>Member cash</small>
+                    <b><span class="tabular">$300.00</span></b>
+                  </div>
+                  <span class="home-level-arrow">↗</span>
+                </a>
+              </div>
+
+              <!-- L1 -->
+              <div>
+                <a class="home-level-card" href="/register.html?level=L1">
+                  <span class="home-level-number tone-1">L1</span>
+                  <div>
+                    <small>Entry</small>
+                    <strong><span class="tabular">$300.00</span></strong>
+                  </div>
+                  <div class="home-level-divider" style="background:#143527;"></div>
+                  <div>
+                    <small>Member cash</small>
+                    <b><span class="tabular">$700.00</span></b>
+                  </div>
+                  <span class="home-level-arrow">↗</span>
+                </a>
+              </div>
+
+              <!-- L2 -->
+              <div>
+                <a class="home-level-card" href="/register.html?level=L2">
+                  <span class="home-level-number tone-2">L2</span>
+                  <div>
+                    <small>Entry</small>
+                    <strong><span class="tabular">$700.00</span></strong>
+                  </div>
+                  <div class="home-level-divider" style="background:#143527;"></div>
+                  <div>
+                    <small>Member cash</small>
+                    <b><span class="tabular">$1,750.00</span></b>
+                  </div>
+                  <span class="home-level-arrow">↗</span>
+                </a>
+              </div>
+
+              <!-- L3 (Featured Emerald) -->
+              <div>
+                <a class="home-level-card featured" href="/register.html?level=L3">
+                  <span class="home-level-popular">Popular start</span>
+                  <span class="home-level-number tone-3" style="background:linear-gradient(135deg,#10b981,#047857);">L3</span>
+                  <div>
+                    <small>Entry</small>
+                    <strong><span class="tabular">$1,500.00</span></strong>
+                  </div>
+                  <div class="home-level-divider" style="background:#143527;"></div>
+                  <div>
+                    <small>Member cash</small>
+                    <b><span class="tabular">$3,937.50</span></b>
+                  </div>
+                  <span class="home-level-arrow" style="color:#34d399;">↗</span>
+                </a>
+              </div>
+
+              <!-- L4 -->
+              <div>
+                <a class="home-level-card" href="/register.html?level=L4">
+                  <span class="home-level-number tone-4">L4</span>
+                  <div>
+                    <small>Entry</small>
+                    <strong><span class="tabular">$3,000.00</span></strong>
+                  </div>
+                  <div class="home-level-divider" style="background:#143527;"></div>
+                  <div>
+                    <small>Member cash</small>
+                    <b><span class="tabular">$8,750.00</span></b>
+                  </div>
+                  <span class="home-level-arrow">↗</span>
+                </a>
+              </div>
+
+              <!-- L5 -->
+              <div>
+                <a class="home-level-card" href="/register.html?level=L5">
+                  <span class="home-level-number tone-0">L5</span>
+                  <div>
+                    <small>Entry</small>
+                    <strong><span class="tabular">$5,000.00</span></strong>
+                  </div>
+                  <div class="home-level-divider" style="background:#143527;"></div>
+                  <div>
+                    <small>Member cash</small>
+                    <b><span class="tabular">$15,750.00</span></b>
+                  </div>
+                  <span class="home-level-arrow">↗</span>
+                </a>
+              </div>
+
+              <!-- L6 -->
+              <div>
+                <a class="home-level-card" href="/register.html?level=L6">
+                  <span class="home-level-number tone-1">L6</span>
+                  <div>
+                    <small>Entry</small>
+                    <strong><span class="tabular">$7,000.00</span></strong>
+                  </div>
+                  <div class="home-level-divider" style="background:#143527;"></div>
+                  <div>
+                    <small>Member cash</small>
+                    <b><span class="tabular">$21,875.00</span></b>
+                  </div>
+                  <span class="home-level-arrow">↗</span>
+                </a>
+              </div>
+
+              <!-- L7 (Zenith Gold Peak) -->
+              <div>
+                <a class="home-level-card" href="/register.html?level=L7">
+                  <span class="home-level-number tone-2" style="background:linear-gradient(135deg,#f59e0b,#b45309);">L7</span>
+                  <div>
+                    <small>Entry</small>
+                    <strong><span class="tabular">$10,000.00</span></strong>
+                  </div>
+                  <div class="home-level-divider" style="background:#143527;"></div>
+                  <div>
+                    <small>Member cash</small>
+                    <b><span class="tabular" style="color:#fbbf24;">$35,000.00</span></b>
+                  </div>
+                  <span class="home-level-arrow" style="color:#f59e0b;">↗</span>
+                </a>
+              </div>
+
+            </div>
+
+            <div class="home-level-note">
+              <span>All payouts depend on future contributions and support.</span>
+              <a href="/transparency.html" style="color:#34d399;">Review the full allocation table →</a>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Counter Band -->
+        <section class="home-section home-counter-band">
+          <div class="home-shell home-counter-grid">
+            <div>
+              <span class="home-eyebrow" style="color:#34d399;">A simple system with explicit rules</span>
+              <h2>Built to make progress easier to understand.</h2>
+            </div>
+            <div class="home-counters">
+              <div>
+                <strong><span class="tabular">8</span></strong>
+                <span>configured levels</span>
+              </div>
+              <div>
+                <strong><span class="tabular">8</span></strong>
+                <span>contributors per group</span>
+              </div>
+              <div>
+                <strong><span class="tabular" style="color:#34d399;">$35,000.00</span></strong>
+                <span>final-level member cash</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Final Call to Action -->
+        <section class="home-final-cta">
+          <div class="home-shell">
+            <div class="home-final-card">
+              <div>
+                <span class="home-eyebrow" style="color:#34d399;">Ready when you are</span>
+                <h2>Make your next move visible.</h2>
+                <p>Create your account and explore Pinnacle in sandbox mode.</p>
+              </div>
+              <div>
+                <a class="home-primary-cta" href="/register.html">Get started <span>↗</span></a>
+                <small>No guaranteed income or payout date.</small>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-[var(--border)] py-8 pb-24 text-center text-xs text-[var(--text-muted)] md:pb-8" style="background:#02070e;border-color:#143527;">
+    Pinnacle sandbox — no guaranteed payout dates, no referral requirement, no guaranteed returns. 
+    <a href="/transparency.html" class="underline underline-offset-2 hover:text-[var(--text)]">Read how it works</a> 
+    · 
+    <a href="/terms.html" class="underline underline-offset-2 hover:text-[var(--text)]">Terms &amp; Conditions</a>.
+  </footer>
+
+  <script>
+    const slidesData = [
+      { 
+        src: "/assets/images/community-flow.webp", 
+        kicker: "Community powered", 
+        title: "Progress is better when it moves together.",
+        alt: "A group of professionals collaborating around a circular table in Kigali"
+      },
+      { 
+        src: "/assets/images/level-journey.webp", 
+        kicker: "Seven clear levels", 
+        title: "See every step before you take it.",
+        alt: "Seven illuminated platforms visualizing a transparent progression journey"
+      },
+      { 
+        src: "/assets/images/mobile-progress.webp", 
+        kicker: "Built for your rhythm", 
+        title: "Follow your flow from wherever you are.",
+        alt: "Friends reviewing their progress together on a mobile phone"
+      }
+    ];
+    let activeSlideIndex = 0;
+    let autoSlideInterval = null;
+
+    function renderSlide(idx) {
+      activeSlideIndex = idx;
+      const slide = slidesData[idx];
+      const imgEl = document.getElementById('hero-slider-img');
+      const kickerEl = document.getElementById('slider-kicker');
+      const titleEl = document.getElementById('slider-title');
+
+      if (imgEl) {
+        imgEl.style.opacity = '0.7';
+        setTimeout(() => {
+          imgEl.src = slide.src;
+          imgEl.alt = slide.alt;
+          imgEl.style.opacity = '1';
+        }, 120);
+      }
+      if (kickerEl) kickerEl.innerText = slide.kicker;
+      if (titleEl) titleEl.innerText = slide.title;
+
+      [0, 1, 2].forEach(i => {
+        const dot = document.getElementById('dot-' + i);
+        if (dot) {
+          dot.setAttribute('aria-selected', i === idx ? 'true' : 'false');
+          dot.innerHTML = i === idx ? '<span></span>' : '';
+        }
+      });
+    }
+
+    function changeSlide(direction) {
+      let next = (activeSlideIndex + direction + slidesData.length) % slidesData.length;
+      renderSlide(next);
+      restartAutoSlide();
+    }
+
+    function setSlide(idx) {
+      renderSlide(idx);
+      restartAutoSlide();
+    }
+
+    function restartAutoSlide() {
+      if (autoSlideInterval) clearInterval(autoSlideInterval);
+      autoSlideInterval = setInterval(() => {
+        let next = (activeSlideIndex + 1) % slidesData.length;
+        renderSlide(next);
+      }, 5500);
+    }
+
+    restartAutoSlide();
+
+    const storyData = [
+      {
+        eyebrow: "How the flow works",
+        title: "Start at the level that fits you.",
+        desc: "Every level shows its entry, gross target, support allocation, next-level amount, and member cash before you join.",
+        metric: "L1–L7",
+        metricLabel: "flexible entry points"
+      },
+      {
+        eyebrow: "Support fund",
+        title: "Community cushions built into every level.",
+        desc: "Support allocations ensure liquidity for waiting positions and cycle back to foundational tiers automatically.",
+        metric: "100%",
+        metricLabel: "visible allocations"
+      },
+      {
+        eyebrow: "Automated progression",
+        title: "Advance forward without recruiting.",
+        desc: "Next-tier entries are funded directly from completed payouts, moving you up the ladder seamlessly.",
+        metric: "FIFO",
+        metricLabel: "strict ordering"
+      }
+    ];
+
+    function setStory(idx) {
+      [0, 1, 2].forEach(i => {
+        const tab = document.getElementById('story-tab-' + i);
+        if (tab) tab.setAttribute('aria-selected', i === idx ? 'true' : 'false');
+      });
+      const data = storyData[idx];
+      document.getElementById('story-eyebrow').innerText = data.eyebrow;
+      document.getElementById('story-title').innerText = data.title;
+      document.getElementById('story-desc').innerText = data.desc;
+      document.getElementById('story-metric').innerText = data.metric;
+      document.getElementById('story-metric-label').innerText = data.metricLabel;
+    }
+  </script>
+</body>
+</html>

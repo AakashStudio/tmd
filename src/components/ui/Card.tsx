@@ -8,11 +8,14 @@ interface CardProps {
 }
 
 export const Card: React.FC<CardProps> = ({ children, id, className = "", onClick }) => {
+  const hasPadding = /(^|\s)p[xytbrl]?-/.test(className);
   return (
     <div
       id={id}
       onClick={onClick}
-      className={`rounded-lg bg-[#14141a] border border-[#24242e] p-4 text-white shadow-md ${
+      className={`rounded-lg bg-[#14141a] border border-[#24242e] ${
+        hasPadding ? "" : "p-4"
+      } text-white shadow-md ${
         onClick ? "cursor-pointer hover:border-[#383848] transition-colors" : ""
       } ${className}`}
     >

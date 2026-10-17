@@ -94,53 +94,56 @@ export default function SettingsPage() {
           </span>
 
           <Link href="/settings/edit-profile" className="block">
-            <Card className="flex items-center justify-between py-2.5 px-3.5 hover:bg-[#181822]">
+            <Card className="h-12 flex items-center justify-between px-3.5 hover:bg-[#181822] transition-colors">
               <div className="flex items-center gap-3">
-                <User className="w-4 h-4 text-[#ff1475]" />
+                <User className="w-4 h-4 text-[#ff1475] shrink-0" />
                 <span className="text-xs font-medium">Edit Profile & Details</span>
               </div>
-              <ChevronRight className="w-4 h-4 text-[#5e5e6e]" />
+              <ChevronRight className="w-4 h-4 text-[#5e5e6e] shrink-0" />
             </Card>
           </Link>
 
           <Link href="/settings/photos" className="block">
-            <Card className="flex items-center justify-between py-2.5 px-3.5 hover:bg-[#181822]">
+            <Card className="h-12 flex items-center justify-between px-3.5 hover:bg-[#181822] transition-colors">
               <div className="flex items-center gap-3">
-                <Camera className="w-4 h-4 text-[#ff6b8b]" />
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium">Manage Photos</span>
-                  <Badge variant="neutral">{profile?.photos?.length || 0}/6</Badge>
-                </div>
+                <Camera className="w-4 h-4 text-[#ff6b8b] shrink-0" />
+                <span className="text-xs font-medium">Manage Photos</span>
               </div>
-              <ChevronRight className="w-4 h-4 text-[#5e5e6e]" />
+              <div className="flex items-center gap-2">
+                <Badge variant="neutral">{profile?.photos?.length || 0}/6</Badge>
+                <ChevronRight className="w-4 h-4 text-[#5e5e6e] shrink-0" />
+              </div>
             </Card>
           </Link>
 
           <Link href="/settings/verification" className="block">
-            <Card className="flex items-center justify-between py-2.5 px-3.5 hover:bg-[#181822]">
+            <Card className="h-12 flex items-center justify-between px-3.5 hover:bg-[#181822] transition-colors">
               <div className="flex items-center gap-3">
-                <ShieldCheck className="w-4 h-4 text-[#10b981]" />
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium">Face Verification</span>
-                  {user.isVerified ? (
-                    <Badge variant="verified">Verified</Badge>
-                  ) : (
-                    <Badge variant="neutral">Unverified</Badge>
-                  )}
-                </div>
+                <ShieldCheck className="w-4 h-4 text-[#10b981] shrink-0" />
+                <span className="text-xs font-medium">Face Verification</span>
               </div>
-              <ChevronRight className="w-4 h-4 text-[#5e5e6e]" />
+              <div className="flex items-center gap-2">
+                {user.isVerified ? (
+                  <Badge variant="verified">Verified</Badge>
+                ) : (
+                  <Badge variant="neutral">Unverified</Badge>
+                )}
+                <ChevronRight className="w-4 h-4 text-[#5e5e6e] shrink-0" />
+              </div>
             </Card>
           </Link>
 
           {entitlements?.canRequestDobCorrection && (
             <Link href="/settings/verification#dob" className="block">
-              <Card className="flex items-center justify-between py-2.5 px-3.5 hover:bg-[#181822]">
+              <Card className="h-12 flex items-center justify-between px-3.5 hover:bg-[#181822] transition-colors">
                 <div className="flex items-center gap-3">
-                  <Calendar className="w-4 h-4 text-[#ff1475]" />
+                  <Calendar className="w-4 h-4 text-[#ff1475] shrink-0" />
                   <span className="text-xs font-medium">Request DOB Correction</span>
                 </div>
-                <Badge variant="pro">PRO Feature</Badge>
+                <div className="flex items-center gap-2">
+                  <Badge variant="pro">PRO Feature</Badge>
+                  <ChevronRight className="w-4 h-4 text-[#5e5e6e] shrink-0" />
+                </div>
               </Card>
             </Link>
           )}

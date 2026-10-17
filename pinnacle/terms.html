@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full antialiased">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Terms & Conditions — Pinnacle</title>
+  <meta name="description" content="Operational terms and non-custodial sandbox execution parameters of the Pinnacle 3-Tier Sovereign Matrix."/>
+  <link rel="icon" href="/assets/images/pinnacle.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #030705;
+      --bg-elevated: #070e0a;
+      --bg-card: #09140e;
+      --border: #142a1e;
+      --border-focus: #00e699;
+      --accent: #00e699;
+      --gold: #f59e0b;
+      --text: #f0faf5;
+      --text-muted: #82a894;
+      --text-faint: #4e735f;
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-display: 'Space Grotesk', system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Ambient Depth Glows */
+    .ambient-glow-top {
+      position: absolute;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1000px;
+      height: 480px;
+      background: radial-gradient(ellipse, rgba(0, 230, 153, 0.12) 0%, transparent 68%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Top Announcement Strip */
+    .top-notice-bar {
+      background: linear-gradient(90deg, #021a10 0%, #063820 50%, #021a10 100%);
+      border-bottom: 1px solid rgba(0, 230, 153, 0.25);
+      padding: 9px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #bbf7d0;
+      text-align: center;
+      position: relative;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .top-notice-bar a {
+      color: var(--accent);
+      text-decoration: underline;
+      font-weight: 700;
+      margin-left: 6px;
+    }
+
+    /* Sticky Navbar */
+    .plana-navbar-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(3, 7, 5, 0.85);
+      border-bottom: 1px solid rgba(20, 42, 30, 0.7);
+    }
+    .plana-navbar {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .plana-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #00e699, #007a4d);
+      color: #030705;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 16px;
+      box-shadow: 0 0 16px rgba(0, 230, 153, 0.4);
+    }
+    .brand-text {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      font-family: var(--font-display);
+    }
+    .brand-text span {
+      color: var(--accent);
+    }
+
+    .plana-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+    @media (max-width: 860px) {
+      .plana-nav-links { display: none; }
+    }
+    .plana-nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+    .plana-nav-links a:hover, .plana-nav-links a.active {
+      color: #ffffff;
+    }
+    .plana-nav-links a.active {
+      color: var(--accent);
+    }
+
+    .plana-nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-btn-outline {
+      padding: 8px 18px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .nav-btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .nav-btn-solid {
+      padding: 8px 18px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #030705;
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 16px rgba(0, 230, 153, 0.25);
+    }
+    .nav-btn-solid:hover {
+      background: #44ffbb;
+      box-shadow: 0 0 24px rgba(0, 230, 153, 0.45);
+    }
+
+    /* Main Container */
+    .main-wrap {
+      flex: 1;
+      max-width: 960px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+      position: relative;
+      z-index: 5;
+    }
+
+    .page-header {
+      margin-bottom: 36px;
+      text-align: left;
+    }
+    .page-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(0, 230, 153, 0.08);
+      border: 1px solid rgba(0, 230, 153, 0.2);
+      padding: 5px 14px;
+      border-radius: 99px;
+      margin-bottom: 14px;
+    }
+    .page-title {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #ffffff;
+      font-family: var(--font-display);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .page-title span {
+      color: var(--accent);
+    }
+    .page-desc {
+      font-size: 15px;
+      color: var(--text-muted);
+      max-width: 720px;
+      line-height: 1.6;
+    }
+
+    /* Legal Content Box */
+    .legal-card {
+      background: rgba(7, 14, 10, 0.9);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 38px 40px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .legal-clause {
+      padding-bottom: 24px;
+      border-bottom: 1px solid rgba(20, 42, 30, 0.7);
+    }
+    .legal-clause:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .clause-num {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .clause-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #ffffff;
+      font-family: var(--font-display);
+      margin-bottom: 10px;
+    }
+    .clause-text {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+    .clause-text strong {
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    /* Footer */
+    .plana-footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 0;
+      background: #020503;
+      margin-top: auto;
+    }
+    .footer-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 13px;
+    }
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Glow -->
+  <div class="ambient-glow-top" aria-hidden="true"></div>
+
+  <!-- Top Announcement Strip -->
+  <div class="top-notice-bar">
+    <span>⚖ Operational Framework · 3-Tier Sovereign Matrix Protocol</span>
+    <a href="/sample-3.html">Return to Main Platform →</a>
+  </div>
+
+  <!-- Header -->
+  <header class="plana-navbar-wrap">
+    <div class="plana-navbar">
+      <a class="plana-brand" href="/sample-3.html">
+        <div class="brand-mark">▲</div>
+        <div class="brand-text">Pinnacle<span>.</span></div>
+      </a>
+      
+      <nav class="plana-nav-links" aria-label="Main Navigation">
+        <a href="/sample-3.html#matrix-breakdown">The 3 Tiers</a>
+        <a href="/sample-3.html#platform-showcase">Platform</a>
+        <a href="/sample-3.html#simulator">Simulator</a>
+        <a href="/transparency.html">Transparency</a>
+        <a href="/terms.html" class="active">Terms</a>
+      </nav>
+
+      <div class="plana-nav-actions">
+        <a href="/login.html?sample=3" class="nav-btn-outline">Log in</a>
+        <a href="/register.html" class="nav-btn-solid">Start at $300</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View -->
+  <div class="main-wrap">
+    
+    <div class="page-header">
+      <div class="page-eyebrow">
+        <span>Protocol Terms of Operation</span>
+      </div>
+      <h1 class="page-title">
+        Terms &amp; <span>Conditions</span>
+      </h1>
+      <p class="page-desc">
+        Welcome to Pinnacle. By accessing or interacting with the Pinnacle 3-Tier Sovereign Matrix engine, you acknowledge and agree to the following programmatic operating parameters:
+      </p>
+    </div>
+
+    <div class="legal-card">
+
+      <div class="legal-clause">
+        <div class="clause-num">Clause 01</div>
+        <div class="clause-title">1. Sandbox &amp; Non-Custodial Protocol Execution</div>
+        <div class="clause-text">
+          Pinnacle operates as an automated peer-to-peer liquidity allocation protocol. In sandbox simulation modes, all transactions, queue updates, and ledger events represent educational mathematical models. When executing with active digital assets, operations remain completely non-custodial and disburse directly between participants without intermediary centralized holding.
+        </div>
+      </div>
+
+      <div class="legal-clause">
+        <div class="clause-num">Clause 02</div>
+        <div class="clause-title">2. 3-Tier Matrix Mechanics &amp; Upgrade Discretion</div>
+        <div class="clause-text">
+          The protocol strictly adheres to the 3-Tier sovereign structure:
+          <strong>Level 1 ($300 Entry ➔ $1,200 Gross)</strong>, 
+          <strong>Level 2 ($3,000 Direct or $300 Upgrade ➔ $6,000 Gross)</strong>, and 
+          <strong>Level 3 ($6,000 Direct or $1,500 Upgrade ➔ $20,000 Sovereign Peak)</strong>. 
+          Participants maintain sole discretion whether to allocate part of their payout into an upgraded tier slot or retain 100% of their net gross disbursements.
+        </div>
+      </div>
+
+      <div class="legal-clause">
+        <div class="clause-num">Clause 03</div>
+        <div class="clause-title">3. Deterministic FIFO Queue (Zero Recruitment Mandate)</div>
+        <div class="clause-text">
+          Disbursements are routed exclusively in <strong>First-In, First-Out (FIFO)</strong> chronological sequence. Pinnacle guarantees that <strong>no referrals, team recruitments, or personal friend solicitations</strong> are required to qualify for queue progression or cycle clearance. Queue velocity is solely dependent on public incoming system liquidity.
+        </div>
+      </div>
+
+      <div class="legal-clause">
+        <div class="clause-num">Clause 04</div>
+        <div class="clause-title">4. Velocity Variables &amp; No Guaranteed Timelines</div>
+        <div class="clause-text">
+          Because cycle progression depends strictly on subsequent network participants and upgrade liquidity, the protocol provides <strong>no guaranteed payout timelines, completion deadlines, or fixed calendar return guarantees</strong>. All operations are executed as and when valid algorithmic matching events occur.
+        </div>
+      </div>
+
+      <div class="legal-clause">
+        <div class="clause-num">Clause 05</div>
+        <div class="clause-title">5. Terminal Settlement at Level 3</div>
+        <div class="clause-text">
+          Completion of Level 3 marks the final tier of the Sovereign Matrix, yielding <strong>$20,000.00</strong> net with zero mandatory subsequent deductions. Following completion, participants may elect to restart a new queue sequence at Level 1, 2, or 3 independently, with each cycle governed as a distinct protocol entry.
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="plana-footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <a class="plana-brand" href="/sample-3.html">
+          <div class="brand-mark">▲</div>
+          <div class="brand-text">Pinnacle<span>.</span></div>
+        </a>
+        <span style="color:var(--text-faint);">|</span>
+        <span>Deterministic 3-Tier Sovereign Matrix Engine</span>
+      </div>
+      <div class="footer-links">
+        <a href="/sample-3.html">Home</a>
+        <a href="/transparency.html">Transparency</a>
+        <a href="/terms.html" style="color:var(--accent);">Terms &amp; Conditions</a>
+        <a href="/login.html?sample=3">Log in</a>
+        <a href="/register.html">Register</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

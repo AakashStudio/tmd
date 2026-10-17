@@ -1,0 +1,2314 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full antialiased">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Pinnacle — The Deterministic Liquidity & Capital Growth Platform</title>
+  <link rel="icon" href="/assets/images/pinnacle.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==========================================================================
+       PINNACLE — PLANA.EARTH DARK LUXURY ARCHITECTURE
+       Design DNA inspired by plana.earth (Top Banner, Center Pill Navbar,
+       Centered Editorial H1, 3 Interactive Feature Panels, Bento Grid, 
+       Pill Stat Badges, Glowing Depth, Dark Slate Matrix)
+       ========================================================================== */
+    :root {
+      --bg: #030705;
+      --bg-elevated: #070e0a;
+      --bg-card: #09140e;
+      --bg-card-subtle: #0d1e15;
+      --border: #142a1e;
+      --border-focus: #00e699;
+      --accent: #00e699;
+      --accent-glow: rgba(0, 230, 153, 0.25);
+      --accent-soft: rgba(0, 230, 153, 0.08);
+      --gold: #f59e0b;
+      --gold-soft: rgba(245, 158, 11, 0.12);
+      --text: #f0faf5;
+      --text-muted: #82a894;
+      --text-faint: #4e735f;
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-display: 'Space Grotesk', system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      overflow-x: hidden;
+      max-width: 100vw;
+      width: 100%;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+      position: relative;
+    }
+
+    /* Ambient Depth Glows */
+    .ambient-glow-top {
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(900px, 100vw);
+      height: 600px;
+      background: radial-gradient(circle, rgba(0, 230, 153, 0.12) 0%, rgba(5, 40, 25, 0.08) 50%, transparent 75%);
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .ambient-glow-mid {
+      position: absolute;
+      top: 1400px;
+      right: 0;
+      width: min(700px, 100vw);
+      height: 700px;
+      background: radial-gradient(circle, rgba(0, 230, 153, 0.06) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    /* Container Shell */
+    .plana-container {
+      max-width: 1220px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 24px;
+      padding-right: 24px;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Top Notice Bar (Plan A style) */
+    .top-notice-bar {
+      background: linear-gradient(90deg, #05140c 0%, #0c2b1b 50%, #05140c 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      font-size: 12px;
+      text-align: center;
+      color: #92ba9e;
+      letter-spacing: 0.02em;
+      position: relative;
+      z-index: 50;
+    }
+    .top-notice-bar a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 700;
+      margin-left: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .top-notice-bar a:hover {
+      text-decoration: underline;
+    }
+
+    /* Plan A Navbar: Clean, Blurred, Floating Pill */
+    .plana-navbar-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      padding: 14px 24px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(3, 7, 5, 0.85);
+      border-bottom: 1px solid rgba(20, 42, 30, 0.6);
+    }
+    .plana-navbar {
+      max-width: 1220px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .plana-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #00e699, #007a4d);
+      color: #030705;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 16px;
+      box-shadow: 0 0 16px rgba(0, 230, 153, 0.4);
+    }
+    .brand-text {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      font-family: var(--font-display);
+    }
+    .brand-text span {
+      color: var(--accent);
+    }
+
+    .plana-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+    @media (max-width: 860px) {
+      .plana-nav-links { display: none; }
+    }
+    .plana-nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+    .plana-nav-links a:hover {
+      color: #ffffff;
+    }
+
+    .plana-nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-btn-outline {
+      padding: 8px 18px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .nav-btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .nav-btn-solid {
+      padding: 8px 18px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #030705;
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 16px rgba(0, 230, 153, 0.25);
+    }
+    .nav-btn-solid:hover {
+      background: #44ffbb;
+      box-shadow: 0 0 24px rgba(0, 230, 153, 0.45);
+    }
+
+    /* Plan A Style Hero: Centered Editorial Headline */
+    .plana-hero {
+      padding: 105px 0 75px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background-color: #030705;
+      background-image: 
+        radial-gradient(ellipse 80% 50% at 50% 10%, rgba(0, 230, 153, 0.14), transparent 65%),
+        linear-gradient(to bottom, rgba(3, 7, 5, 0.72) 0%, rgba(3, 7, 5, 0.84) 60%, #030705 100%),
+        url('/assets/images/hero-bg.jpg');
+      background-size: cover, cover, cover;
+      background-position: center top, center center, center top;
+      background-repeat: no-repeat;
+      border-bottom: 1px solid rgba(20, 42, 30, 0.4);
+    }
+    .plana-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center 35%, transparent 25%, rgba(3, 7, 5, 0.75) 75%, #030705 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .plana-hero .plana-container {
+      position: relative;
+      z-index: 2;
+    }
+    @media (max-width: 768px) {
+      .plana-hero { padding: 70px 0 45px; }
+    }
+
+    .hero-eyebrow-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: rgba(0, 230, 153, 0.08);
+      border: 1px solid rgba(0, 230, 153, 0.25);
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 24px;
+    }
+    .hero-eyebrow-chip span.pulse {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    .plana-hero h1 {
+      font-size: clamp(34px, 4.4vw, 56px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.18;
+      max-width: 1000px;
+      margin: 0 auto 20px;
+      font-family: var(--font-sans);
+      color: #ffffff;
+      text-wrap: balance;
+    }
+    .plana-hero h1 span.gradient {
+      background: linear-gradient(135deg, #00e699 10%, #66ffcc 90%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+      text-shadow: 0 0 35px rgba(0, 230, 153, 0.3);
+    }
+
+    .plana-hero p.subtitle {
+      font-size: 16px;
+      line-height: 1.65;
+      color: #9abfa9;
+      max-width: 680px;
+      margin: 0 auto 34px;
+      text-wrap: balance;
+    }
+
+    .plana-hero-cta-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+    .btn-hero-primary {
+      padding: 14px 32px;
+      background: var(--accent);
+      color: #030705;
+      font-size: 15px;
+      font-weight: 800;
+      border-radius: 8px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 0 30px rgba(0, 230, 153, 0.35);
+      transition: all 0.25s ease;
+    }
+    .btn-hero-primary:hover {
+      background: #5cffca;
+      box-shadow: 0 0 45px rgba(0, 230, 153, 0.6);
+      transform: translateY(-2px);
+    }
+    .btn-hero-secondary {
+      padding: 14px 28px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 8px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-hero-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* 3 Micro-Benefit Pills (Plan A Hero Pattern) */
+    .hero-benefit-triad {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+      padding-top: 24px;
+      border-top: 1px solid rgba(20, 42, 30, 0.6);
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    .benefit-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #9ec2ae;
+    }
+    .benefit-icon {
+      color: var(--accent);
+      font-size: 16px;
+    }
+
+    /* Marquee / Infinite Proof Bar */
+    .marquee-strip {
+      padding: 24px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: #040906;
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+    }
+    .marquee-track {
+      display: inline-flex;
+      gap: 48px;
+      animation: marquee-scroll 28s linear infinite;
+    }
+    @keyframes marquee-scroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    .marquee-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #799e8d;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .marquee-pill strong {
+      color: #ffffff;
+    }
+    .marquee-pill span.dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    /* ==========================================================================
+       PLAN A CORE FEATURE GRID: "One platform to master your journey"
+       3 Step Cards with clean numbering, clear headline, description & CTA
+       ========================================================================== */
+    .plana-section {
+      padding: 90px 0;
+      position: relative;
+    }
+    .section-header-centered {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 54px;
+    }
+    .section-eyebrow {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .section-title {
+      font-size: clamp(30px, 3.8vw, 46px);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.15;
+      color: #ffffff;
+      font-family: var(--font-display);
+      margin-bottom: 16px;
+    }
+    .section-desc {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    /* 3 Step Matrix Cards (Plan A Style) */
+    .matrix-3-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    @media (max-width: 960px) {
+      .matrix-3-cards { grid-template-columns: 1fr; }
+    }
+
+    .matrix-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+    .matrix-card:hover {
+      border-color: var(--border-focus);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0, 230, 153, 0.12);
+    }
+    .matrix-card.featured {
+      background: radial-gradient(circle at 85% 15%, rgba(0, 230, 153, 0.12), transparent 60%), var(--bg-card);
+      border: 1.5px solid var(--accent);
+      box-shadow: 0 20px 60px rgba(0, 230, 153, 0.18);
+    }
+    .matrix-card.peak {
+      background: radial-gradient(circle at 85% 15%, rgba(245, 158, 11, 0.12), transparent 60%), var(--bg-card);
+      border: 1.5px solid var(--gold);
+    }
+
+    .card-top-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+    .step-number-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      font-size: 15px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+    }
+    .step-number-circle.gold {
+      color: var(--gold);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+    .card-pill-tag {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 10px;
+      border-radius: 99px;
+      background: rgba(0, 230, 153, 0.1);
+      border: 1px solid rgba(0, 230, 153, 0.3);
+      color: var(--accent);
+    }
+    .card-pill-tag.gold {
+      background: rgba(245, 158, 11, 0.1);
+      border-color: rgba(245, 158, 11, 0.3);
+      color: var(--gold);
+    }
+
+    .matrix-card h3 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+    .matrix-card p.card-summary {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 24px;
+      min-height: 44px;
+    }
+
+    /* Numbers Breakdown Pod */
+    .card-numbers-pod {
+      background: #050b07;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 24px;
+    }
+    .pod-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(20, 42, 30, 0.5);
+    }
+    .pod-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .pod-row span {
+      color: var(--text-muted);
+    }
+    .pod-row strong {
+      color: #ffffff;
+      font-weight: 700;
+    }
+    .pod-row strong.accent-val {
+      color: var(--accent);
+      font-size: 17px;
+      font-weight: 800;
+    }
+    .pod-row strong.gold-val {
+      color: var(--gold);
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .card-action-btn {
+      width: 100%;
+      padding: 12px 18px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .card-action-btn:hover {
+      background: var(--accent);
+      color: #030705;
+      border-color: var(--accent);
+      font-weight: 800;
+    }
+    .card-action-btn.featured-btn {
+      background: var(--accent);
+      color: #030705;
+      font-weight: 800;
+      border-color: var(--accent);
+    }
+    .card-action-btn.featured-btn:hover {
+      background: #44ffbb;
+    }
+    .card-action-btn.peak-btn {
+      background: var(--gold);
+      color: #030705;
+      font-weight: 800;
+      border-color: var(--gold);
+    }
+
+    /* ==========================================================================
+       HERO LIVE TERMINAL GLASS MOCKUP
+       ========================================================================== */
+    .hero-live-terminal-wrap {
+      margin-top: 48px;
+      max-width: 1060px;
+      margin-left: auto;
+      margin-right: auto;
+      position: relative;
+    }
+    .hero-terminal-glass {
+      background: rgba(4, 10, 6, 0.78);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(0, 230, 153, 0.25);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), 0 0 40px rgba(0, 230, 153, 0.08);
+      text-align: left;
+    }
+    .terminal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(20, 42, 30, 0.6);
+      margin-bottom: 20px;
+    }
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .terminal-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #183324;
+      display: inline-block;
+    }
+    .terminal-dots span:first-child { background: #e05252; }
+    .terminal-dots span:nth-child(2) { background: #eab308; }
+    .terminal-dots span:last-child { background: #00e699; }
+    .terminal-title {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #92bfa7;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-display);
+    }
+    .live-blink {
+      color: var(--accent);
+      animation: blink-pulse 1.8s infinite;
+    }
+    @keyframes blink-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .terminal-badge {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--accent);
+      background: rgba(0, 230, 153, 0.1);
+      border: 1px solid rgba(0, 230, 153, 0.3);
+      padding: 3px 10px;
+      border-radius: 99px;
+      letter-spacing: 0.06em;
+    }
+    .terminal-body-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr 1.1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 860px) {
+      .terminal-body-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+    }
+    .terminal-node-col {
+      background: rgba(2, 6, 4, 0.6);
+      border: 1px solid rgba(20, 42, 30, 0.5);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .node-meta-label {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .node-tier-pill {
+      font-size: 14px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+    .node-progress-bar {
+      height: 8px;
+      background: #091910;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .node-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00b377, #00e699);
+      border-radius: 99px;
+      box-shadow: 0 0 10px rgba(0, 230, 153, 0.5);
+    }
+    .node-progress-caption {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .fast-track-routes {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .ft-route {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(20, 42, 30, 0.6);
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+    .ft-route span { color: var(--text-muted); }
+    .ft-route strong { color: var(--accent); }
+    .ft-route.gold strong { color: var(--gold); }
+    .terminal-tx-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .terminal-tx-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      padding: 6px 8px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 6px;
+    }
+    .tx-time { color: #5a7d6b; font-family: monospace; }
+    .tx-hash { color: #ffffff; font-family: monospace; }
+    .tx-badge {
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+    }
+    .tx-badge.l1 { color: #00e699; background: rgba(0, 230, 153, 0.12); }
+    .tx-badge.l2 { color: #38bdf8; background: rgba(56, 189, 248, 0.12); }
+    .tx-badge.l3 { color: #fbbf24; background: rgba(251, 191, 36, 0.15); font-weight: 900; }
+
+    /* Visual 3D Crystal Cards */
+    .card-visual-artwork {
+      width: 100%;
+      height: 125px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      background: #020604;
+      border: 1px solid rgba(20, 42, 30, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .tier-crystal-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .matrix-card:hover .tier-crystal-img {
+      transform: scale(1.06);
+    }
+
+    /* Plan A Dark Bento Architecture Showcase */
+    .bento-showcase-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 24px;
+      margin-top: 48px;
+    }
+    @media (max-width: 920px) {
+      .bento-showcase-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .bento-card-main {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    .bento-card-main:hover, .bento-card-sub:hover {
+      border-color: rgba(0, 230, 153, 0.4);
+      box-shadow: 0 20px 60px rgba(0, 230, 153, 0.1);
+    }
+    .bento-sub-column {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .bento-card-sub {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    .bento-visual-holder {
+      margin-top: 24px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(20, 42, 30, 0.6);
+      background: #020604;
+      position: relative;
+    }
+    .bento-visual-holder img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .bento-card-main:hover .bento-visual-holder img,
+    .bento-card-sub:hover .bento-visual-holder img {
+      transform: scale(1.03);
+    }
+
+    /* Live Verified Settlements Ledger */
+    .ledger-stream-box {
+      background: #020704;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-top: 48px;
+      overflow: hidden;
+    }
+    .ledger-stream-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 18px;
+    }
+    @media (max-width: 860px) {
+      .ledger-stream-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 520px) {
+      .ledger-stream-grid { grid-template-columns: 1fr; }
+    }
+    .ledger-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(20, 42, 30, 0.7);
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .ledger-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+    }
+    .ledger-item-amount {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--accent);
+      font-family: var(--font-display);
+    }
+    .ledger-item-amount.gold { color: var(--gold); }
+
+    /* Community Testimonials */
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 40px;
+    }
+    @media (max-width: 900px) {
+      .reviews-grid { grid-template-columns: 1fr; }
+    }
+    .review-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+    }
+    .review-card:hover {
+      border-color: rgba(0, 230, 153, 0.4);
+      transform: translateY(-3px);
+    }
+    .review-stars {
+      color: var(--accent);
+      font-size: 15px;
+      letter-spacing: 2px;
+      margin-bottom: 14px;
+    }
+    .review-quote {
+      font-size: 14px;
+      line-height: 1.65;
+      color: #b2d4c3;
+      margin: 0 0 24px;
+      font-style: normal;
+    }
+    .review-user-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 16px;
+      border-top: 1px solid rgba(20, 42, 30, 0.5);
+    }
+    .review-user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .review-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #09281a, #04120a);
+      border: 1px solid rgba(0, 230, 153, 0.3);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .review-user-info strong {
+      display: block;
+      font-size: 13px;
+      color: #ffffff;
+    }
+    .review-user-info span {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .review-badge-verified {
+      font-size: 11px;
+      color: var(--accent);
+      background: rgba(0, 230, 153, 0.08);
+      border: 1px solid rgba(0, 230, 153, 0.25);
+      padding: 3px 8px;
+      border-radius: 99px;
+      font-weight: 700;
+    }
+
+    /* System Constants Bar */
+    .system-constants-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+      background: #020704;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px 32px;
+    }
+    @media (max-width: 768px) {
+      .system-constants-bar { grid-template-columns: 1fr; gap: 16px; padding: 20px; }
+    }
+    .constant-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .constant-badge {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .constant-title {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .constant-val {
+      font-size: 20px;
+      font-weight: 900;
+      color: #ffffff;
+      font-family: var(--font-display);
+    }
+
+    /* ==========================================================================
+       PLAN A METRICS / STATS HERO BANNER ("Accelerate time-to-value")
+       ========================================================================== */
+    .plana-stats-section {
+      background: #050c08;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 70px 0;
+    }
+    .stats-triad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 36px;
+      text-align: center;
+    }
+    @media (max-width: 768px) {
+      .stats-triad-grid { grid-template-columns: 1fr; gap: 28px; }
+    }
+    .stat-display-item .huge-metric {
+      font-size: clamp(44px, 5vw, 64px);
+      font-weight: 900;
+      color: var(--accent);
+      font-family: var(--font-display);
+      line-height: 1;
+      margin-bottom: 8px;
+      letter-spacing: -0.04em;
+    }
+    .stat-display-item .stat-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+    .stat-display-item p {
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 300px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    /* ==========================================================================
+       INTERACTIVE CALCULATOR (Plan A Clean Interface Style)
+       ========================================================================== */
+    .calculator-wrapper {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 44px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+      margin-top: 40px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+    }
+    @media (max-width: 900px) {
+      .calculator-wrapper {
+        grid-template-columns: 1fr;
+        padding: 24px;
+        gap: 30px;
+      }
+    }
+
+    .calc-level-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 24px 0;
+    }
+    .calc-tab-btn {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text-muted);
+    }
+    .calc-tab-btn:hover {
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+    .calc-tab-btn.active {
+      border-color: var(--accent);
+      background: rgba(0, 230, 153, 0.12);
+      color: var(--accent);
+      font-weight: 800;
+      box-shadow: 0 0 16px rgba(0, 230, 153, 0.2);
+    }
+    .calc-tab-btn small {
+      display: block;
+      font-size: 10px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .calc-tab-btn strong {
+      display: block;
+      font-size: 14px;
+      margin-top: 2px;
+    }
+
+    .calc-display-card {
+      background: #040906;
+      border: 1px solid #1a3828;
+      border-radius: 16px;
+      padding: 30px;
+    }
+    .calc-row-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .calc-row-item:last-child {
+      border-bottom: none;
+      padding-top: 16px;
+    }
+    .calc-row-item span {
+      color: var(--text-muted);
+    }
+    .calc-row-item strong {
+      color: #ffffff;
+      font-weight: 700;
+    }
+    .calc-row-item strong.big-cash {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--accent);
+      font-family: var(--font-display);
+      text-shadow: 0 0 20px rgba(0, 230, 153, 0.4);
+    }
+
+    /* ==========================================================================
+       PLAN A TRUST & SCIENTIFIC STANDARD GRID
+       ========================================================================== */
+    .scientific-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-top: 40px;
+    }
+    @media (max-width: 900px) {
+      .scientific-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 540px) {
+      .scientific-grid { grid-template-columns: 1fr; }
+    }
+
+    .scientific-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 20px;
+      transition: all 0.2s ease;
+    }
+    .scientific-item:hover {
+      border-color: var(--accent);
+    }
+    .sci-icon {
+      font-size: 24px;
+      margin-bottom: 14px;
+      display: block;
+    }
+    .scientific-item h4 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+    .scientific-item p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* FAQ Section */
+    .faq-accordion-group {
+      max-width: 820px;
+      margin: 40px auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .faq-pill-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+    }
+    .faq-pill-item:hover {
+      border-color: rgba(0, 230, 153, 0.4);
+    }
+    .faq-pill-item summary {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .faq-pill-item summary::-webkit-details-marker {
+      display: none;
+    }
+    .faq-pill-item summary:after {
+      content: "+";
+      font-size: 20px;
+      color: var(--accent);
+      font-weight: 300;
+    }
+    .faq-pill-item[open] summary:after {
+      content: "−";
+    }
+    .faq-pill-content {
+      margin-top: 14px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-muted);
+      padding-top: 14px;
+      border-top: 1px solid rgba(20, 42, 30, 0.5);
+    }
+
+    /* Plan A Style Final Green Banner CTA */
+    .plana-final-banner {
+      background: linear-gradient(135deg, #071910 0%, #0c2d1d 50%, #05140c 100%);
+      border: 1px solid #18422a;
+      border-radius: 24px;
+      padding: 60px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      margin: 80px 0 40px;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.7);
+    }
+    .plana-final-banner h2 {
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 800;
+      color: #ffffff;
+      font-family: var(--font-display);
+      margin-bottom: 14px;
+      letter-spacing: -0.03em;
+    }
+    .plana-final-banner p {
+      font-size: 16px;
+      color: #92bfa7;
+      max-width: 580px;
+      margin: 0 auto 32px;
+    }
+
+    /* Plan A Clean Minimal Footer */
+    .plana-footer {
+      border-top: 1px solid var(--border);
+      padding: 60px 0 40px;
+      background: #020503;
+      font-size: 13px;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 48px;
+    }
+    @media (max-width: 768px) {
+      .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+    }
+    .footer-col h5 {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #ffffff;
+      margin-bottom: 16px;
+    }
+    .footer-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .footer-col ul a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-col ul a:hover {
+      color: var(--accent);
+    }
+    .footer-bottom-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--text-faint);
+      font-size: 12px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* ==========================================================================
+       MOBILE RESPONSIVENESS & OVERFLOW CONTAINMENT (iOS / Android / Small Screens)
+       ========================================================================== */
+    @media (max-width: 768px) {
+      .plana-container {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+      }
+      .top-notice-bar {
+        padding: 8px 12px !important;
+        font-size: 11px !important;
+        line-height: 1.4 !important;
+        flex-direction: column !important;
+        gap: 4px !important;
+      }
+      .plana-navbar-wrap {
+        padding: 10px 16px !important;
+      }
+      .plana-navbar {
+        width: 100% !important;
+      }
+      .brand-text {
+        font-size: 17px !important;
+      }
+      .brand-mark {
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 14px !important;
+      }
+      .plana-nav-actions {
+        gap: 8px !important;
+      }
+      .nav-btn-outline {
+        padding: 6px 12px !important;
+        font-size: 12px !important;
+      }
+      .nav-btn-solid {
+        padding: 6px 12px !important;
+        font-size: 12px !important;
+      }
+
+      /* Hero section mobile scaling */
+      .plana-hero {
+        padding: 48px 0 36px !important;
+      }
+      .hero-eyebrow-chip {
+        font-size: 10px !important;
+        padding: 5px 12px !important;
+        margin-bottom: 16px !important;
+        max-width: 90% !important;
+      }
+      .plana-hero h1 {
+        font-size: clamp(26px, 7.5vw, 36px) !important;
+        line-height: 1.2 !important;
+        margin-bottom: 16px !important;
+      }
+      .plana-hero p.subtitle {
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+        margin-bottom: 24px !important;
+        padding: 0 4px !important;
+      }
+      .plana-hero-cta-group {
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 12px !important;
+        margin-bottom: 32px !important;
+      }
+      .btn-hero-primary, .btn-hero-secondary {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 13px 20px !important;
+        font-size: 14px !important;
+      }
+      .hero-benefit-triad {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 12px !important;
+        padding-top: 20px !important;
+      }
+      .benefit-item {
+        font-size: 12px !important;
+        text-align: center !important;
+      }
+
+      /* Live Terminal Mockup Mobile Fit */
+      .hero-live-terminal-wrap {
+        margin-top: 32px !important;
+        width: 100% !important;
+      }
+      .hero-terminal-glass {
+        padding: 16px !important;
+        border-radius: 14px !important;
+      }
+      .terminal-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+        padding-bottom: 12px !important;
+      }
+      .terminal-title {
+        font-size: 10px !important;
+        line-height: 1.4 !important;
+        word-break: break-word !important;
+      }
+      .terminal-badge {
+        align-self: flex-start !important;
+      }
+      .terminal-body-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+      }
+      .terminal-node-col {
+        padding: 12px !important;
+      }
+      .ft-route {
+        padding: 7px 10px !important;
+        font-size: 11px !important;
+      }
+
+      /* Sections & Cards */
+      .plana-section {
+        padding: 50px 0 !important;
+      }
+      .section-header-centered {
+        margin-bottom: 32px !important;
+      }
+      .section-title {
+        font-size: 26px !important;
+      }
+      .section-desc {
+        font-size: 14px !important;
+      }
+      .matrix-card {
+        padding: 24px 18px !important;
+      }
+      .bento-card-main, .bento-card-sub {
+        padding: 22px 18px !important;
+      }
+      .calculator-wrapper {
+        padding: 20px 16px !important;
+      }
+      .calc-level-tabs {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+      }
+      .plana-final-banner {
+        padding: 36px 18px !important;
+        margin: 40px 0 20px !important;
+      }
+      .plana-final-banner h2 {
+        font-size: 26px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Luxury Glow -->
+  <div class="ambient-glow-top" aria-hidden="true"></div>
+  <div class="ambient-glow-mid" aria-hidden="true"></div>
+
+  <!-- Top Announcement Strip (Plan A style) -->
+  <div class="top-notice-bar">
+    <span>💡 3-Tier Deterministic Matrix Active: Level 1 Entry $300 delivers $1,200</span>
+    <a href="#matrix-breakdown">Explore the 3 Tiers →</a>
+  </div>
+
+  <!-- Sticky Blurred Navigation Bar (Plan A style) -->
+  <header class="plana-navbar-wrap">
+    <div class="plana-navbar">
+      <a class="plana-brand" href="/sample-3.html">
+        <div class="brand-mark">▲</div>
+        <div class="brand-text">Pinnacle<span>.</span></div>
+      </a>
+      
+      <nav class="plana-nav-links" aria-label="Main Navigation">
+        <a href="#matrix-breakdown">The 3 Tiers</a>
+        <a href="#platform-showcase">Platform</a>
+        <a href="#simulator">Simulator</a>
+        <a href="#testimonials">Reviews</a>
+        <a href="#faq">FAQ</a>
+        <a href="/transparency.html">Transparency</a>
+      </nav>
+
+      <div class="plana-nav-actions">
+        <a href="/login.html?sample=3" class="nav-btn-outline">Log in</a>
+        <a href="/register.html" class="nav-btn-solid">Start at $300</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       HERO SECTION (Inspired by Plan A's Centered Typography & Impact Hero)
+       ======================================================================== -->
+  <section class="plana-hero">
+    <div class="plana-container">
+      <div class="hero-eyebrow-chip">
+        <span class="pulse"></span>
+        <span>Deterministic 3-Tier FIFO Matrix</span>
+      </div>
+
+      <h1>
+        Turn community liquidity into<br/>
+        <span class="gradient">predictable sovereign wealth.</span>
+      </h1>
+
+      <p class="subtitle">
+        An audited 3-tier matrix engineered for transparent capital growth. Zero downlines, zero recruitment quotas, and up to $20,000 in sovereign member cash.
+      </p>
+
+      <div class="plana-hero-cta-group">
+        <a href="/register.html?level=L1" class="btn-hero-primary">
+          Start at Level 1 ($300) <span>↗</span>
+        </a>
+        <a href="#matrix-breakdown" class="btn-hero-secondary">
+          Explore All 3 Tiers & Direct Starts ↓
+        </a>
+      </div>
+
+      <!-- Plan A Style 3-Benefit Assurance Row -->
+      <div class="hero-benefit-triad">
+        <div class="benefit-item">
+          <span class="benefit-icon">✓</span>
+          <span>Flexible Entry: Any Tier (L1, L2, L3)</span>
+        </div>
+        <div class="benefit-item">
+          <span class="benefit-icon">✓</span>
+          <span>Zero Recruitment Mandates</span>
+        </div>
+        <div class="benefit-item">
+          <span class="benefit-icon">✓</span>
+          <span>$20,000 Terminal Peak Payout</span>
+        </div>
+      </div>
+
+      <!-- Live FIFO Protocol Terminal Mockup (Plan A High-Tech Glass Pod) -->
+      <div class="hero-live-terminal-wrap">
+        <div class="hero-terminal-glass">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="terminal-title">
+              <span class="live-blink">●</span> PINNACLE FIFO DISPATCHER · LIVE ENGINE STATUS: OPERATIONAL
+            </div>
+            <div class="terminal-badge">STRICT NON-CUSTODIAL</div>
+          </div>
+          <div class="terminal-body-grid">
+            <div class="terminal-node-col">
+              <div class="node-meta-label">CURRENT ACTIVE QUEUE</div>
+              <div class="node-tier-pill">Tier 01: $300 Entry Pool</div>
+              <div class="node-progress-bar">
+                <div class="node-bar-fill" style="width: 75%;"></div>
+              </div>
+              <div class="node-progress-caption">
+                <span>7 of 8 Contributors Filled</span>
+                <strong style="color:var(--accent);">Next Payout: $1,200</strong>
+              </div>
+            </div>
+            
+            <div class="terminal-node-col">
+              <div class="node-meta-label">FAST-TRACK ONBOARDING</div>
+              <div class="fast-track-routes">
+                <div class="ft-route">
+                  <span>Direct Level 2:</span>
+                  <strong>$3,000 → Pays $6,000</strong>
+                </div>
+                <div class="ft-route gold">
+                  <span>Direct Level 3:</span>
+                  <strong>$6,000 → Pays $20,000</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="terminal-node-col">
+              <div class="node-meta-label">RECENT AUTOMATED SETTLEMENTS</div>
+              <div class="terminal-tx-list">
+                <div class="terminal-tx-item">
+                  <span class="tx-time">04:18:22</span>
+                  <span class="tx-hash">0x7a8...c2f</span>
+                  <span class="tx-badge l1">+$1,200 L1</span>
+                </div>
+                <div class="terminal-tx-item">
+                  <span class="tx-time">04:12:09</span>
+                  <span class="tx-hash">0x9c4...81b</span>
+                  <span class="tx-badge l2">+$6,000 L2</span>
+                </div>
+                <div class="terminal-tx-item">
+                  <span class="tx-time">03:58:40</span>
+                  <span class="tx-hash">0x3f1...e90</span>
+                  <span class="tx-badge l3">+$20,000 PEAK</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Marquee / Live Engine Pulse Strip -->
+  <div class="marquee-strip">
+    <div class="marquee-track">
+      <div class="marquee-pill"><span class="dot"></span> TIER 01: <strong>$300 ENTRY → $1,200 PAYOUT</strong></div>
+      <div class="marquee-pill"><span class="dot"></span> TIER 02: <strong>$3,000 DIRECT (OR $300 UPGRADE) → $6,000 PAYOUT</strong></div>
+      <div class="marquee-pill"><span class="dot"></span> TIER 03: <strong>$6,000 DIRECT (OR $1,500 UPGRADE) → $20,000 PEAK PAYOUT</strong></div>
+      <div class="marquee-pill"><span class="dot"></span> FLEXIBLE ONBOARDING: <strong>START AT ANY TIER YOU CHOOSE</strong></div>
+      <!-- Duplicate for smooth infinite loop -->
+      <div class="marquee-pill"><span class="dot"></span> TIER 01: <strong>$300 ENTRY → $1,200 PAYOUT</strong></div>
+      <div class="marquee-pill"><span class="dot"></span> TIER 02: <strong>$3,000 DIRECT (OR $300 UPGRADE) → $6,000 PAYOUT</strong></div>
+      <div class="marquee-pill"><span class="dot"></span> TIER 03: <strong>$6,000 DIRECT (OR $1,500 UPGRADE) → $20,000 PEAK PAYOUT</strong></div>
+      <div class="marquee-pill"><span class="dot"></span> FLEXIBLE ONBOARDING: <strong>START AT ANY TIER YOU CHOOSE</strong></div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       CORE FEATURE CARDS (Plan A 1-2-3 Step Card Architecture)
+       ======================================================================== -->
+  <section class="plana-section" id="matrix-breakdown">
+    <div class="plana-container">
+      
+      <div class="section-header-centered">
+        <span class="section-eyebrow">The 3-Tier Sovereign Matrix</span>
+        <h2 class="section-title">One connected engine to guide your progression.</h2>
+        <p class="section-desc">
+          Start at Level 1 and graduate upward, or fast-track directly into Level 2 ($3,000) or Level 3 ($6,000). Every tier settles in timestamped FIFO order.
+        </p>
+      </div>
+
+      <div class="matrix-3-cards">
+        
+        <!-- CARD 1 -->
+        <div class="matrix-card">
+          <div>
+            <div class="card-top-indicator">
+              <div class="step-number-circle">1</div>
+              <div class="card-pill-tag">Foundational Entry</div>
+            </div>
+
+            <div class="card-visual-artwork">
+              <img src="/assets/images/tier1-cube.jpg" alt="Level 1 Foundational Genesis" class="tier-crystal-img"/>
+            </div>
+
+            <h3>Level 01 · Entry</h3>
+            <p class="card-summary">
+              Join the foundational liquidity pool. Accessible entry for all members that establishes your position in the global queue.
+            </p>
+
+            <div class="card-numbers-pod">
+              <div class="pod-row">
+                <span>Entry Contribution</span>
+                <strong class="accent-val">$300.00</strong>
+              </div>
+              <div class="pod-row">
+                <span>Cycle Member Cash</span>
+                <strong class="accent-val">$1,200.00</strong>
+              </div>
+              <div class="pod-row">
+                <span>Upgrade to Level 2</span>
+                <strong>Pay $300 slot reservation</strong>
+              </div>
+              <div class="pod-row">
+                <span>Net Retention</span>
+                <strong style="color:#ffffff;">$900 profit (if upgrading)</strong>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <a href="/register.html?level=L1" class="card-action-btn">
+              Start at Level 1 ($300) <span>↗</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- CARD 2 (Featured) -->
+        <div class="matrix-card featured">
+          <div>
+            <div class="card-top-indicator">
+              <div class="step-number-circle" style="background:#00e699; color:#030705; font-weight:900;">2</div>
+              <div class="card-pill-tag" style="background:var(--accent); color:#030705; font-weight:900;">High Velocity Tier</div>
+            </div>
+
+            <div class="card-visual-artwork">
+              <img src="/assets/images/tier2-orb.jpg" alt="Level 2 Acceleration Orb" class="tier-crystal-img"/>
+            </div>
+
+            <h3>Level 02 · Acceleration</h3>
+            <p class="card-summary">
+              Start directly here for $3,000, or advance from Level 1 for just $300. Generates a compounded $6,000 payout.
+            </p>
+
+            <div class="card-numbers-pod" style="background:#030805; border-color:rgba(0,230,153,0.3);">
+              <div class="pod-row">
+                <span>Direct Entry Option</span>
+                <strong style="color:#ffffff;">$3,000.00 direct</strong>
+              </div>
+              <div class="pod-row">
+                <span>Or Upgrade From L1</span>
+                <strong style="color:var(--accent);">$300.00 slot fee</strong>
+              </div>
+              <div class="pod-row">
+                <span>Accelerated Cash Payout</span>
+                <strong class="accent-val" style="font-size:22px; text-shadow:0 0 14px rgba(0,230,153,0.5);">$6,000.00</strong>
+              </div>
+              <div class="pod-row">
+                <span>Upgrade to Level 3</span>
+                <strong>Pay $1,500 to reach peak</strong>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <a href="/register.html?level=L2" class="card-action-btn featured-btn">
+              Join Level 2 ($3,000 Direct / $300 Upgrade) <span>↗</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- CARD 3 (Peak Gold Zenith) -->
+        <div class="matrix-card peak">
+          <div>
+            <div class="card-top-indicator">
+              <div class="step-number-circle gold">3</div>
+              <div class="card-pill-tag gold">Terminal Zenith Peak</div>
+            </div>
+
+            <div class="card-visual-artwork" style="border-color: rgba(245,158,11,0.4); background:#060401;">
+              <img src="/assets/images/tier3-apex.jpg" alt="Level 3 Sovereign Peak Zenith" class="tier-crystal-img"/>
+            </div>
+
+            <h3 style="color:#fbbf24;">Level 03 · Final Peak</h3>
+            <p class="card-summary">
+              The ultimate destination. Start right here for $6,000 or advance from Level 2 for $1,500. Settle a massive $20,000 in cash with zero further upgrades!
+            </p>
+
+            <div class="card-numbers-pod" style="background:#080703; border-color:rgba(245,158,11,0.3);">
+              <div class="pod-row">
+                <span>Direct Entry Option</span>
+                <strong class="gold-val">$6,000.00 direct</strong>
+              </div>
+              <div class="pod-row">
+                <span>Or Upgrade From L2</span>
+                <strong style="color:#fbbf24;">$1,500.00 upgrade</strong>
+              </div>
+              <div class="pod-row">
+                <span>Final Peak Member Cash</span>
+                <strong class="gold-val" style="font-size:24px; text-shadow:0 0 16px rgba(245,158,11,0.5);">$20,000.00</strong>
+              </div>
+              <div class="pod-row">
+                <span>Further Upgrades</span>
+                <strong style="color:#ffffff;">None · 100% Cash Retained</strong>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <a href="/register.html?level=L3" class="card-action-btn peak-btn">
+              Join Level 3 ($6,000 Direct / $1,500 Upgrade) <span>↗</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       PLAN A METRICS / STATS HERO (3 Massive Highlights)
+       ======================================================================== -->
+  <section class="plana-stats-section">
+    <div class="plana-container">
+      <div class="stats-triad-grid">
+        <div class="stat-display-item">
+          <div class="huge-metric">4x</div>
+          <div class="stat-label">Initial Entry Multiplier</div>
+          <p>$300 foundational contribution turns into $1,200 member payout deterministically.</p>
+        </div>
+
+        <div class="stat-display-item">
+          <div class="huge-metric">$20,000</div>
+          <div class="stat-label">Level 3 Peak Cash Payout</div>
+          <p>Start directly for $6,000 or advance from Level 2 for $1,500 to extract maximum capital.</p>
+        </div>
+
+        <div class="stat-display-item">
+          <div class="huge-metric">Any Tier</div>
+          <div class="stat-label">Flexible Direct Onboarding</div>
+          <p>Start at Level 1 ($300), Level 2 ($3,000), or jump straight to Level 3 ($6,000).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       PLATFORM ARCHITECTURE & INTERFACE IN ACTION (Plan A Dark Bento Showcase)
+       ======================================================================== -->
+  <section class="plana-section" id="platform-showcase" style="border-top: 1px solid var(--border);">
+    <div class="plana-container">
+      
+      <div class="section-header-centered">
+        <span class="section-eyebrow">Platform Telemetry & Architecture</span>
+        <h2 class="section-title">Built for mobile clarity. Governed by math.</h2>
+        <p class="section-desc">
+          Monitor your timestamped queue position from any device with non-custodial execution and zero manual interference.
+        </p>
+      </div>
+
+      <div class="bento-showcase-grid">
+        <!-- Main Bento Card: Mobile Tracker Showcase -->
+        <div class="bento-card-main">
+          <div>
+            <span class="card-pill-tag" style="margin-bottom:14px; display:inline-block;">Real-time Telemetry</span>
+            <h3 style="font-size:26px; font-weight:800; color:#ffffff; font-family:var(--font-display); margin-bottom:10px;">
+              Live Mobile FIFO Queue Tracking
+            </h3>
+            <p style="color:var(--text-muted); font-size:14px; line-height:1.6; max-width:540px;">
+              Every position in Pinnacle is tracked in a transparent, timestamped public queue. Monitor contributor arrivals, group fulfillment, and automated payout execution directly from your smartphone or desktop.
+            </p>
+          </div>
+
+          <div class="bento-visual-holder" style="max-height: 400px;">
+            <img src="/assets/images/mobile-progress.webp" alt="Pinnacle Mobile Queue Tracking" loading="lazy" decoding="async"/>
+          </div>
+        </div>
+
+        <!-- Sub Column: 2 Visual Architectural Cards -->
+        <div class="bento-sub-column">
+          
+          <div class="bento-card-sub">
+            <div>
+              <span class="card-pill-tag" style="background:rgba(56,189,248,0.1); border-color:rgba(56,189,248,0.3); color:#38bdf8; margin-bottom:12px; display:inline-block;">
+                Autonomous Aggregation
+              </span>
+              <h4 style="font-size:18px; font-weight:700; color:#ffffff; margin-bottom:8px;">
+                Community Liquidity Flow
+              </h4>
+              <p style="color:var(--text-muted); font-size:13px; line-height:1.5;">
+                Peer-to-peer liquidity aggregation without corporate custody. Capital routes cleanly between tiers.
+              </p>
+            </div>
+            <div class="bento-visual-holder" style="max-height:170px;">
+              <img src="/assets/images/community-flow.webp" alt="Community Liquidity Flow" loading="lazy" decoding="async"/>
+            </div>
+          </div>
+
+          <div class="bento-card-sub">
+            <div>
+              <span class="card-pill-tag gold" style="margin-bottom:12px; display:inline-block;">
+                Flexible Velocity
+              </span>
+              <h4 style="font-size:18px; font-weight:700; color:#fbbf24; margin-bottom:8px;">
+                Sequential & Direct Tier Journey
+              </h4>
+              <p style="color:var(--text-muted); font-size:13px; line-height:1.5;">
+                Advance step-by-step from $300 to $20,000, or fast-track into Level 2 ($3,000) or Level 3 ($6,000).
+              </p>
+            </div>
+            <div class="bento-visual-holder" style="max-height:170px;">
+              <img src="/assets/images/level-journey.webp" alt="Level Journey Visualization" loading="lazy" decoding="async"/>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Live Verified Settlements Stream Ledger -->
+      <div class="ledger-stream-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div>
+            <span style="font-size:11px; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:0.08em; display:block;">
+              ● Public Queue Telemetry
+            </span>
+            <strong style="font-size:16px; color:#ffffff;">Recent Verified FIFO Distributions</strong>
+          </div>
+          <span style="font-size:11px; color:#6b947e; font-family:monospace;">Updated 12s ago · 100% Non-Custodial</span>
+        </div>
+
+        <div class="ledger-stream-grid">
+          <div class="ledger-item">
+            <div class="ledger-item-header">
+              <span style="color:#799e8d;">Wallet 0x7a8...c2f</span>
+              <span class="tx-badge l1">Level 1</span>
+            </div>
+            <div class="ledger-item-amount">+$1,200.00</div>
+            <span style="font-size:11px; color:#5a7d6b;">Slot upgraded to Level 2</span>
+          </div>
+
+          <div class="ledger-item">
+            <div class="ledger-item-header">
+              <span style="color:#799e8d;">Wallet 0x9c4...81b</span>
+              <span class="tx-badge l2">Level 2</span>
+            </div>
+            <div class="ledger-item-amount" style="color:#38bdf8;">+$6,000.00</div>
+            <span style="font-size:11px; color:#5a7d6b;">Advance fee to Level 3</span>
+          </div>
+
+          <div class="ledger-item">
+            <div class="ledger-item-header">
+              <span style="color:#799e8d;">Wallet 0x3f1...e90</span>
+              <span class="tx-badge l3">Peak Zenith</span>
+            </div>
+            <div class="ledger-item-amount gold">+$20,000.00</div>
+            <span style="font-size:11px; color:#927938;">Final Sovereign Cash Extracted</span>
+          </div>
+
+          <div class="ledger-item">
+            <div class="ledger-item-header">
+              <span style="color:#799e8d;">Wallet 0x4d2...77a</span>
+              <span class="tx-badge l1">Level 1</span>
+            </div>
+            <div class="ledger-item-amount">+$1,200.00</div>
+            <span style="font-size:11px; color:#5a7d6b;">Member Cash Retained</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Institutional Constants Strip -->
+      <div class="system-constants-bar">
+        <div class="constant-item">
+          <span class="constant-badge">PROTOCOL INVARIANT 01</span>
+          <span class="constant-title">Queue Architecture</span>
+          <strong class="constant-val">3 Audited Tiers</strong>
+        </div>
+        <div class="constant-item">
+          <span class="constant-badge">PROTOCOL INVARIANT 02</span>
+          <span class="constant-title">Accessible Minimum Entry</span>
+          <strong class="constant-val">$300.00 Entry</strong>
+        </div>
+        <div class="constant-item">
+          <span class="constant-badge" style="color:var(--gold);">PROTOCOL INVARIANT 03</span>
+          <span class="constant-title">Terminal Sovereign Payout</span>
+          <strong class="constant-val" style="color:var(--gold);">$20,000.00 Peak</strong>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       INTERACTIVE CALCULATOR / SIMULATOR (Plan A Clean Widget Style)
+       ======================================================================== -->
+  <section class="plana-section" id="simulator">
+    <div class="plana-container">
+      
+      <div class="section-header-centered">
+        <span class="section-eyebrow">Interactive Simulator</span>
+        <h2 class="section-title">Test the mathematical rules before you join.</h2>
+        <p class="section-desc">
+          Click between the 3 tiers below to inspect entry contributions, upgrade requirements, and exact member cash outputs.
+        </p>
+      </div>
+
+      <div class="calculator-wrapper">
+        <!-- Controls Column -->
+        <div>
+          <span style="font-size:11px; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:0.08em;">
+            Select Progression Tier
+          </span>
+
+          <div class="calc-level-tabs">
+            <div class="calc-tab-btn active" id="tab-0" onclick="selectTab(0)">
+              <small>Tier 01</small>
+              <strong>Level 1 ($300)</strong>
+            </div>
+            <div class="calc-tab-btn" id="tab-1" onclick="selectTab(1)">
+              <small>Tier 02</small>
+              <strong>Level 2 ($6k Payout)</strong>
+            </div>
+            <div class="calc-tab-btn" id="tab-2" onclick="selectTab(2)">
+              <small>Tier 03</small>
+              <strong>Level 3 ($20k Peak)</strong>
+            </div>
+          </div>
+
+          <p style="font-size:14px; line-height:1.6; color:var(--text-muted); margin-bottom:24px;">
+            In Pinnacle, every tier runs on a public deterministic FIFO schedule. Start at any level you prefer or scale systematically through cycle upgrades.
+          </p>
+
+          <a href="/register.html" class="btn-hero-primary" style="font-size:14px; padding:12px 24px;">
+            Start at Selected Tier <span>↗</span>
+          </a>
+        </div>
+
+        <!-- Calculated Output Column -->
+        <div class="calc-display-card">
+          <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.08em; margin-bottom:12px;">
+            Simulated Tier Breakdown
+          </div>
+
+          <div class="calc-row-item">
+            <span>Entry / Start Cost</span>
+            <strong id="sim-entry">$300.00</strong>
+          </div>
+
+          <div class="calc-row-item">
+            <span>Upgrade Option</span>
+            <strong id="sim-upgrade" style="color:#fbbf24;">Pay $300 slot to Level 2</strong>
+          </div>
+
+          <div class="calc-row-item">
+            <span>Next Stage Destination</span>
+            <strong id="sim-next">Level 2 Acceleration ($6k)</strong>
+          </div>
+
+          <div class="calc-row-item">
+            <span>Gross Member Payout</span>
+            <strong class="big-cash" id="sim-cash">$1,200.00</strong>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       HOW IT WORKS (Plan A 3-Step Science & Assurance Grid)
+       ======================================================================== -->
+  <section class="plana-section" id="how-it-works" style="background: #040906; border-top: 1px solid var(--border);">
+    <div class="plana-container">
+      
+      <div class="section-header-centered">
+        <span class="section-eyebrow">Platform Assurance</span>
+        <h2 class="section-title">Built on scientific clarity, not promises.</h2>
+        <p class="section-desc">
+          Four foundational principles protect every participant in the Pinnacle queue.
+        </p>
+      </div>
+
+      <div class="scientific-grid">
+        <div class="scientific-item">
+          <span class="sci-icon">⏱️</span>
+          <h4>Timestamped FIFO</h4>
+          <p>Your entry is permanently ordered by transaction timestamp. No queue-jumping or administrator privileges.</p>
+        </div>
+
+        <div class="scientific-item">
+          <span class="sci-icon">🎯</span>
+          <h4>Direct Tier Jump-In</h4>
+          <p>Start directly at Level 1 ($300), Level 2 ($3,000), or fast-track straight into Level 3 ($6,000).</p>
+        </div>
+
+        <div class="scientific-item">
+          <span class="sci-icon">🛡️</span>
+          <h4>Zero Referral Quotas</h4>
+          <p>Never recruit a downline. Payout eligibility is 100% mechanical and position-based.</p>
+        </div>
+
+        <div class="scientific-item">
+          <span class="sci-icon">⚡</span>
+          <h4>$20,000 Peak Extraction</h4>
+          <p>Level 3 terminates all upgrades, ensuring top-tier members receive the full $20,000 in net cash.</p>
+        </div>
+      </div>
+
+  <!-- ========================================================================
+       MEMBER REVIEWS & COMMUNITY PROOF (Plan A Clean Testimonial Architecture)
+       ======================================================================== -->
+  <section class="plana-section" id="testimonials" style="background:#040906; border-top:1px solid var(--border);">
+    <div class="plana-container">
+      
+      <div class="section-header-centered">
+        <span class="section-eyebrow">Participant Verification</span>
+        <h2 class="section-title">Trusted by independent community members.</h2>
+        <p class="section-desc">
+          Real feedback from participants who value visible allocations, automated progression, and zero recruitment mandates.
+        </p>
+      </div>
+
+      <div class="reviews-grid">
+        <div class="review-card">
+          <div>
+            <div class="review-stars">★★★★★</div>
+            <blockquote class="review-quote">
+              "Finally a system that doesn't ask me to recruit friends or build a pyramid downline. The FIFO queue is strictly visible, and every dollar has an exact recorded destination."
+            </blockquote>
+          </div>
+          <div class="review-user-row">
+            <div class="review-user-info">
+              <div class="review-avatar">AK</div>
+              <div>
+                <strong>Aarav Kapoor</strong>
+                <span>Level 2 Participant · London, UK</span>
+              </div>
+            </div>
+            <span class="review-badge-verified">✓ Verified</span>
+          </div>
+        </div>
+
+        <div class="review-card" style="border-color:rgba(0,230,153,0.3); background:radial-gradient(circle at 90% 10%, rgba(0,230,153,0.08), transparent 60%), var(--bg-card);">
+          <div>
+            <div class="review-stars">★★★★★</div>
+            <blockquote class="review-quote">
+              "Starting directly at Level 2 for $3,000 saved me weeks of wait time. The $6,000 payout settled automatically into my account, allowing me to fast-track toward the $20,000 peak."
+            </blockquote>
+          </div>
+          <div class="review-user-row">
+            <div class="review-user-info">
+              <div class="review-avatar" style="border-color:var(--accent);">ER</div>
+              <div>
+                <strong>Elena Rostova</strong>
+                <span>Level 3 Sovereign · Berlin, DE</span>
+              </div>
+            </div>
+            <span class="review-badge-verified">✓ Verified</span>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div>
+            <div class="review-stars">★★★★★</div>
+            <blockquote class="review-quote">
+              "Entered with $300 at Level 1, received my $1,200 payout without delay. The math is simple, transparent, and completely automated. Best deterministic model on the web."
+            </blockquote>
+          </div>
+          <div class="review-user-row">
+            <div class="review-user-info">
+              <div class="review-avatar">MV</div>
+              <div>
+                <strong>Marcus Vance</strong>
+                <span>Level 1 Graduate · Toronto, CA</span>
+              </div>
+            </div>
+            <span class="review-badge-verified">✓ Verified</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       FAQ (Plan A Minimal Accordion Style)
+       ======================================================================== -->
+  <section class="plana-section" id="faq">
+    <div class="plana-container">
+      
+      <div class="section-header-centered">
+        <span class="section-eyebrow">Got Questions?</span>
+        <h2 class="section-title">Frequently asked questions.</h2>
+        <p class="section-desc">
+          Everything you need to know about Pinnacle's 3-tier matrix.
+        </p>
+      </div>
+
+      <div class="faq-accordion-group">
+        
+        <details class="faq-pill-item" open>
+          <summary>How do the 3 tiers work?</summary>
+          <div class="faq-pill-content">
+            Pinnacle features 3 deterministic tiers:<br/>
+            • <strong>Level 1:</strong> Entry is $300. You receive a <strong>$1,200</strong> payout. (Upgrade to Level 2 for $300 slot reservation).<br/>
+            • <strong>Level 2:</strong> Start directly for $3,000, or upgrade from Level 1 for $300. You receive a <strong>$6,000</strong> payout. (Upgrade to Level 3 for $1,500).<br/>
+            • <strong>Level 3 (Final Peak):</strong> Start directly for $6,000, or upgrade from Level 2 for $1,500. You receive <strong>$20,000</strong> in member cash with zero further upgrades required!
+          </div>
+        </details>
+
+        <details class="faq-pill-item">
+          <summary>Can members start directly at Level 2 or Level 3?</summary>
+          <div class="faq-pill-content">
+            <strong>Yes!</strong> You do not need to start at Level 1. Members can start directly at any level they want:<br/>
+            • Want to start at <strong>Level 2</strong> directly? Pay <strong>$3,000</strong> to qualify for the $6,000 payout.<br/>
+            • Want to jump straight into <strong>Level 3</strong>? Pay <strong>$6,000</strong> to qualify directly for the $20,000 peak payout.
+          </div>
+        </details>
+
+        <details class="faq-pill-item">
+          <summary>Do I ever need to recruit friends or family?</summary>
+          <div class="faq-pill-content">
+            No. Pinnacle strictly prohibits recruitment mandates. All positions advance through timestamped global FIFO queues as participants join or progress.
+          </div>
+        </details>
+
+        <details class="faq-pill-item">
+          <summary>What is the payout when reaching Level 3?</summary>
+          <div class="faq-pill-content">
+            Members at Level 3 receive a gross payout of <strong>$20,000.00</strong>. Because Level 3 is the terminal peak, there are no higher tiers and no further upgrade deductions—the full payout is retained as sovereign member cash.
+          </div>
+        </details>
+
+      </div>
+
+      <!-- Plan A Style Final Green Banner CTA -->
+      <div class="plana-final-banner">
+        <h2>Ready to start your progression?</h2>
+        <p>Join Level 1 at $300, or fast-track directly into Level 2 ($3,000) or Level 3 ($6,000) for up to $20,000.</p>
+        <div style="display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
+          <a href="/register.html?level=L1" class="btn-hero-primary" style="font-size:15px; padding:15px 32px;">
+            Start at Level 1 ($300) <span>↗</span>
+          </a>
+          <a href="/register.html?level=L3" class="btn-hero-secondary" style="font-size:15px; padding:15px 32px; border-color:var(--gold); color:var(--gold);">
+            Fast-Track to Level 3 ($6,000) <span>↗</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       FOOTER (Plan A Clean Minimal Corporate Style)
+       ======================================================================== -->
+  <footer class="plana-footer">
+    <div class="plana-container">
+      <div class="footer-minimal-wrap">
+        <a class="plana-brand" href="/sample-3.html" style="margin-bottom:12px; display:inline-flex;">
+          <div class="brand-mark">▲</div>
+          <div class="brand-text">Pinnacle<span>.</span></div>
+        </a>
+        <p style="color:var(--text-muted); line-height:1.6; max-width:440px; margin-bottom:14px; font-size:13px;">
+          The transparent 3-tier deterministic liquidity and capital growth matrix with automated FIFO queue ordering.
+        </p>
+        <div style="display:inline-flex; align-items:center; gap:8px; font-size:11px; color:var(--accent); font-weight:700;">
+          <span style="width:6px; height:6px; border-radius:50%; background:var(--accent); display:inline-block;"></span>
+          Core Engine Operational · v3.5
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Interactive Simulator Tab Script -->
+  <script>
+    const simData = [
+      {
+        entry: "$300.00 (Standard Entry)",
+        upgrade: "Pay $300 to Level 2 (Keep $900 net)",
+        next: "Level 2 Acceleration ($6,000)",
+        cash: "$1,200.00"
+      },
+      {
+        entry: "$3,000 Direct (or $300 Upgrade)",
+        upgrade: "Pay $1,500 to Level 3 (Keep $4,500 net)",
+        next: "Level 3 Final Peak ($20,000)",
+        cash: "$6,000.00"
+      },
+      {
+        entry: "$6,000 Direct (or $1,500 Upgrade)",
+        upgrade: "None · 100% Cash Retained",
+        next: "Terminal Peak · No More Upgrades",
+        cash: "$20,000.00"
+      }
+    ];
+
+    function selectTab(idx) {
+      [0, 1, 2].forEach(i => {
+        const tab = document.getElementById('tab-' + i);
+        if (tab) {
+          if (i === idx) tab.classList.add('active');
+          else tab.classList.remove('active');
+        }
+      });
+
+      const data = simData[idx];
+      document.getElementById('sim-entry').innerText = data.entry;
+      document.getElementById('sim-upgrade').innerText = data.upgrade;
+      document.getElementById('sim-next').innerText = data.next;
+      document.getElementById('sim-cash').innerText = data.cash;
+    }
+  </script>
+
+</body>
+</html>

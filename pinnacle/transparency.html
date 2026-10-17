@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full antialiased">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Transparency & Mathematical Framework — Pinnacle</title>
+  <meta name="description" content="A fully transparent 3-tier deterministic liquidity and capital growth matrix. Mathematical clarity, non-custodial FIFO execution."/>
+  <link rel="icon" href="/assets/images/pinnacle.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #030705;
+      --bg-elevated: #070e0a;
+      --bg-card: #09140e;
+      --bg-card-subtle: #0d1e15;
+      --border: #142a1e;
+      --border-focus: #00e699;
+      --accent: #00e699;
+      --accent-glow: rgba(0, 230, 153, 0.25);
+      --accent-soft: rgba(0, 230, 153, 0.08);
+      --gold: #f59e0b;
+      --gold-soft: rgba(245, 158, 11, 0.12);
+      --text: #f0faf5;
+      --text-muted: #82a894;
+      --text-faint: #4e735f;
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-display: 'Space Grotesk', system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Ambient Depth Glows */
+    .ambient-glow-top {
+      position: absolute;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1000px;
+      height: 480px;
+      background: radial-gradient(ellipse, rgba(0, 230, 153, 0.12) 0%, transparent 68%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Top Announcement Strip */
+    .top-notice-bar {
+      background: linear-gradient(90deg, #021a10 0%, #063820 50%, #021a10 100%);
+      border-bottom: 1px solid rgba(0, 230, 153, 0.25);
+      padding: 9px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #bbf7d0;
+      text-align: center;
+      position: relative;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .top-notice-bar a {
+      color: var(--accent);
+      text-decoration: underline;
+      font-weight: 700;
+      margin-left: 6px;
+    }
+
+    /* Sticky Navbar */
+    .plana-navbar-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(3, 7, 5, 0.85);
+      border-bottom: 1px solid rgba(20, 42, 30, 0.7);
+    }
+    .plana-navbar {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .plana-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #00e699, #007a4d);
+      color: #030705;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 16px;
+      box-shadow: 0 0 16px rgba(0, 230, 153, 0.4);
+    }
+    .brand-text {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      font-family: var(--font-display);
+    }
+    .brand-text span {
+      color: var(--accent);
+    }
+
+    .plana-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+    @media (max-width: 860px) {
+      .plana-nav-links { display: none; }
+    }
+    .plana-nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+    .plana-nav-links a:hover, .plana-nav-links a.active {
+      color: #ffffff;
+    }
+    .plana-nav-links a.active {
+      color: var(--accent);
+    }
+
+    .plana-nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-btn-outline {
+      padding: 8px 18px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .nav-btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .nav-btn-solid {
+      padding: 8px 18px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #030705;
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 16px rgba(0, 230, 153, 0.25);
+    }
+    .nav-btn-solid:hover {
+      background: #44ffbb;
+      box-shadow: 0 0 24px rgba(0, 230, 153, 0.45);
+    }
+
+    /* Main Container */
+    .main-wrap {
+      flex: 1;
+      max-width: 1040px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+      position: relative;
+      z-index: 5;
+    }
+
+    .page-header {
+      margin-bottom: 40px;
+      text-align: left;
+    }
+    .page-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(0, 230, 153, 0.08);
+      border: 1px solid rgba(0, 230, 153, 0.2);
+      padding: 5px 14px;
+      border-radius: 99px;
+      margin-bottom: 14px;
+    }
+    .page-title {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #ffffff;
+      font-family: var(--font-display);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .page-title span {
+      color: var(--accent);
+    }
+    .page-desc {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 780px;
+      line-height: 1.6;
+    }
+
+    /* Content Cards */
+    .content-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .matrix-panel {
+      background: rgba(7, 14, 10, 0.9);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 32px 34px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      transition: border-color 0.2s ease;
+    }
+    .matrix-panel:hover {
+      border-color: rgba(0, 230, 153, 0.35);
+    }
+    .matrix-panel.highlight-panel {
+      background: linear-gradient(175deg, rgba(9, 20, 14, 0.95), rgba(5, 12, 8, 0.95));
+      border: 1px solid rgba(0, 230, 153, 0.3);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 230, 153, 0.05);
+    }
+
+    .panel-num-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .panel-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+      font-family: var(--font-display);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .panel-p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 18px;
+    }
+    .panel-p strong {
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    /* Math Breakdown Table */
+    .ledger-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-size: 13px;
+    }
+    .ledger-table tr {
+      border-bottom: 1px solid rgba(20, 42, 30, 0.8);
+    }
+    .ledger-table tr:last-child {
+      border-bottom: none;
+    }
+    .ledger-table td {
+      padding: 12px 0;
+      color: var(--text-muted);
+    }
+    .ledger-table td:last-child {
+      text-align: right;
+      font-weight: 700;
+      color: #ffffff;
+      font-family: var(--font-display);
+    }
+    .ledger-table tr.total-row td {
+      padding-top: 16px;
+      font-size: 15px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .ledger-table tr.total-row td:last-child {
+      color: var(--accent);
+      font-size: 17px;
+    }
+    .ledger-table tr.gold-total td:last-child {
+      color: var(--gold);
+      font-size: 18px;
+    }
+
+    /* Tier Feature Tag */
+    .tier-tag {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(0, 230, 153, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(0, 230, 153, 0.25);
+    }
+    .tier-tag.gold {
+      background: var(--gold-soft);
+      color: var(--gold);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    /* Warning / Disclosure Card */
+    .disclosure-box {
+      background: rgba(18, 12, 3, 0.85);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 18px;
+      padding: 32px 34px;
+    }
+    .disclosure-box h3 {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--gold);
+      font-family: var(--font-display);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .disclosure-box ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .disclosure-box li {
+      position: relative;
+      padding-left: 24px;
+      font-size: 13px;
+      color: #d1b89d;
+      line-height: 1.6;
+    }
+    .disclosure-box li::before {
+      content: '⚠';
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--gold);
+      font-size: 12px;
+    }
+    .disclosure-box strong {
+      color: #ffffff;
+    }
+
+    /* Footer */
+    .plana-footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 0;
+      background: #020503;
+      margin-top: auto;
+    }
+    .footer-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 13px;
+    }
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Glow -->
+  <div class="ambient-glow-top" aria-hidden="true"></div>
+
+  <!-- Top Announcement Strip -->
+  <div class="top-notice-bar">
+    <span>💎 3-Tier Sovereign Matrix Protocol · Audited Deterministic FIFO Queue Flow</span>
+    <a href="/sample-3.html">Back to Main Platform →</a>
+  </div>
+
+  <!-- Header -->
+  <header class="plana-navbar-wrap">
+    <div class="plana-navbar">
+      <a class="plana-brand" href="/sample-3.html">
+        <div class="brand-mark">▲</div>
+        <div class="brand-text">Pinnacle<span>.</span></div>
+      </a>
+      
+      <nav class="plana-nav-links" aria-label="Main Navigation">
+        <a href="/sample-3.html#matrix-breakdown">The 3 Tiers</a>
+        <a href="/sample-3.html#platform-showcase">Platform</a>
+        <a href="/sample-3.html#simulator">Simulator</a>
+        <a href="/transparency.html" class="active">Transparency</a>
+        <a href="/terms.html">Terms</a>
+      </nav>
+
+      <div class="plana-nav-actions">
+        <a href="/login.html?sample=3" class="nav-btn-outline">Log in</a>
+        <a href="/register.html" class="nav-btn-solid">Start at $300</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View -->
+  <div class="main-wrap">
+    
+    <div class="page-header">
+      <div class="page-eyebrow">
+        <span>⚡ Public Protocol Transparency</span>
+      </div>
+      <h1 class="page-title">
+        How the <span>3-Tier Sovereign Matrix</span> Works
+      </h1>
+      <p class="page-desc">
+        Every allocation, upgrade path, and payout formula on this platform is calculated deterministically with zero hidden parameters, zero recruitment dependencies, and 100% visible queue mechanics.
+      </p>
+    </div>
+
+    <div class="content-stack">
+
+      <!-- Section 1: Flexible 3-Tier Architecture -->
+      <div class="matrix-panel highlight-panel">
+        <div class="panel-num-badge">Rule 01 · Entry Freedom</div>
+        <div class="panel-title">
+          <span>1. Flexible Starting Level &amp; Sequential Upgrades</span>
+          <span class="tier-tag">Any Tier Direct Entry</span>
+        </div>
+        <p class="panel-p">
+          Participants are not forced into rigid bottom-tier stepping stones. You may enter the matrix at any level of your choice based on capital tolerance: 
+          <strong>Level 1 ($300)</strong>, <strong>Level 2 ($3,000)</strong>, or directly fast-track to <strong>Level 3 ($6,000)</strong>. 
+          Alternatively, participants starting at Level 1 or 2 can unlock subsequent tiers through discounted upgrade reservations funded directly from their accumulated cycle disbursements.
+        </p>
+      </div>
+
+      <!-- Section 2: Deterministic FIFO Queue -->
+      <div class="matrix-panel">
+        <div class="panel-num-badge">Rule 02 · Queue Integrity</div>
+        <div class="panel-title">
+          <span>2. Deterministic FIFO Queue (Zero Recruitment)</span>
+          <span class="tier-tag">Global Timestamp Order</span>
+        </div>
+        <p class="panel-p">
+          Positions are satisfied strictly in chronological <strong>First-In, First-Out (FIFO)</strong> order. 
+          Pinnacle strictly enforces a <strong>zero-recruitment mandate</strong>: you never need to invite members, recruit friends, or maintain downline pyramids to qualify for completion. 
+          Incoming pool liquidity from direct entries and automatic upgrades funds the front of the queue in public real-time sequence.
+        </p>
+      </div>
+
+      <!-- Section 3: Level 1 Breakdown -->
+      <div class="matrix-panel">
+        <div class="panel-num-badge">Tier Breakdown · Level 1 (Entry Matrix)</div>
+        <div class="panel-title">
+          <span>3. Level 1: $300 Entry ➔ $1,200 Gross Payout</span>
+          <span class="tier-tag">4x Capital Yield</span>
+        </div>
+        <p class="panel-p">
+          The foundational entry tier provides an accessible 4x multiplier. Upon queue clearance, members may choose to reserve an accelerated slot into Level 2 for $300, or collect the full gross payout as sovereign net cash.
+        </p>
+        <table class="ledger-table">
+          <tr>
+            <td>Entry Capital Commitment</td>
+            <td>$300.00</td>
+          </tr>
+          <tr>
+            <td>Deterministic FIFO Gross Cycle Payout</td>
+            <td>$1,200.00</td>
+          </tr>
+          <tr>
+            <td>Optional Level 2 Slot Reservation Fee</td>
+            <td>-$300.00</td>
+          </tr>
+          <tr class="total-row">
+            <td>Net Retained Cash (If Upgraded to L2)</td>
+            <td>$900.00 Net</td>
+          </tr>
+          <tr class="total-row">
+            <td>Net Retained Cash (If Cashing Out at L1)</td>
+            <td>$1,200.00 Net (100%)</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Section 4: Level 2 Breakdown -->
+      <div class="matrix-panel">
+        <div class="panel-num-badge">Tier Breakdown · Level 2 (Acceleration Matrix)</div>
+        <div class="panel-title">
+          <span>4. Level 2: $3,000 Direct (or $300 Upgrade) ➔ $6,000 Payout</span>
+          <span class="tier-tag">Acceleration Phase</span>
+        </div>
+        <p class="panel-p">
+          Level 2 accommodates both direct institutional entries ($3,000) and members advancing from Level 1 ($300 slot reservation). Upon full cycle completion, participants receive a $6,000 disbursement. They may advance to the Sovereign Peak (Level 3) for $1,500, or cash out.
+        </p>
+        <table class="ledger-table">
+          <tr>
+            <td>Direct Level 2 Entry (or $300 Upgrade from L1)</td>
+            <td>$3,000.00 / $300.00</td>
+          </tr>
+          <tr>
+            <td>Deterministic Gross Cycle Payout</td>
+            <td>$6,000.00</td>
+          </tr>
+          <tr>
+            <td>Optional Level 3 Sovereign Peak Upgrade Fee</td>
+            <td>-$1,500.00</td>
+          </tr>
+          <tr class="total-row">
+            <td>Net Retained Cash (If Upgraded to L3)</td>
+            <td>$4,500.00 Net</td>
+          </tr>
+          <tr class="total-row">
+            <td>Net Retained Cash (If Cashing Out at L2)</td>
+            <td>$6,000.00 Net (100%)</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Section 5: Level 3 Sovereign Peak -->
+      <div class="matrix-panel highlight-panel" style="border-color: rgba(245, 158, 11, 0.4);">
+        <div class="panel-num-badge" style="color:var(--gold);">Terminal Tier · Level 3 (Sovereign Peak)</div>
+        <div class="panel-title">
+          <span>5. Level 3: $6,000 Direct (or $1,500 Upgrade) ➔ $20,000 Peak</span>
+          <span class="tier-tag gold">Terminal 100% Cash Retained</span>
+        </div>
+        <p class="panel-p">
+          Level 3 is the terminal apex of the Pinnacle protocol. Because there are no higher tiers, <strong>zero upgrade deductions apply</strong>. 
+          Members receive the entire <strong>$20,000.00</strong> gross payout directly into their sovereign wallet as non-custodial capital.
+        </p>
+        <table class="ledger-table">
+          <tr>
+            <td>Direct Peak Entry (or $1,500 Upgrade from L2)</td>
+            <td>$6,000.00 / $1,500.00</td>
+          </tr>
+          <tr>
+            <td>Gross Terminal Cycle Payout</td>
+            <td>$20,000.00</td>
+          </tr>
+          <tr>
+            <td>Next-Tier Allocation Deductions</td>
+            <td>$0.00 (None — Peak Achieved)</td>
+          </tr>
+          <tr class="total-row gold-total">
+            <td>Final Sovereign Member Cash Retained</td>
+            <td>$20,000.00 Net (100%)</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Section 6: Disclosures -->
+      <div class="disclosure-box">
+        <h3><span>⚠</span> Explicit Protocol Disclosures</h3>
+        <ul>
+          <li><strong>No Guaranteed Payout Dates:</strong> Progression velocity is determined purely by incoming pool volume and chronological queue sequence. The protocol does not guarantee fixed calendar dates or instant cycle turnarounds.</li>
+          <li><strong>No Guaranteed Commercial Yield:</strong> Pinnacle is an automated, decentralized liquidity routing sandbox. There are no fixed promises of passive commercial interest or risk-free return of investment.</li>
+          <li><strong>Pure FIFO Execution:</strong> Payout positions advance strictly based on mathematical liquidity events. No individual or network receives preferential queue elevation or sponsor skips.</li>
+          <li><strong>Terminal Completion:</strong> Level 3 represents full cycle completion. Once $20,000 is disbursed, a participant may choose to initiate a fresh cycle starting at Level 1, 2, or 3 at their own discretion.</li>
+        </ul>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="plana-footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <a class="plana-brand" href="/sample-3.html">
+          <div class="brand-mark">▲</div>
+          <div class="brand-text">Pinnacle<span>.</span></div>
+        </a>
+        <span style="color:var(--text-faint);">|</span>
+        <span>Deterministic 3-Tier Sovereign Matrix Engine</span>
+      </div>
+      <div class="footer-links">
+        <a href="/sample-3.html">Home</a>
+        <a href="/transparency.html" style="color:var(--accent);">Transparency</a>
+        <a href="/terms.html">Terms &amp; Conditions</a>
+        <a href="/login.html?sample=3">Log in</a>
+        <a href="/register.html">Register</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

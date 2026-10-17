@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full antialiased">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Register — Pinnacle</title>
+  <link rel="icon" href="/assets/images/pinnacle.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #030705;
+      --surface: #070d0a;
+      --border: #13241c;
+      --accent: #00e699;
+      --text: #f0faf5;
+      --text-muted: #799e8d;
+      --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-display: 'Space Grotesk', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 16px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient Subtle Glow */
+    .bg-ambient-top {
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 650px;
+      height: 350px;
+      background: radial-gradient(ellipse, rgba(0, 230, 153, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Stage Container (Always Centered) */
+    .register-stage-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Dual-Pane Card (Scaled up for prominence) */
+    .split-register-card {
+      width: 100%;
+      max-width: 960px;
+      background: rgba(7, 13, 10, 0.94);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid #1a3326;
+      border-radius: 20px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 230, 153, 0.06);
+      display: grid;
+      grid-template-columns: 510px 450px;
+      overflow: hidden;
+    }
+
+    @media (max-width: 960px) {
+      body {
+        padding: 24px 16px;
+        min-height: auto;
+      }
+      .split-register-card {
+        grid-template-columns: 1fr;
+        max-width: 480px;
+      }
+      .image-pane {
+        display: none !important;
+      }
+      .form-pane {
+        padding: 36px 26px !important;
+      }
+    }
+
+    /* LEFT: Form Pane */
+    .form-pane {
+      padding: 40px 38px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-right: 1px solid #13241c;
+      background: linear-gradient(175deg, rgba(7, 13, 10, 0.98), rgba(4, 8, 6, 0.98));
+    }
+
+    /* Integrated Brand Header */
+    .brand-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      margin-bottom: 22px;
+    }
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #00e699, #006644);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #030605;
+      font-weight: 900;
+      font-size: 15px;
+      box-shadow: 0 0 14px rgba(0, 230, 153, 0.5);
+    }
+    .brand-text strong {
+      display: block;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.1;
+      font-family: var(--font-display);
+    }
+    .brand-text small {
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .form-heading h1 {
+      font-size: 25px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+      font-family: var(--font-display);
+    }
+    .form-heading p {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-bottom: 22px;
+      line-height: 1.45;
+    }
+
+    .field-group {
+      margin-bottom: 15px;
+    }
+    .field-label {
+      display: block;
+      color: #a3cbb7;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .field-input {
+      width: 100%;
+      background: #040806;
+      border: 1px solid #1a3326;
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: #f0faf5;
+      font-size: 14.5px;
+      outline: none;
+      transition: all 0.2s ease;
+      font-family: var(--font-main);
+    }
+    .field-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px rgba(0, 230, 153, 0.25);
+      background: #060d09;
+    }
+    .field-hint {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 16px 0 18px;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .checkbox-row input {
+      accent-color: var(--accent);
+      cursor: pointer;
+      width: 15px;
+      height: 15px;
+    }
+    .checkbox-row a {
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    /* Green Submit Button */
+    .submit-btn {
+      width: 100%;
+      background: var(--accent);
+      color: #030705;
+      border: none;
+      border-radius: 8px;
+      padding: 13px;
+      font-size: 14.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 18px rgba(0, 230, 153, 0.35);
+      font-family: var(--font-main);
+      min-height: 45px;
+    }
+    .submit-btn:hover {
+      background: #44ffbb;
+      box-shadow: 0 0 26px rgba(0, 230, 153, 0.55);
+      transform: translateY(-1px);
+    }
+
+    .login-redirect-row {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .login-redirect-row a {
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      font-weight: 600;
+    }
+
+    /* RIGHT: Compact Image Pane */
+    .image-pane {
+      background: #020604;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .image-pane img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 20%;
+      display: block;
+      filter: brightness(0.96) contrast(1.04);
+      transition: transform 0.4s ease;
+    }
+    .split-register-card:hover .image-pane img {
+      transform: scale(1.02);
+    }
+
+    /* Soft Inner Vignette Overlay */
+    .image-vignette {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(7, 13, 10, 0.3) 0%, transparent 15%, transparent 85%, rgba(7, 13, 10, 0.3) 100%),
+                  linear-gradient(180deg, transparent 80%, rgba(3, 7, 5, 0.5) 100%);
+      pointer-events: none;
+    }
+
+    /* Minimal Bottom Footer Note */
+    .footer-note {
+      margin-top: 14px;
+      font-size: 10.5px;
+      color: #446153;
+      text-align: center;
+    }
+    .footer-note a {
+      color: var(--text-muted);
+      text-decoration: underline;
+    }
+    .footer-note a:hover {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Ambient Glow -->
+  <div class="bg-ambient-top" aria-hidden="true"></div>
+
+  <!-- Stage: Fully Centered in Viewport -->
+  <div class="register-stage-container">
+    
+    <div class="split-register-card">
+      
+      <!-- LEFT PANE: Compact Form -->
+      <div class="form-pane">
+        <!-- Integrated Brand Logo -->
+        <a class="brand-link" id="brand-link" href="/sample-3.html">
+          <div class="brand-icon">▲</div>
+          <div class="brand-text">
+            <strong>Pinnacle</strong>
+            <small>Move. Support. Progress.</small>
+          </div>
+        </a>
+
+        <div class="form-heading">
+          <h1>Create your account</h1>
+          <p>Sandbox mode — no real payment required. No referral or invite is ever needed.</p>
+        </div>
+
+        <form onsubmit="event.preventDefault(); alert('Account registered in Pinnacle sandbox mode!'); window.location.href='/sample-3.html';">
+          <div class="field-group">
+            <label class="field-label" for="email">Email</label>
+            <input id="email" type="email" required autocomplete="email" class="field-input" placeholder="you@domain.com"/>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="phoneNumber">Phone number</label>
+            <input id="phoneNumber" type="tel" required autocomplete="tel" placeholder="+1 555 123 4567" class="field-input"/>
+            <small class="field-hint">Your own number, with its country code.</small>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="password">Password</label>
+            <input id="password" type="password" required minlength="8" autocomplete="new-password" class="field-input"/>
+          </div>
+
+          <label class="checkbox-row">
+            <input type="checkbox" required checked/>
+            <span>I agree to the <a target="_blank" rel="noopener noreferrer" href="/terms.html">Terms &amp; Conditions</a></span>
+          </label>
+
+          <button class="submit-btn" type="submit">Create account</button>
+
+          <p class="login-redirect-row">
+            Already have an account? <a id="login-link" href="/login.html">Log in</a>
+          </p>
+        </form>
+      </div>
+
+      <!-- RIGHT PANE: Compact Image Only -->
+      <div class="image-pane">
+        <img src="/assets/images/community-people.jpg" alt="Pinnacle Community Members" loading="eager"/>
+        <div class="image-vignette" aria-hidden="true"></div>
+      </div>
+
+    </div>
+
+    <!-- 1-Line Compact Footer Note -->
+    <div class="footer-note">
+      Pinnacle sandbox — no guaranteed payout dates, no referral requirement. 
+      <a href="/transparency.html">How it works</a> · 
+      <a href="/terms.html">Terms</a>
+    </div>
+
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const sample = params.get('sample') || '3';
+
+    const brandLink = document.getElementById('brand-link');
+    if (brandLink) {
+      brandLink.href = (sample === '2' ? '/sample-2.html' : '/sample-3.html');
+    }
+
+    const loginLink = document.getElementById('login-link');
+    if (loginLink) {
+      loginLink.href = '/login.html?sample=' + sample;
+    }
+  </script>
+
+</body>
+</html>

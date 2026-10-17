@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full antialiased">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Sign In — Pinnacle</title>
+  <link rel="icon" href="/assets/images/pinnacle.png"/>
+  <link rel="stylesheet" href="/assets/css/emerald.css?v=3.0"/>
+  <link rel="stylesheet" href="/assets/css/app.css?v=3.0"/>
+
+  <style>
+    :root, html, body {
+      --bg: #030605 !important;
+      --surface: #070d0a !important;
+      --surface-elevated: #091710 !important;
+      --border: #13241c !important;
+      --accent: #00e699 !important;
+      --accent-soft: rgba(0, 230, 153, 0.12) !important;
+      --text: #f0faf5 !important;
+      --text-muted: #799e8d !important;
+      --text-faint: #446153 !important;
+    }
+
+    body {
+      background: #030605 !important;
+      color: #f0faf5 !important;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Ambient background mesh identical to sample-3 */
+    .bg-mesh {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(0, 230, 153, 0.16) 0%, transparent 45%),
+        radial-gradient(circle at 90% 25%, rgba(5, 120, 80, 0.14) 0%, transparent 50%),
+        radial-gradient(circle at 50% 90%, rgba(0, 190, 125, 0.1) 0%, transparent 55%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+
+    /* Stage */
+    .login-stage-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      position: relative;
+      z-index: 5;
+    }
+
+    /* Master Dual-Pane Glass Card */
+    .enterprise-login-card {
+      width: 100%;
+      max-width: 1140px;
+      background: rgba(7, 13, 10, 0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid #1a3326;
+      border-radius: 24px;
+      box-shadow: 0 30px 100px rgba(0, 0, 0, 0.8), 0 0 50px rgba(0, 230, 153, 0.08);
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      overflow: hidden;
+      min-height: 620px;
+    }
+
+    @media (max-width: 960px) {
+      .enterprise-login-card {
+        grid-template-columns: 1fr;
+        max-width: 100%;
+        min-height: auto;
+        border-radius: 16px;
+      }
+      .enterprise-promo-pane {
+        display: none !important;
+      }
+      .enterprise-form-pane {
+        padding: 32px 20px !important;
+      }
+    }
+
+    /* LEFT PANE: Form Area */
+    .enterprise-form-pane {
+      padding: 48px 42px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid #13241c;
+      background: linear-gradient(175deg, rgba(7, 13, 10, 0.98), rgba(4, 8, 6, 0.98));
+    }
+
+    .login-brand-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      margin-bottom: 34px;
+    }
+    .login-brand-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #00e699, #006644);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #030605;
+      font-weight: 900;
+      font-size: 18px;
+      box-shadow: 0 0 18px rgba(0, 230, 153, 0.5);
+    }
+    .login-brand-text strong {
+      display: block;
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+    .login-brand-text small {
+      color: #00e699;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .form-heading h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+    .form-heading p {
+      color: #799e8d;
+      font-size: 13px;
+      margin-bottom: 24px;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+    .input-label {
+      display: block;
+      color: #a3cbb7;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+    .input-field {
+      width: 100%;
+      background: #040806;
+      border: 1px solid #1a3326;
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: #f0faf5;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+    }
+    .input-field:focus {
+      border-color: #00e699;
+      box-shadow: 0 0 12px rgba(0, 230, 153, 0.25);
+      background: #060d09;
+    }
+
+    .form-options-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 18px 0 24px;
+      font-size: 12px;
+    }
+    .remember-me {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #799e8d;
+      cursor: pointer;
+    }
+    .remember-me input {
+      accent-color: #00e699;
+      cursor: pointer;
+    }
+    .forgot-link {
+      color: #00e699;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .forgot-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Submit Button */
+    .btn-login-primary {
+      width: 100%;
+      background: #ffffff;
+      color: #030605;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15);
+      margin-bottom: 12px;
+    }
+    .btn-login-primary:hover {
+      background: #00e699;
+      box-shadow: 0 0 20px rgba(0, 230, 153, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-passkey {
+      width: 100%;
+      background: #091710;
+      color: #a3cbb7;
+      border: 1px solid #1a3326;
+      border-radius: 8px;
+      padding: 11px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-passkey:hover {
+      border-color: #00e699;
+      color: #f0faf5;
+      background: #0c1f15;
+    }
+
+    .form-disclaimer {
+      font-size: 11px;
+      color: #446153;
+      line-height: 1.5;
+      margin-top: 18px;
+    }
+    .form-disclaimer a {
+      color: #799e8d;
+      text-decoration: underline;
+    }
+
+    .form-footer-meta {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid #13241c;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #446153;
+    }
+    .form-footer-meta a {
+      color: #799e8d;
+      text-decoration: none;
+      margin-left: 10px;
+    }
+    .form-footer-meta a:hover {
+      color: #00e699;
+    }
+
+    /* RIGHT PANE: Big Image Showcase (Spacious & Clean) */
+    .enterprise-promo-pane {
+      background: #040806;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      justify-content: space-between;
+    }
+
+    /* Big Hero Visual Banner */
+    .hero-showcase-card {
+      background: #070e0a;
+      border: 1px solid #1a3326;
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+    .hero-showcase-img-wrap {
+      flex: 1;
+      min-height: 320px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-showcase-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.9) contrast(1.1);
+      transition: transform 0.4s ease;
+    }
+    .hero-showcase-card:hover .hero-showcase-img-wrap img {
+      transform: scale(1.03);
+    }
+    .hero-showcase-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(3, 6, 5, 0.1) 0%, rgba(7, 14, 10, 0.95) 90%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 24px 28px;
+    }
+    .hero-showcase-overlay h3 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .hero-showcase-overlay p {
+      color: #92b8a5;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 14px;
+      max-width: 480px;
+    }
+
+    /* Compact Bottom Live Stats Ribbon */
+    .promo-status-strip {
+      background: #070e0a;
+      border: 1px solid #1a3326;
+      border-radius: 14px;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .status-strip-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .status-strip-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(0, 230, 153, 0.1);
+      border: 1px solid rgba(0, 230, 153, 0.25);
+      color: #00e699;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .status-strip-text small {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #446153;
+    }
+    .status-strip-text strong {
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-mesh" aria-hidden="true"></div>
+
+
+  <!-- Main Stage -->
+  <div class="login-stage-container">
+    <div class="enterprise-login-card">
+      
+      <!-- LEFT PANE: Institutional Login Form -->
+      <div class="enterprise-form-pane">
+        <div>
+          <!-- Brand Logo -->
+          <a class="login-brand-header" href="/sample-3.html">
+            <div class="login-brand-icon">▲</div>
+            <div class="login-brand-text">
+              <strong>Pinnacle</strong>
+              <small>Institutional Portal</small>
+            </div>
+          </a>
+
+          <!-- Form Head -->
+          <div class="form-heading">
+            <h1>Sign In</h1>
+            <p>Access your live FIFO queue &amp; member allocations.</p>
+          </div>
+
+          <!-- Auth Form -->
+          <form onsubmit="event.preventDefault(); alert('Signed in to Pinnacle Sandbox!'); window.location.href='/sample-3.html';">
+            
+            <div class="input-group">
+              <label class="input-label" for="member-email">Participant Identifier / Email</label>
+              <input id="member-email" type="email" required class="input-field" placeholder="participant@pinnacle.engine" value="member@obsidian.flow"/>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label" for="member-password">Cryptographic Passphrase</label>
+              <input id="member-password" type="password" required class="input-field" placeholder="••••••••••••••••" value="DeterministicSecure2026!"/>
+            </div>
+
+            <div class="form-options-row">
+              <label class="remember-me">
+                <input type="checkbox" checked/>
+                <span>Remember Session</span>
+              </label>
+              <a href="#" class="forgot-link">Recover Keyphrase?</a>
+            </div>
+
+            <button type="submit" class="btn-login-primary">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              Authenticate &amp; Enter Portal
+            </button>
+
+            <button type="button" class="btn-passkey" onclick="alert('Hardware WebAuthn Passkey signature verified.'); window.location.href='/sample-3.html';">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5z"></path>
+              </svg>
+              Sign In with WebAuthn Passkey
+            </button>
+
+            <div class="form-disclaimer">
+              By authenticating, you agree to Pinnacle's <a href="/transparency.html">Deterministic Allocation Rules</a>.
+            </div>
+
+          </form>
+        </div>
+
+        <!-- Left Pane Footer Meta -->
+        <div class="form-footer-meta">
+          <span>© 2026 Pinnacle Engine</span>
+          <div>
+            <a href="/register.html?sample=3">New Member? Register →</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT PANE: Big Visual Showcase (Spacious & Clean) -->
+      <div class="enterprise-promo-pane">
+        
+        <!-- Big Hero Visual Showcase Card -->
+        <div class="hero-showcase-card">
+          <div class="hero-showcase-img-wrap">
+            <img src="/assets/images/level-journey.webp" alt="Pinnacle 3-Tier Progression Journey" width="960" height="600" fetchpriority="high" loading="eager" decoding="async"/>
+            <div class="hero-showcase-overlay">
+              <span style="display:inline-block; font-size:10px; font-weight:800; color:#00e699; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px;">
+                ✓ 3-Tier Sovereign Matrix Protocol
+              </span>
+              <h3>Track Queue Progress in Real Time</h3>
+              <p>Deterministic FIFO queue tracking with 100% visible public state. Level 1 ($300), Level 2 ($3,000), and Level 3 ($6,000 ➔ $20,000 peak).</p>
+              <div>
+                <a href="/sample-3.html#simulator" class="home-primary-cta" style="padding:10px 20px; font-size:12px; display:inline-flex;">
+                  Open Sandbox Simulator ↗
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compact Status Ribbon -->
+        <div class="promo-status-strip">
+          <div class="status-strip-item">
+            <div class="status-strip-icon">🛡️</div>
+            <div class="status-strip-text">
+              <small>Queue Protocol</small>
+              <strong>Strict FIFO Order</strong>
+            </div>
+          </div>
+          <div style="width:1px; height:28px; background:#1a3326;"></div>
+          <div class="status-strip-item">
+            <div class="status-strip-icon">⚡</div>
+            <div class="status-strip-text">
+              <small>System Mandate</small>
+              <strong>0 Referrals Needed</strong>
+            </div>
+          </div>
+          <div style="width:1px; height:28px; background:#1a3326;"></div>
+          <div class="status-strip-item">
+            <div class="status-strip-icon">💎</div>
+            <div class="status-strip-text">
+              <small>Peak Tier Cash</small>
+              <strong style="color:#00e699;">$20,000.00</strong>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
