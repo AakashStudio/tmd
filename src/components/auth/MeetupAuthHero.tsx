@@ -126,15 +126,13 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
         </div>
       </div>
 
-      {/* Interactive Verification Modal */}
+      {/* Interactive Full Screen Verification */}
       {authMode && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <AuthModal
-            initialProvider="PHONE_OTP"
-            onSuccess={onSuccess}
-            onCancel={() => setAuthMode(null)}
-          />
-        </div>
+        <AuthModal
+          initialProvider="PHONE_OTP"
+          onSuccess={onSuccess}
+          onCancel={() => setAuthMode(null)}
+        />
       )}
     </div>
   );

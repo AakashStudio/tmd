@@ -327,21 +327,17 @@ export default function PlansPage() {
 
       {/* Auth Modal */}
       {showAuthModal && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in">
-          <div className="w-full max-w-sm">
-            <AuthModal
-              onSuccess={async () => {
-                setShowAuthModal(false);
-                await refreshUser();
-                await refreshProfile();
-                if (selectedPlan) {
-                  setShowCheckoutModal(true);
-                }
-              }}
-              onCancel={() => setShowAuthModal(false)}
-            />
-          </div>
-        </div>
+        <AuthModal
+          onSuccess={async () => {
+            setShowAuthModal(false);
+            await refreshUser();
+            await refreshProfile();
+            if (selectedPlan) {
+              setShowCheckoutModal(true);
+            }
+          }}
+          onCancel={() => setShowAuthModal(false)}
+        />
       )}
 
       <BottomNav />
