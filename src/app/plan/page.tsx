@@ -72,32 +72,41 @@ export default function PlansPage() {
     loadPlans();
   }, []);
 
+  const getPkgPrice = (code: string, fallback: number) => {
+    const found = plans.find((p) => p.code === code);
+    return found ? Math.round(found.priceInRupees) : fallback;
+  };
+
+  const tier49Price = getPkgPrice("TIER_49", 49);
+  const tier149Price = getPkgPrice("TIER_149", 149);
+  const pro499Price = getPkgPrice("PRO_499", 499);
+
   const planPackages = [
-    {
-      code: "TIER_149",
-      badge: "Popular",
-      title: "1 Week",
-      subtitle: "₹159.00/wk",
-      price: 159,
-      totalPrice: 159,
-      isPopular: true,
-    },
     {
       code: "TIER_49",
       badge: null,
-      title: "1 Month",
-      subtitle: "₹79.75/wk",
-      price: 319,
-      totalPrice: 319,
+      title: "15 Days",
+      subtitle: `₹${tier49Price} total`,
+      price: tier49Price,
+      totalPrice: tier49Price,
       isPopular: false,
+    },
+    {
+      code: "TIER_149",
+      badge: "Popular",
+      title: "15 Days Gold",
+      subtitle: `₹${tier149Price} total`,
+      price: tier149Price,
+      totalPrice: tier149Price,
+      isPopular: true,
     },
     {
       code: "PRO_499",
       badge: "VIP PRO",
-      title: "VIP Pass",
-      subtitle: "₹124.75/wk",
-      price: 499,
-      totalPrice: 499,
+      title: "VIP Events",
+      subtitle: `₹${pro499Price} total`,
+      price: pro499Price,
+      totalPrice: pro499Price,
       isPopular: false,
     },
   ];
