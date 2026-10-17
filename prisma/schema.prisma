@@ -484,11 +484,15 @@ model Event {
   minAge         Int            @default(18)
   capacity       Int
   seatsLeft      Int
-  feeInPaise     Int            @default(0)
-  attendanceMode AttendanceMode @default(OPEN_JOIN)
-  status         EventStatus    @default(ACTIVE)
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  feeInPaise          Int            @default(0)
+  isPaid              Boolean        @default(false)
+  entryFee            Int            @default(0)
+  requireLinkedin     Boolean        @default(false)
+  isLinkedinMandatory Boolean        @default(false)
+  attendanceMode      AttendanceMode @default(REQUEST_APPROVAL)
+  status              EventStatus    @default(ACTIVE)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
 
   organizer User            @relation("EventsOrganized", fields: [organizerId], references: [id], onDelete: Cascade)
   attendees EventAttendee[]
@@ -507,12 +511,14 @@ enum AttendeeStatus {
 }
 
 model EventAttendee {
-  id        String         @id @default(cuid())
-  eventId   String
-  userId    String
-  status    AttendeeStatus @default(REQUESTED)
-  joinedAt  DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  id          String         @id @default(cuid())
+  eventId     String
+  userId      String
+  linkedinUrl String?
+  note        String?
+  status      AttendeeStatus @default(REQUESTED)
+  joinedAt    DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)

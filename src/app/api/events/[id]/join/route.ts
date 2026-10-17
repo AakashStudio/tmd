@@ -45,6 +45,32 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
       );
     }
 
+    const body = await req.json().catch(() => ({}));
+    const { linkedinUrl, note } = body;
+
+    // Check LinkedIn requirement if organizer set it as mandatory
+    if (event.requireLinkedin && event.isLinkedinMandatory) {
+      if (!linkedinUrl || !linkedinUrl.trim()) {
+        return NextResponse.json(
+          {
+            error: "LinkedIn profile URL is mandatory for this event. Please provide your profile link to submit request.",
+          },
+          { status: 400 }
+        );
+      }
+
+      // Basic URL format validation
+      const urlRegex = /^https?:\/\/(www\.)?linkedin\.com\/.*$/i;
+      if (!urlRegex.test(linkedinUrl.trim())) {
+        return NextResponse.json(
+          {
+            error: "Please enter a valid LinkedIn URL (e.g. https://linkedin.com/in/your-name).",
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     // Age validation
     if (user.profile && user.profile.age < event.minAge) {
       return NextResponse.json(
@@ -63,9 +89,8 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Determine status based on attendanceMode
-    const newStatus =
-      event.attendanceMode === "OPEN_JOIN" ? "APPROVED" : "REQUESTED";
+    // As requested: all attendees submit a request for the organizer to approve
+    const newStatus = "REQUESTED" as const;
 
     const attendee = await prisma.eventAttendee.upsert({
       where: {
@@ -76,32 +101,22 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
       },
       update: {
         status: newStatus,
+        linkedinUrl: linkedinUrl ? linkedinUrl.trim() : undefined,
+        note: note ? note.trim() : undefined,
       },
       create: {
         eventId,
         userId: user.id,
         status: newStatus,
+        linkedinUrl: linkedinUrl ? linkedinUrl.trim() : null,
+        note: note ? note.trim() : null,
       },
     });
-
-    // Update seatsLeft if approved
-    if (newStatus === "APPROVED") {
-      const approvedCount = await prisma.eventAttendee.count({
-        where: { eventId, status: "APPROVED" },
-      });
-      await prisma.event.update({
-        where: { id: eventId },
-        data: { seatsLeft: Math.max(0, event.capacity - approvedCount) },
-      });
-    }
 
     return NextResponse.json({
       success: true,
       status: attendee.status,
-      message:
-        newStatus === "APPROVED"
-          ? "You are confirmed for this event!"
-          : "Your request has been submitted to the organizer for approval.",
+      message: "Your request has been submitted to the organizer for approval.",
     });
   } catch (error: any) {
     console.error("Join event error:", error);

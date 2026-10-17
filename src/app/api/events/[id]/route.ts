@@ -86,7 +86,11 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
             id: a.id,
             userId: a.userId,
             name: a.user.profile?.name || "Attendee",
+            age: a.user.profile?.age,
+            city: a.user.profile?.city,
             photoUrl: a.user.profile?.photos[0]?.url || null,
+            linkedinUrl: a.linkedinUrl,
+            note: a.note,
             joinedAt: a.joinedAt,
           })),
         pendingAttendees: isOrganizer
@@ -96,7 +100,11 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
                 id: a.id,
                 userId: a.userId,
                 name: a.user.profile?.name || "Applicant",
+                age: a.user.profile?.age,
+                city: a.user.profile?.city,
                 photoUrl: a.user.profile?.photos[0]?.url || null,
+                linkedinUrl: a.linkedinUrl,
+                note: a.note,
                 joinedAt: a.joinedAt,
               }))
           : [],

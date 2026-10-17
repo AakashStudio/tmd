@@ -118,7 +118,11 @@ export async function GET(req: NextRequest) {
           capacity: event.capacity,
           seatsLeft: event.seatsLeft,
           feeInPaise: event.feeInPaise,
-          feeInRupees: event.feeInPaise / 100,
+          feeInRupees: event.entryFee || event.feeInPaise / 100,
+          isPaid: event.isPaid || event.entryFee > 0 || event.feeInPaise > 0,
+          entryFee: event.entryFee || Math.round(event.feeInPaise / 100),
+          requireLinkedin: event.requireLinkedin,
+          isLinkedinMandatory: event.isLinkedinMandatory,
           attendanceMode: event.attendanceMode,
           organizer: {
             id: event.organizer.id,
@@ -210,8 +214,12 @@ export async function POST(req: NextRequest) {
         minAge: data.minAge,
         capacity: data.capacity,
         seatsLeft: Math.max(0, data.capacity - 1),
-        feeInPaise: data.feeInPaise,
-        attendanceMode: data.attendanceMode,
+        feeInPaise: (data.entryFee || 0) * 100 || data.feeInPaise,
+        isPaid: data.isPaid || data.entryFee > 0,
+        entryFee: data.entryFee || Math.round(data.feeInPaise / 100),
+        requireLinkedin: data.requireLinkedin || data.isLinkedinMandatory,
+        isLinkedinMandatory: data.isLinkedinMandatory,
+        attendanceMode: "REQUEST_APPROVAL",
         status: "ACTIVE",
         attendees: {
           create: {

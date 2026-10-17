@@ -146,7 +146,11 @@ export const createEventSchema = z.object({
   minAge: z.number().int().min(18).max(99).default(18),
   capacity: z.number().int().min(2).max(1000),
   feeInPaise: z.number().int().min(0).default(0),
-  attendanceMode: z.enum(["OPEN_JOIN", "REQUEST_APPROVAL"]).default("OPEN_JOIN"),
+  isPaid: z.boolean().default(false),
+  entryFee: z.number().int().min(0).default(0),
+  requireLinkedin: z.boolean().default(false),
+  isLinkedinMandatory: z.boolean().default(false),
+  attendanceMode: z.enum(["OPEN_JOIN", "REQUEST_APPROVAL"]).default("REQUEST_APPROVAL"),
 }).refine((data) => data.endDateTime > data.startDateTime, {
   message: "Event end time must be after the start time",
   path: ["endDateTime"],
