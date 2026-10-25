@@ -17,8 +17,6 @@ import {
   Edit2,
   Sparkles,
   Camera,
-  Star,
-  Zap,
   Music,
   LogOut,
   X,
@@ -353,78 +351,8 @@ export default function ProfileHubPage() {
         </div>
       </div>
 
-      {/* ================= 3. BUMBLE SPOTLIGHT & GOLD SECTION ================= */}
       <div className="px-5 space-y-4">
-        {/* TMD Gold Membership Banner */}
-        <Link href="/plan" className="block">
-          <div className="p-4 rounded-2xl bg-gradient-to-r from-[#D4AF37] via-[#FFC629] to-[#E5B824] text-black shadow-lg shadow-amber-500/15 flex items-center justify-between transition hover:brightness-105 active:scale-[0.99]">
-            <div className="space-y-0.5">
-              <div className="flex items-center gap-1.5">
-                <span className="font-black text-lg tracking-wider">TMD</span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-black text-[#FFC629] uppercase">
-                  Gold
-                </span>
-              </div>
-              <p className="text-xs font-bold text-zinc-950">
-                See who Likes you · Unlimited Super Likes · Priority matching
-              </p>
-            </div>
-            <div className="w-8 h-8 rounded-full bg-black text-[#FFC629] flex items-center justify-center shrink-0 shadow">
-              <ChevronRight className="w-4 h-4 stroke-[3]" />
-            </div>
-          </div>
-        </Link>
-
-        {/* 2 Side-by-Side Bumble Spotlight & Super Like Cards */}
-        <div className="grid grid-cols-2 gap-3">
-          {/* Spotlight Card */}
-          <Link
-            href="/plan"
-            className="p-3.5 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-amber-400/40 transition group flex flex-col justify-between min-h-[96px] active:scale-[0.98]"
-          >
-            <div className="flex items-center justify-between">
-              <div className="w-8 h-8 rounded-full bg-amber-400/15 text-[#FFC629] flex items-center justify-center">
-                <Zap className="w-4 h-4 fill-[#FFC629]" />
-              </div>
-              <span className="text-[10px] font-black text-amber-400 uppercase tracking-wider">
-                Boost
-              </span>
-            </div>
-            <div>
-              <h4 className="text-xs font-extrabold text-white group-hover:text-amber-300 transition">
-                Spotlight
-              </h4>
-              <p className="text-[11px] text-zinc-400">
-                Get up to 3x more views
-              </p>
-            </div>
-          </Link>
-
-          {/* Super Like Card */}
-          <Link
-            href="/plan"
-            className="p-3.5 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-amber-400/40 transition group flex flex-col justify-between min-h-[96px] active:scale-[0.98]"
-          >
-            <div className="flex items-center justify-between">
-              <div className="w-8 h-8 rounded-full bg-amber-400/15 text-[#FFC629] flex items-center justify-center">
-                <Star className="w-4 h-4 fill-[#FFC629]" />
-              </div>
-              <span className="text-[10px] font-black text-amber-400 uppercase tracking-wider">
-                Stand out
-              </span>
-            </div>
-            <div>
-              <h4 className="text-xs font-extrabold text-white group-hover:text-amber-300 transition">
-                Super Like
-              </h4>
-              <p className="text-[11px] text-zinc-400">
-                Notify them instantly
-              </p>
-            </div>
-          </Link>
-        </div>
-
-        {/* ================= 4. HORIZONTAL QUICK BASICS PILLS ================= */}
+        {/* ================= MY BASICS ================= */}
         <div className="space-y-1.5 pt-1">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-zinc-400">My Basics</span>
