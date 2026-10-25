@@ -101,3 +101,34 @@ select:-webkit-autofill {
   -webkit-box-shadow: 0 0 0px 1000px #121217 inset !important;
   transition: background-color 5000s ease-in-out 0s !important;
 }
+
+/* ============================================================================
+   Custom Scrollbar Utilities (Eradicates Ugly Browser Scrollbars)
+   ============================================================================ */
+.scrollbar-none::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.scrollbar-none,
+.no-scrollbar {
+  -ms-overflow-style: none !important; /* IE and Edge */
+  scrollbar-width: none !important; /* Firefox */
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #272732;
+  border-radius: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #FFC629;
+}

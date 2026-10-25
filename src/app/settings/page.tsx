@@ -470,7 +470,7 @@ export default function ProfileHubPage() {
               Edit all
             </Link>
           </div>
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs font-semibold text-zinc-300">
+          <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-zinc-300">
             <button
               type="button"
               onClick={() => openQuickEdit("LIVING_IN")}
