@@ -18,25 +18,25 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const baseClasses =
-    "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-150 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.98]";
+    "inline-flex items-center justify-center font-bold rounded-full transition-all duration-150 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.98]";
 
   const sizeClasses = {
-    sm: "px-3 py-1.5 text-xs",
-    md: "px-4 py-2.5 text-sm",
+    sm: "px-3.5 py-1.5 text-xs",
+    md: "px-5 py-2.5 text-sm",
     lg: "px-6 py-3.5 text-base",
   };
 
   const variantClasses = {
     primary:
-      "bg-gradient-to-r from-[#ff1475] to-[#ff4088] text-white hover:brightness-110 shadow-lg shadow-[#ff1475]/25 font-bold",
+      "bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] text-black font-extrabold hover:brightness-105 shadow-lg shadow-amber-500/25",
     secondary:
-      "bg-[#1e1e26] text-white hover:bg-[#282834] border border-[#2a2a38]",
+      "bg-[#181822] text-white hover:bg-[#22222e] border border-[#2a2a38]",
     outline:
-      "bg-transparent text-white border border-[#323242] hover:bg-[#1e1e26]",
+      "bg-transparent text-white border border-zinc-700 hover:border-amber-400 hover:text-amber-300",
     danger:
-      "bg-[#ef4444] text-white hover:bg-[#dc2626] font-semibold",
+      "bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-red-500/30 font-semibold",
     ghost:
-      "bg-transparent text-[#9e9ea8] hover:text-white hover:bg-[#1a1a22]",
+      "bg-transparent text-zinc-400 hover:text-white hover:bg-zinc-900",
   };
 
   return (

@@ -19,16 +19,16 @@ export const Badge: React.FC<BadgeProps> = ({
   };
 
   const variantClasses = {
-    primary: "bg-[#ff1475]/15 text-[#ff1475] border border-[#ff1475]/35",
-    pro: "bg-gradient-to-r from-[#ff1475] via-[#ff4088] to-[#ff6b8b] text-white font-black shadow-sm",
+    primary: "bg-[#FFC629]/15 text-[#FFC629] border border-[#FFC629]/35 font-bold",
+    pro: "bg-gradient-to-r from-[#D4AF37] via-[#F59E0B] to-[#FFC629] text-black font-black shadow-sm",
     verified: "bg-[#10b981]/15 text-[#10b981] border border-[#10b981]/30",
-    neutral: "bg-[#1e1e26] text-[#9e9ea8] border border-[#2a2a38]",
-    danger: "bg-[#ef4444]/15 text-[#ef4444] border border-[#ef4444]/30",
+    neutral: "bg-[#181822] text-[#9e9ea8] border border-[#262634]",
+    danger: "bg-red-500/15 text-red-400 border border-red-500/30",
   };
 
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded font-medium select-none ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
+      className={`inline-flex items-center gap-1 rounded-full font-medium select-none ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
     >
       {children}
     </span>

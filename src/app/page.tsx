@@ -97,7 +97,7 @@ export default function HomePage() {
       {/* Top Bar */}
       <header className="px-5 py-3 border-b border-[#1e1e26] flex items-center justify-between sticky top-0 bg-[#0a0a0c]/90 backdrop-blur-md z-30">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#ff1475] to-[#ff6b8b] flex items-center justify-center font-black text-sm text-white shadow-md shadow-[#ff1475]/30">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#D4AF37] via-[#F59E0B] to-[#FFC629] flex items-center justify-center font-black text-sm text-black shadow-md shadow-amber-500/30">
             TMD
           </div>
           <span className="font-bold text-sm tracking-tight">The Match Date</span>
@@ -125,7 +125,7 @@ export default function HomePage() {
       <main className="flex-1 px-5 py-2 flex flex-col items-center justify-start relative max-w-md w-full mx-auto">
         {feedLoading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3">
-            <div className="w-8 h-8 rounded-full border-2 border-[#ff1475] border-t-transparent animate-spin" />
+            <div className="w-8 h-8 rounded-full border-2 border-[#FFC629] border-t-transparent animate-spin" />
             <p className="text-xs text-zinc-400">Finding dates near {profile.city}...</p>
           </div>
         ) : hasMore && currentCandidate ? (
@@ -135,8 +135,8 @@ export default function HomePage() {
               <div className="w-full max-w-sm mx-auto mb-1 animate-in slide-in-from-top-2 fade-in duration-300">
                 <div className="w-full bg-white text-black rounded-full px-4 py-2.5 flex items-center justify-between shadow-2xl shadow-black/50 border border-white/20 select-none">
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center shrink-0">
-                      <Heart className="w-3.5 h-3.5 fill-[#ff1475] text-[#ff1475] animate-pulse" />
+                    <div className="w-7 h-7 rounded-full bg-amber-500/10 border border-amber-400/30 flex items-center justify-center shrink-0">
+                      <Heart className="w-3.5 h-3.5 fill-[#FFC629] text-[#FFC629] animate-pulse" />
                     </div>
                     <div className="flex flex-col text-left">
                       <span className="text-xs font-black text-zinc-900 leading-tight">
@@ -187,7 +187,7 @@ export default function HomePage() {
           /* Empty Discovery State */
           <div className="w-full max-w-xs text-center py-12 px-4 space-y-5 animate-in fade-in">
             <div className="w-20 h-20 mx-auto rounded-3xl bg-zinc-900 border border-zinc-800 flex items-center justify-center shadow-inner">
-              <Sparkles className="w-10 h-10 text-rose-500 animate-pulse" />
+              <Sparkles className="w-10 h-10 text-amber-400 animate-pulse" />
             </div>
             <div className="space-y-2">
               <h3 className="text-xl font-bold text-white">All Caught Up!</h3>
@@ -207,7 +207,7 @@ export default function HomePage() {
               {!entitlements?.canSelectCity && (
                 <Link
                   href="/plan"
-                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-rose-500/20 to-pink-500/20 border border-rose-500/40 text-rose-300 text-xs font-semibold hover:bg-rose-500/30 transition text-center"
+                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#F59E0B]/20 to-[#FFC629]/20 border border-amber-400/40 text-amber-300 text-xs font-semibold hover:bg-amber-400/30 transition text-center"
                 >
                   Unlock Any City & Distance with Plus (₹149) →
                 </Link>

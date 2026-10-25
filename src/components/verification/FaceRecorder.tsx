@@ -281,8 +281,8 @@ export const FaceRecorder: React.FC<FaceRecorderProps> = ({ onSuccess, onError }
       {/* 1. IDLE STATE */}
       {state === "idle" && (
         <div className="p-4 sm:p-5 rounded-2xl bg-[#0e0e13] border border-[#242432] space-y-4">
-          <div className="relative w-28 h-28 mx-auto rounded-full bg-gradient-to-tr from-[#ff1475]/20 to-[#9333ea]/20 border-2 border-dashed border-[#ff1475]/60 flex items-center justify-center shadow-lg shadow-[#ff1475]/10">
-            <Camera className="w-10 h-10 text-[#ff1475] animate-pulse" />
+          <div className="relative w-28 h-28 mx-auto rounded-full bg-gradient-to-tr from-[#F59E0B]/20 to-[#FFC629]/20 border-2 border-dashed border-[#FFC629]/60 flex items-center justify-center shadow-lg shadow-amber-500/10">
+            <Camera className="w-10 h-10 text-[#FFC629] animate-pulse" />
             <div className="absolute inset-1 rounded-full border border-white/10" />
           </div>
 
@@ -312,7 +312,7 @@ export const FaceRecorder: React.FC<FaceRecorderProps> = ({ onSuccess, onError }
             <Button
               type="button"
               variant="primary"
-              className="w-full py-3 text-xs font-bold shadow-lg shadow-[#ff1475]/25 flex items-center justify-center gap-2"
+              className="w-full py-3 text-xs font-bold shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2"
               onClick={handleStartProcess}
             >
               <Video className="w-4 h-4" />
@@ -332,8 +332,8 @@ export const FaceRecorder: React.FC<FaceRecorderProps> = ({ onSuccess, onError }
 
       {/* 2. COUNTDOWN & 3. RECORDING STATES */}
       {(state === "countdown" || state === "recording") && (
-        <div className="p-4 sm:p-5 rounded-2xl bg-[#0e0e13] border border-[#ff1475]/50 space-y-4">
-          <div className="relative w-56 h-56 sm:w-60 sm:h-60 mx-auto rounded-full overflow-hidden border-4 border-[#ff1475] shadow-2xl shadow-[#ff1475]/40 bg-black">
+        <div className="p-4 sm:p-5 rounded-2xl bg-[#0e0e13] border border-[#FFC629]/50 space-y-4">
+          <div className="relative w-56 h-56 sm:w-60 sm:h-60 mx-auto rounded-full overflow-hidden border-4 border-[#FFC629] shadow-2xl shadow-amber-500/40 bg-black">
             <video
               ref={videoRef}
               autoPlay
@@ -348,7 +348,7 @@ export const FaceRecorder: React.FC<FaceRecorderProps> = ({ onSuccess, onError }
             {/* Countdown Overlay */}
             {state === "countdown" && (
               <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white backdrop-blur-[2px]">
-                <span className="text-[11px] uppercase tracking-wider text-rose-300 font-semibold mb-1">
+                <span className="text-[11px] uppercase tracking-wider text-amber-300 font-semibold mb-1">
                   Get Ready
                 </span>
                 <span className="text-5xl font-black text-white animate-ping">{countdown}</span>
@@ -374,7 +374,7 @@ export const FaceRecorder: React.FC<FaceRecorderProps> = ({ onSuccess, onError }
           {state === "recording" && (
             <div className="w-48 mx-auto h-1.5 rounded-full bg-zinc-800 overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-[#ff1475] to-[#ff6b8b] transition-all duration-1000 ease-linear"
+                className="h-full bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] transition-all duration-1000 ease-linear"
                 style={{ width: `${((3 - recordingSecondsLeft + 1) / 3) * 100}%` }}
               />
             </div>

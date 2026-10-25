@@ -2,16 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================================
+   TMD - AURA GOLD DESIGN SYSTEM
+   Global Theme CSS Variables
+   ============================================================================ */
 :root {
   --font-primary: "Oracle Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --bg-primary: #0a0a0c;
-  --bg-surface: #14141a;
-  --bg-surface-elevated: #1e1e26;
-  --color-primary: #ff1475;
-  --color-accent: #ff6b8b;
+  --bg-primary: #08080b;
+  --bg-surface: #121217;
+  --bg-surface-elevated: #1a1a24;
+  --color-primary: #FFC629;
+  --color-primary-amber: #F59E0B;
+  --color-primary-metallic: #D4AF37;
+  --color-accent: #FFC629;
   --text-primary: #ffffff;
-  --text-secondary: #9e9ea8;
-  --text-muted: #5e5e6e;
+  --text-secondary: #d1d1d8;
+  --text-muted: #888896;
 
   /* Spacing Tokens */
   --space-micro: 4px;
@@ -54,7 +60,7 @@ select {
 }
 
 select option {
-  background-color: #14141a !important;
+  background-color: #121217 !important;
   color: #ffffff !important;
   padding: 8px !important;
 }
@@ -85,14 +91,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   opacity: 0.85;
 }
 
-/* Clean WebKit/iOS dark autofill (removes yellow highlight) */
+/* Clean WebKit/iOS dark autofill */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 textarea:-webkit-autofill,
 select:-webkit-autofill {
   -webkit-text-fill-color: #ffffff !important;
-  -webkit-box-shadow: 0 0 0px 1000px #14141a inset !important;
+  -webkit-box-shadow: 0 0 0px 1000px #121217 inset !important;
   transition: background-color 5000s ease-in-out 0s !important;
 }
-

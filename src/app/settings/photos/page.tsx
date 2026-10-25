@@ -124,7 +124,7 @@ export default function PhotosManagerPage() {
     <div className="min-h-screen bg-[#0a0a0c] text-white max-w-md mx-auto px-5 py-4 pb-20">
       {/* Top Bar */}
       <div className="flex items-center gap-3 mb-4 border-b border-[#1e1e26] pb-3">
-        <button onClick={() => router.back()} className="p-1 hover:text-[#ff1475]">
+        <button onClick={() => router.back()} className="p-1 hover:text-amber-400 transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex-1">
@@ -167,7 +167,7 @@ export default function PhotosManagerPage() {
                   onClick={() => handleSetPrimary(photo.id)}
                   className="text-[11px] font-semibold text-white/90 hover:text-white flex items-center gap-1 bg-black/40 px-2 py-1 rounded"
                 >
-                  <Star className="w-3 h-3 text-[#ff6b8b]" /> Make Primary
+                  <Star className="w-3 h-3 text-[#FFC629] fill-[#FFC629]" /> Make Primary
                 </button>
               )}
               {photos.length > 1 && (
@@ -200,9 +200,9 @@ export default function PhotosManagerPage() {
             type="button"
             onClick={handleTriggerUpload}
             disabled={isUploading}
-            className="aspect-[3/4] rounded-lg border-2 border-dashed border-[#24242e] hover:border-[#ff1475]/70 hover:bg-[#ff1475]/5 bg-[#0e0e12] flex flex-col items-center justify-center text-[#5e5e6e] group cursor-pointer transition-all"
+            className="aspect-[3/4] rounded-lg border-2 border-dashed border-[#24242e] hover:border-[#FFC629]/70 hover:bg-amber-400/5 bg-[#0e0e12] flex flex-col items-center justify-center text-[#5e5e6e] group cursor-pointer transition-all"
           >
-            <div className="w-8 h-8 rounded-full bg-[#1b1b26] group-hover:bg-[#ff1475] text-[#ff1475] group-hover:text-white flex items-center justify-center mb-1 transition shadow-sm font-bold">
+            <div className="w-8 h-8 rounded-full bg-[#1b1b26] group-hover:bg-[#FFC629] text-[#FFC629] group-hover:text-black flex items-center justify-center mb-1 transition shadow-sm font-bold">
               <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
             </div>
             <span className="text-[11px] group-hover:text-white transition">Slot {photos.length + i + 1}</span>
@@ -221,7 +221,7 @@ export default function PhotosManagerPage() {
             isLoading={isUploading}
             disabled={isUploading}
           >
-            <ImageIcon className="w-4 h-4 text-[#ff1475]" />
+            <ImageIcon className="w-4 h-4 text-[#FFC629]" />
             <span>{isUploading ? "Uploading photo..." : "Upload from Phone Gallery / Camera"}</span>
           </Button>
 

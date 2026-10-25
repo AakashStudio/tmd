@@ -219,28 +219,15 @@ export default function PlansPage() {
 
   return (
     <div className="min-h-screen bg-[#0d0d12] text-white pb-52 max-w-md mx-auto relative select-none">
-      {/* 1. TOP HEADER (Exact Screenshot Layout) */}
-      <div className="sticky top-0 inset-x-0 z-40 bg-[#0d0d12]/90 backdrop-blur-md px-5 py-3.5 flex items-center justify-between">
-        {/* Close Button */}
-        <button
-          type="button"
-          onClick={() => router.push("/")}
-          className="w-9 h-9 rounded-full bg-zinc-800/80 hover:bg-zinc-700 flex items-center justify-center text-zinc-300 hover:text-white transition active:scale-95 shadow"
-          title="Close"
-        >
-          <X className="w-5 h-5 stroke-[2.5]" />
-        </button>
-
-        {/* Center Logo Branding matching screenshot: TINDER GOLD -> TMD GOLD */}
-        <div className="flex items-center gap-1.5">
+      {/* 1. TOP HEADER */}
+      <div className="sticky top-0 inset-x-0 z-40 bg-[#0d0d12]/90 backdrop-blur-md px-5 py-4 flex items-center justify-center border-b border-white/[0.06]">
+        {/* Center Logo Branding: TMD GOLD */}
+        <div className="flex items-center gap-2">
           <span className="font-black text-xl tracking-wider text-white">TMD</span>
-          <span className="px-1.5 py-0.5 rounded text-[10px] font-black bg-[#d4af37] text-black">
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-[#D4AF37] to-[#FFC629] text-black uppercase shadow-sm">
             GOLD
           </span>
         </div>
-
-        {/* Right spacer for symmetrical centering */}
-        <div className="w-9 h-9" />
       </div>
 
       <div className="px-5 pt-3 space-y-6">

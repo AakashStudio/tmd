@@ -13,10 +13,10 @@ export const Card: React.FC<CardProps> = ({ children, id, className = "", onClic
     <div
       id={id}
       onClick={onClick}
-      className={`rounded-lg bg-[#14141a] border border-[#24242e] ${
+      className={`rounded-2xl bg-[#121217] border border-[#22222d] ${
         hasPadding ? "" : "p-4"
       } text-white shadow-md ${
-        onClick ? "cursor-pointer hover:border-[#383848] transition-colors" : ""
+        onClick ? "cursor-pointer hover:border-amber-400/40 transition-colors" : ""
       } ${className}`}
     >
       {children}

@@ -278,7 +278,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
           {showLocationInfo && (
             <div className="p-4 rounded-2xl bg-zinc-900/90 border border-zinc-800 text-left animate-in slide-in-from-bottom-2 fade-in duration-200 space-y-1.5">
               <div className="flex items-center gap-2">
-                <ChevronUp className="w-4 h-4 text-[#ff1475]" />
+                <ChevronUp className="w-4 h-4 text-amber-400" />
                 <h4 className="text-sm font-black text-white">Don&apos;t worry—</h4>
               </div>
               <p className="text-xs text-zinc-400 leading-relaxed">
@@ -292,7 +292,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
         {showLocationPopup && (
           <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-150">
             <div className="w-full max-w-[290px] rounded-3xl bg-[#1c1c24] border border-white/10 p-6 text-center shadow-2xl animate-in zoom-in-95 duration-150">
-              <div className="w-12 h-12 mx-auto mb-3.5 rounded-full bg-[#ff1475]/15 border border-[#ff1475]/30 flex items-center justify-center text-[#ff1475]">
+              <div className="w-12 h-12 mx-auto mb-3.5 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-[#FFC629]">
                 <MapPin className="w-6 h-6" />
               </div>
 
@@ -308,7 +308,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
                 <button
                   type="button"
                   onClick={() => handlePermissionChoice("WHILE_USING")}
-                  className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#FF1475] to-[#FF6079] text-white font-bold text-xs shadow-md active:scale-95 transition cursor-pointer"
+                  className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] text-black font-extrabold text-xs shadow-md shadow-amber-500/20 active:scale-95 transition cursor-pointer"
                 >
                   While using the app
                 </button>
@@ -340,7 +340,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
     <div className="w-full max-w-md mx-auto p-5 sm:p-6 rounded-2xl bg-[#14141a] border border-[#24242e] shadow-2xl text-left overflow-hidden box-border">
       <div className="flex items-center justify-between mb-4 border-b border-[#1e1e26] pb-3">
         <h2 className="text-base font-bold text-white tracking-tight">Create Your Profile</h2>
-        <span className="text-xs font-semibold text-[#ff1475] bg-[#ff1475]/10 px-2.5 py-0.5 rounded-full border border-[#ff1475]/30">
+        <span className="text-xs font-semibold text-[#FFC629] bg-amber-400/10 px-2.5 py-0.5 rounded-full border border-amber-400/30">
           Step {step} of 4
         </span>
       </div>
@@ -373,7 +373,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
                 setDobString(e.target.value);
                 setError(null);
               }}
-              className="w-full block max-w-full box-border px-3.5 py-2.5 rounded-lg bg-[#14141a] border border-[#24242e] text-white text-sm focus:border-[#ff1475] focus:outline-none appearance-none"
+              className="w-full block max-w-full box-border px-3.5 py-2.5 rounded-lg bg-[#14141a] border border-[#24242e] text-white text-sm focus:border-[#FFC629] focus:outline-none appearance-none"
             />
             <div className="mt-2 flex items-center justify-between">
               <span className="text-xs text-[#9e9ea8]">Calculated Age:</span>
@@ -395,7 +395,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
                 type="checkbox"
                 checked={is18PlusConfirmed}
                 onChange={(e) => setIs18PlusConfirmed(e.target.checked)}
-                className="mt-0.5 rounded border-[#383848] text-[#ff1475] focus:ring-[#ff1475]"
+                className="mt-0.5 rounded border-[#383848] text-amber-500 focus:ring-amber-400"
               />
               <span className="text-xs text-[#9e9ea8] leading-tight">
                 I confirm that I am at least 18 years of age and that my provided date of birth is accurate.
@@ -411,7 +411,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
               <select
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
-                className="w-full block max-w-full box-border px-3 py-2.5 rounded-lg bg-[#14141a] border border-[#24242e] text-white text-sm focus:border-[#ff1475] focus:outline-none cursor-pointer"
+                className="w-full block max-w-full box-border px-3 py-2.5 rounded-lg bg-[#14141a] border border-[#24242e] text-white text-sm focus:border-[#FFC629] focus:outline-none cursor-pointer"
               >
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
@@ -426,7 +426,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
               <select
                 value={interestedIn}
                 onChange={(e) => setInterestedIn(e.target.value)}
-                className="w-full block max-w-full box-border px-3 py-2.5 rounded-lg bg-[#14141a] border border-[#24242e] text-white text-sm focus:border-[#ff1475] focus:outline-none cursor-pointer"
+                className="w-full block max-w-full box-border px-3 py-2.5 rounded-lg bg-[#14141a] border border-[#24242e] text-white text-sm focus:border-[#FFC629] focus:outline-none cursor-pointer"
               >
                 <option value="Female">Women</option>
                 <option value="Male">Men</option>
@@ -486,7 +486,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
             <select
               value={relationshipIntention}
               onChange={(e) => setRelationshipIntention(e.target.value)}
-              className="w-full block max-w-full box-border px-3.5 py-2.5 rounded-lg bg-[#14141a] border border-[#24242e] text-white text-sm focus:border-[#ff1475] focus:outline-none cursor-pointer"
+              className="w-full block max-w-full box-border px-3.5 py-2.5 rounded-lg bg-[#14141a] border border-[#24242e] text-white text-sm focus:border-[#FFC629] focus:outline-none cursor-pointer"
             >
               <option value="LONG_TERM">Long-term relationship</option>
               <option value="SHORT_TERM_CASUAL">Short-term / casual</option>
@@ -504,7 +504,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Share a short glimpse of your life and passions..."
-              className="w-full px-3.5 py-2 rounded-lg bg-[#14141a] border border-[#24242e] text-white text-sm focus:border-[#ff1475] focus:outline-none"
+              className="w-full px-3.5 py-2 rounded-lg bg-[#14141a] border border-[#24242e] text-white text-sm focus:border-[#FFC629] focus:outline-none"
             />
           </div>
 
@@ -536,13 +536,13 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
                     onClick={() => {
                       setSelectedInterestIds(
                         isSelected
-                          ? selectedInterestIds.filter((id) => id !== item.id)
+                           ? selectedInterestIds.filter((id) => id !== item.id)
                           : [...selectedInterestIds, item.id]
                       );
                     }}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
                       isSelected
-                        ? "bg-[#ff1475] text-white font-bold border-[#ff1475]"
+                        ? "bg-[#FFC629] text-black font-bold border-[#FFC629] shadow-sm shadow-amber-500/20"
                         : "bg-[#14141a] text-[#9e9ea8] border-[#24242e] hover:border-[#383848]"
                     }`}
                   >
@@ -573,7 +573,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
                     }}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
                       isSelected
-                        ? "bg-[#ff4088] text-white font-bold border-[#ff4088]"
+                        ? "bg-amber-400 text-black font-bold border-amber-400 shadow-sm shadow-amber-500/20"
                         : "bg-[#14141a] text-[#9e9ea8] border-[#24242e] hover:border-[#383848]"
                     }`}
                   >
@@ -604,7 +604,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
                 Profile Photos ({photos.length}/6)
               </label>
               {photos.length === 0 && (
-                <span className="text-[11px] text-[#ff1475] font-medium animate-pulse">
+                <span className="text-[11px] text-amber-400 font-medium animate-pulse">
                   * 1 photo required
                 </span>
               )}
@@ -632,7 +632,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
                   return (
                     <div
                       key={slotIdx}
-                      className="group relative aspect-[3/4] rounded-xl overflow-hidden border border-[#2e2e3d] bg-[#0e0e12] shadow-sm hover:border-[#ff1475]/60 transition-colors"
+                      className="group relative aspect-[3/4] rounded-xl overflow-hidden border border-[#2e2e3d] bg-[#0e0e12] shadow-sm hover:border-[#FFC629]/60 transition-colors"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -643,7 +643,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
 
                       {/* Primary badge for Slot 1 */}
                       {isPrimary && (
-                        <span className="absolute top-1.5 left-1.5 bg-gradient-to-r from-[#ff1475] to-[#ff6b8b] text-[9px] text-white font-extrabold px-1.5 py-0.5 rounded shadow pointer-events-none">
+                        <span className="absolute top-1.5 left-1.5 bg-gradient-to-r from-[#F59E0B] to-[#FFC629] text-[9px] text-black font-extrabold px-1.5 py-0.5 rounded shadow pointer-events-none">
                           ★ Main
                         </span>
                       )}
@@ -665,7 +665,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
                       <button
                         type="button"
                         onClick={() => handleTriggerUpload(slotIdx)}
-                        className="absolute bottom-1 right-1 p-1 rounded-md bg-black/70 hover:bg-[#ff1475] text-white opacity-80 sm:opacity-0 group-hover:opacity-100 transition text-[10px] flex items-center gap-0.5"
+                        className="absolute bottom-1 right-1 p-1 rounded-md bg-black/70 hover:bg-[#FFC629] text-white hover:text-black opacity-80 sm:opacity-0 group-hover:opacity-100 transition text-[10px] flex items-center gap-0.5"
                         title="Replace photo"
                       >
                         <Camera className="w-3 h-3" />
@@ -680,9 +680,9 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
                     type="button"
                     onClick={() => handleTriggerUpload(slotIdx)}
                     disabled={isUploading}
-                    className="aspect-[3/4] rounded-xl border-2 border-dashed border-[#262634] hover:border-[#ff1475]/70 hover:bg-[#ff1475]/5 bg-[#101016] flex flex-col items-center justify-center p-2 text-center transition group cursor-pointer focus:outline-none"
+                    className="aspect-[3/4] rounded-xl border-2 border-dashed border-[#262634] hover:border-[#FFC629]/70 hover:bg-amber-400/5 bg-[#101016] flex flex-col items-center justify-center p-2 text-center transition group cursor-pointer focus:outline-none"
                   >
-                    <div className="w-8 h-8 rounded-full bg-[#1b1b26] group-hover:bg-[#ff1475] text-[#ff1475] group-hover:text-white flex items-center justify-center mb-1.5 transition font-bold shadow-sm">
+                    <div className="w-8 h-8 rounded-full bg-[#1b1b26] group-hover:bg-[#FFC629] text-[#FFC629] group-hover:text-black flex items-center justify-center mb-1.5 transition font-bold shadow-sm">
                       <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
                     </div>
                     <span className="text-[10px] font-semibold text-[#666678] group-hover:text-white transition">
@@ -702,7 +702,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
               isLoading={isUploading}
               disabled={isUploading || photos.length >= 6}
             >
-              <ImageIcon className="w-4 h-4 text-[#ff1475]" />
+              <ImageIcon className="w-4 h-4 text-[#FFC629]" />
               <span>{isUploading ? "Uploading..." : "Upload from Phone Gallery / Camera"}</span>
             </Button>
 

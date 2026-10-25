@@ -27,13 +27,13 @@ export const Input: React.FC<InputProps> = ({
       )}
       <input
         id={inputId}
-        className={`w-full px-3.5 py-2.5 rounded-lg bg-[#14141a] border ${
-          error ? "border-[#ef4444]" : "border-[#24242e] focus:border-[#ff1475]"
-        } text-white placeholder-[#5e5e6e] text-sm transition-colors duration-150 focus:outline-none focus:ring-1 focus:ring-[#ff1475] disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+        className={`w-full px-3.5 py-2.5 rounded-xl bg-[#0f0f14] border ${
+          error ? "border-red-500" : "border-[#242432] focus:border-[#FFC629]"
+        } text-white placeholder-zinc-500 text-sm transition-colors duration-150 focus:outline-none focus:ring-1 focus:ring-[#FFC629]/30 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
         {...props}
       />
-      {error && <p className="text-xs text-[#ef4444] font-medium">{error}</p>}
-      {!error && helperText && <p className="text-xs text-[#5e5e6e]">{helperText}</p>}
+      {error && <p className="text-xs text-red-400 font-medium">{error}</p>}
+      {!error && helperText && <p className="text-xs text-zinc-500">{helperText}</p>}
     </div>
   );
 };

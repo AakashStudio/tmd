@@ -81,7 +81,7 @@ export default function EditProfilePage() {
     <div className="min-h-screen bg-[#0a0a0c] text-white max-w-md mx-auto px-5 py-4 pb-20">
       {/* Top Bar */}
       <div className="flex items-center gap-3 mb-5 border-b border-[#1e1e26] pb-3">
-        <button onClick={() => router.back()} className="p-1 hover:text-[#ff1475]">
+        <button onClick={() => router.back()} className="p-1 hover:text-amber-400">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <h1 className="text-base font-bold text-white tracking-tight">Edit Profile</h1>
@@ -110,7 +110,7 @@ export default function EditProfilePage() {
             </label>
             {!canEditName && (
               <Badge variant="neutral" className="gap-1 text-[10px]">
-                <Lock className="w-3 h-3 text-[#ff1475]" /> Locked (Pro only)
+                <Lock className="w-3 h-3 text-amber-400" /> Locked (Pro only)
               </Badge>
             )}
           </div>
@@ -140,7 +140,7 @@ export default function EditProfilePage() {
           </p>
           <p className="text-[11px] text-[#5e5e6e] pt-1">
             Age and DOB cannot be directly changed. ₹499 PRO users can{" "}
-            <Link href="/settings/verification#dob" className="text-[#ff6b8b] hover:underline">
+            <Link href="/settings/verification#dob" className="text-amber-400 hover:underline font-semibold">
               request a DOB correction
             </Link>{" "}
             with administrative verification.
