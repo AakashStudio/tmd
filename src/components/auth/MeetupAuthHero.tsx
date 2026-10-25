@@ -30,9 +30,9 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
 
         {/* Top App Branding: Official TMD Logo */}
         <div className="relative z-10 flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-black/45 backdrop-blur-md border border-white/10 shadow-2xl">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#FF3B69] via-[#FF6079] to-[#FFA0B2] flex items-center justify-center shadow-[0_0_15px_rgba(255,96,121,0.5)]">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#D4AF37] via-[#F59E0B] to-[#FFC629] flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.5)]">
             <svg
-              className="w-4 h-4 text-white fill-current"
+              className="w-4 h-4 text-black fill-current"
               viewBox="0 0 24 24"
             >
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
@@ -42,7 +42,7 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
             <span className="text-base font-black tracking-wider text-white leading-tight">
               TMD
             </span>
-            <span className="text-[8px] font-black tracking-[0.22em] text-pink-300 uppercase leading-none">
+            <span className="text-[8px] font-black tracking-[0.22em] text-amber-300 uppercase leading-none">
               The Match Date
             </span>
           </div>
@@ -108,7 +108,7 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
           <button
             type="button"
             onClick={() => setAuthMode("PHONE")}
-            className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-full bg-gradient-to-r from-[#FF1475] via-[#FF3B69] to-[#FF6079] hover:opacity-95 text-white text-[13px] font-bold tracking-wide transition-all shadow-lg shadow-[#FF1475]/25 active:scale-[0.98]"
+            className="w-full flex items-center justify-center gap-3 py-3.5 px-4 rounded-full bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] hover:brightness-105 text-black text-[13px] font-black tracking-wide transition-all shadow-lg shadow-amber-500/25 active:scale-[0.98]"
           >
             {/* Phone Icon */}
             <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">

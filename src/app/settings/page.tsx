@@ -11,7 +11,6 @@ import { DiscoveryCandidate } from "@/hooks/useDiscovery";
 import {
   User,
   Settings as SettingsIcon,
-  Users,
   ShieldCheck,
   ChevronRight,
   Plus,
@@ -20,20 +19,10 @@ import {
   Camera,
   Star,
   Zap,
-  Flame,
-  Home,
-  Ruler,
-  Briefcase,
-  GraduationCap,
-  Heart,
-  Globe,
   Music,
-  Share2,
   LogOut,
   X,
-  Check,
-  AlertCircle,
-  HelpCircle,
+  Eye,
 } from "lucide-react";
 
 export default function ProfileHubPage() {
@@ -150,18 +139,18 @@ export default function ProfileHubPage() {
 
   if (authLoading || profileLoading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0c] flex items-center justify-center text-white">
-        <div className="w-8 h-8 rounded-full border-2 border-rose-500 border-t-transparent animate-spin" />
+      <div className="min-h-screen bg-[#0c0c10] flex items-center justify-center text-white">
+        <div className="w-8 h-8 rounded-full border-2 border-[#FFC629] border-t-transparent animate-spin" />
       </div>
     );
   }
 
   if (!user || !profile) {
     return (
-      <div className="min-h-screen bg-[#0a0a0c] flex flex-col items-center justify-center p-6 text-white text-center">
+      <div className="min-h-screen bg-[#0c0c10] flex flex-col items-center justify-center p-6 text-white text-center">
         <h2 className="text-xl font-bold mb-2">Sign in to view Profile</h2>
-        <p className="text-xs text-[#9e9ea8] mb-4">Please log in to manage your TMD profile and preferences.</p>
-        <Link href="/" className="py-2.5 px-6 rounded-xl bg-rose-500 font-bold text-xs">
+        <p className="text-xs text-zinc-400 mb-4">Please log in to manage your TMD profile and preferences.</p>
+        <Link href="/" className="py-2.5 px-6 rounded-xl bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] text-black font-black text-xs">
           Go to Login
         </Link>
       </div>
@@ -211,8 +200,13 @@ export default function ProfileHubPage() {
   if (profile.anthemTitle) completedFields += 1;
   const completionPercentage = Math.min(100, Math.round((completedFields / 10) * 100));
 
+  // Circular progress math (circumference = 2 * PI * 52 = ~326.7)
+  const ringRadius = 52;
+  const ringCircumference = 2 * Math.PI * ringRadius;
+  const strokeOffset = ringCircumference - (ringCircumference * completionPercentage) / 100;
+
   return (
-    <div className="min-h-screen bg-[#0a0a0c] text-white pb-28 max-w-md mx-auto select-none">
+    <div className="min-h-screen bg-[#0c0c10] text-white pb-28 max-w-md mx-auto select-none">
       {/* Hidden Gallery Input */}
       <input
         type="file"
@@ -224,16 +218,67 @@ export default function ProfileHubPage() {
 
       {/* Toast Notification */}
       {uploadToast && (
-        <div className="fixed top-5 inset-x-4 z-50 max-w-sm mx-auto p-3 rounded-xl bg-zinc-900 border border-zinc-700 text-center text-xs font-semibold text-rose-300 shadow-2xl animate-in fade-in">
+        <div className="fixed top-5 inset-x-4 z-50 max-w-sm mx-auto p-3 rounded-xl bg-zinc-900 border border-amber-400/40 text-center text-xs font-semibold text-amber-300 shadow-2xl animate-in fade-in">
           {uploadToast}
         </div>
       )}
 
-      {/* 1. TOP HEADER (Exact Screenshot Layout) */}
+      {/* ================= 1. BUMBLE-STYLE TOP BAR ================= */}
       <div className="px-5 pt-4 pb-2 flex items-center justify-between">
-        {/* User Info & Avatar */}
-        <div className="flex items-center gap-3">
-          <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900 shadow-md shrink-0">
+        <Link
+          href="/settings/verification"
+          className="w-10 h-10 rounded-full bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700 flex items-center justify-center text-zinc-300 hover:text-white transition shadow-sm"
+          title="Safety & Verification"
+        >
+          <ShieldCheck className="w-5 h-5 text-amber-400" />
+        </Link>
+
+        <span className="text-xs font-black tracking-widest text-zinc-400 uppercase">
+          Profile
+        </span>
+
+        <button
+          type="button"
+          onClick={() => setIsSettingsDrawerOpen(true)}
+          className="w-10 h-10 rounded-full bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700 flex items-center justify-center text-zinc-300 hover:text-white transition shadow-sm"
+          title="Account Settings"
+        >
+          <SettingsIcon className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* ================= 2. BUMBLE-STYLE CENTERED AVATAR & RING ================= */}
+      <div className="pt-3 pb-5 flex flex-col items-center justify-center text-center px-4">
+        {/* Avatar with Circular Completion Ring */}
+        <div className="relative w-32 h-32 flex items-center justify-center">
+          {/* Circular SVG Ring */}
+          <svg className="w-32 h-32 transform -rotate-90 pointer-events-none" viewBox="0 0 120 120">
+            {/* Background ring track */}
+            <circle
+              cx="60"
+              cy="60"
+              r={ringRadius}
+              stroke="rgba(255, 255, 255, 0.08)"
+              strokeWidth="5"
+              fill="transparent"
+            />
+            {/* Animated Bumble Gold progress ring */}
+            <circle
+              cx="60"
+              cy="60"
+              r={ringRadius}
+              stroke="#FFC629"
+              strokeWidth="5"
+              strokeDasharray={ringCircumference}
+              strokeDashoffset={strokeOffset}
+              strokeLinecap="round"
+              fill="transparent"
+              className="transition-all duration-700 ease-out"
+            />
+          </svg>
+
+          {/* Centered Circular Photo */}
+          <div className="absolute inset-2.5 rounded-full overflow-hidden bg-zinc-900 border-2 border-zinc-950 shadow-2xl">
             {primaryPhoto ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -243,171 +288,216 @@ export default function ProfileHubPage() {
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-zinc-500">
-                <User className="w-7 h-7" />
+                <User className="w-10 h-10" />
               </div>
             )}
           </div>
 
-          <div>
-            <div className="flex items-center gap-1.5">
-              <h1 className="text-xl font-black text-white tracking-tight">
-                {profile.name}
-              </h1>
-              {user.isVerified ? (
-                <span className="w-4 h-4 rounded-full bg-blue-500 text-white flex items-center justify-center text-[10px] font-bold">
-                  ✓
-                </span>
-              ) : (
-                <Link
-                  href="/settings/verification"
-                  className="w-4 h-4 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700 flex items-center justify-center text-[9px] hover:text-white"
-                  title="Get Verified"
-                >
-                  ✓
-                </Link>
-              )}
-            </div>
-
-            {/* Preview > button that opens full profile preview */}
-            <button
-              type="button"
-              onClick={() => setIsPreviewOpen(true)}
-              className="text-xs text-zinc-400 hover:text-white flex items-center gap-0.5 mt-0.5 transition font-medium"
-            >
-              <span>Preview</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
+          {/* Bottom-right Bumble Gold Camera Upload Button */}
+          <button
+            type="button"
+            onClick={handleDirectUploadClick}
+            disabled={isUploadingPhoto}
+            className="absolute bottom-1 right-1 w-9 h-9 rounded-full bg-[#FFC629] text-black hover:bg-[#ffcf4b] flex items-center justify-center shadow-lg active:scale-90 transition border-2 border-[#0c0c10]"
+            title="Upload photo"
+          >
+            {isUploadingPhoto ? (
+              <div className="w-4 h-4 rounded-full border-2 border-black border-t-transparent animate-spin" />
+            ) : (
+              <Camera className="w-4 h-4 fill-current stroke-[2.5]" />
+            )}
+          </button>
         </div>
 
-        {/* Top Right Action Icons: Safety & Settings Gear */}
-        <div className="flex items-center gap-2.5">
+        {/* User Name & Age with Gold Verified Checkmark */}
+        <div className="mt-3 flex items-center gap-1.5 justify-center">
+          <h1 className="text-2xl font-black text-white tracking-tight">
+            {profile.name}{profile.age ? `, ${profile.age}` : ""}
+          </h1>
+          {user.isVerified ? (
+            <span
+              className="w-5 h-5 rounded-full bg-[#FFC629] text-black flex items-center justify-center text-[11px] font-black shadow-md shadow-amber-500/30"
+              title="Verified Single"
+            >
+              ✓
+            </span>
+          ) : (
+            <Link
+              href="/settings/verification"
+              className="w-5 h-5 rounded-full bg-zinc-800 text-amber-400 border border-amber-400/40 hover:border-amber-400 flex items-center justify-center text-[10px] font-bold"
+              title="Get Verified"
+            >
+              ✓
+            </Link>
+          )}
+        </div>
+
+        {/* Bumble Pill Action Buttons: Complete Profile & Preview */}
+        <div className="mt-4 flex items-center gap-2.5">
           <Link
-            href="/settings/verification"
-            className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 flex items-center justify-center text-zinc-300 hover:text-white transition shadow"
-            title="Safety & Verification"
+            href="/settings/edit-profile"
+            className="py-2.5 px-6 rounded-full bg-[#FFC629] hover:bg-[#ffcf4b] text-black text-xs font-black tracking-wide shadow-md shadow-amber-500/20 active:scale-95 transition flex items-center gap-1.5"
           >
-            <Users className="w-4 h-4" />
+            <span>Complete profile</span>
+            <span className="text-[11px] font-black opacity-80">({completionPercentage}%)</span>
           </Link>
 
           <button
             type="button"
-            onClick={() => setIsSettingsDrawerOpen(true)}
-            className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 flex items-center justify-center text-zinc-300 hover:text-white transition shadow"
-            title="Account Settings"
+            onClick={() => setIsPreviewOpen(true)}
+            className="py-2.5 px-5 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 text-white text-xs font-bold active:scale-95 transition flex items-center gap-1.5 shadow-sm"
           >
-            <SettingsIcon className="w-4 h-4" />
+            <Eye className="w-3.5 h-3.5 text-zinc-300" />
+            <span>Preview</span>
           </button>
         </div>
       </div>
 
-      <div className="px-5 py-3 space-y-5">
-        {/* 2. COMPLETE YOUR PROFILE CAPSULE */}
-        <div
-          onClick={() => openQuickEdit("ABOUT_ME")}
-          className="w-full py-2.5 px-4 rounded-full bg-[#181820] border border-zinc-800 hover:border-zinc-700 transition flex items-center justify-between cursor-pointer shadow-sm"
-        >
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded-full bg-rose-500/20 text-rose-500 flex items-center justify-center text-xs font-black">
-              !
-            </div>
-            <span className="text-xs font-bold text-zinc-200">
-              Complete your profile ({completionPercentage}%)
-            </span>
-          </div>
-          <span className="text-[11px] font-semibold text-rose-400">
-            Edit →
-          </span>
-        </div>
-
-        {/* 3. HORIZONTAL SCROLLABLE TAG PILLS */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs font-semibold text-zinc-300">
-          <button
-            type="button"
-            onClick={() => openQuickEdit("LIVING_IN")}
-            className="px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 hover:border-zinc-700 whitespace-nowrap flex items-center gap-1.5 transition active:scale-95"
-          >
-            <span>🏠 Living in</span>
-            <span className="text-zinc-500">{profile.city || "+"}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => openQuickEdit("HEIGHT")}
-            className="px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 hover:border-zinc-700 whitespace-nowrap flex items-center gap-1.5 transition active:scale-95"
-          >
-            <span>📏 Height</span>
-            <span className="text-zinc-500">{profile.height ? `${profile.height} cm` : "+"}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => openQuickEdit("JOB")}
-            className="px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 hover:border-zinc-700 whitespace-nowrap flex items-center gap-1.5 transition active:scale-95 relative"
-          >
-            <span>💼 Job</span>
-            <span className="text-zinc-500">{profile.profession || "+"}</span>
-            {!profile.profession && (
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 absolute -top-0.5 right-1" />
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => openQuickEdit("EDUCATION")}
-            className="px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 hover:border-zinc-700 whitespace-nowrap flex items-center gap-1.5 transition active:scale-95"
-          >
-            <span>🎓 Education</span>
-            <span className="text-zinc-500">{profile.education || "+"}</span>
-          </button>
-
-          <Link
-            href="/settings/edit-profile"
-            className="px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 hover:border-zinc-700 whitespace-nowrap flex items-center gap-1.5 transition active:scale-95"
-          >
-            <span>Basics +</span>
-          </Link>
-
-          <Link
-            href="/settings/edit-profile"
-            className="px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 hover:border-zinc-700 whitespace-nowrap flex items-center gap-1.5 transition active:scale-95"
-          >
-            <span>🍸 Lifestyle +</span>
-          </Link>
-
-          <Link
-            href="/settings/edit-profile"
-            className="px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 hover:border-zinc-700 whitespace-nowrap flex items-center gap-1.5 transition active:scale-95"
-          >
-            <span>文 Languages +</span>
-          </Link>
-        </div>
-
-        {/* 4. MY PHOTOS SECTION (Matches Screenshot 1) */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <h3 className="font-extrabold text-base text-white">My Photos</h3>
-              {photos.length < 6 && (
-                <span className="w-4 h-4 rounded-full bg-rose-500 text-white flex items-center justify-center text-[10px] font-black">
-                  !
+      {/* ================= 3. BUMBLE SPOTLIGHT & GOLD SECTION ================= */}
+      <div className="px-5 space-y-4">
+        {/* TMD Gold Membership Banner */}
+        <Link href="/plan" className="block">
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-[#D4AF37] via-[#FFC629] to-[#E5B824] text-black shadow-lg shadow-amber-500/15 flex items-center justify-between transition hover:brightness-105 active:scale-[0.99]">
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-1.5">
+                <span className="font-black text-lg tracking-wider">TMD</span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-black text-[#FFC629] uppercase">
+                  Gold
                 </span>
-              )}
+              </div>
+              <p className="text-xs font-bold text-zinc-950">
+                See who Likes you · Unlimited Super Likes · Priority matching
+              </p>
             </div>
-            {photos.length < 6 && (
-              <span className="text-xs font-semibold text-rose-500">
-                Add {6 - photos.length} more {6 - photos.length === 1 ? "photo" : "photos"}
+            <div className="w-8 h-8 rounded-full bg-black text-[#FFC629] flex items-center justify-center shrink-0 shadow">
+              <ChevronRight className="w-4 h-4 stroke-[3]" />
+            </div>
+          </div>
+        </Link>
+
+        {/* 2 Side-by-Side Bumble Spotlight & Super Like Cards */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* Spotlight Card */}
+          <Link
+            href="/plan"
+            className="p-3.5 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-amber-400/40 transition group flex flex-col justify-between min-h-[96px] active:scale-[0.98]"
+          >
+            <div className="flex items-center justify-between">
+              <div className="w-8 h-8 rounded-full bg-amber-400/15 text-[#FFC629] flex items-center justify-center">
+                <Zap className="w-4 h-4 fill-[#FFC629]" />
+              </div>
+              <span className="text-[10px] font-black text-amber-400 uppercase tracking-wider">
+                Boost
               </span>
-            )}
+            </div>
+            <div>
+              <h4 className="text-xs font-extrabold text-white group-hover:text-amber-300 transition">
+                Spotlight
+              </h4>
+              <p className="text-[11px] text-zinc-400">
+                Get up to 3x more views
+              </p>
+            </div>
+          </Link>
+
+          {/* Super Like Card */}
+          <Link
+            href="/plan"
+            className="p-3.5 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-amber-400/40 transition group flex flex-col justify-between min-h-[96px] active:scale-[0.98]"
+          >
+            <div className="flex items-center justify-between">
+              <div className="w-8 h-8 rounded-full bg-amber-400/15 text-[#FFC629] flex items-center justify-center">
+                <Star className="w-4 h-4 fill-[#FFC629]" />
+              </div>
+              <span className="text-[10px] font-black text-amber-400 uppercase tracking-wider">
+                Stand out
+              </span>
+            </div>
+            <div>
+              <h4 className="text-xs font-extrabold text-white group-hover:text-amber-300 transition">
+                Super Like
+              </h4>
+              <p className="text-[11px] text-zinc-400">
+                Notify them instantly
+              </p>
+            </div>
+          </Link>
+        </div>
+
+        {/* ================= 4. HORIZONTAL QUICK BASICS PILLS ================= */}
+        <div className="space-y-1.5 pt-1">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-zinc-400">My Basics</span>
+            <Link
+              href="/settings/edit-profile"
+              className="text-xs font-bold text-[#FFC629] hover:underline"
+            >
+              Edit all
+            </Link>
+          </div>
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs font-semibold text-zinc-300">
+            <button
+              type="button"
+              onClick={() => openQuickEdit("LIVING_IN")}
+              className="px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 hover:border-amber-400/40 whitespace-nowrap flex items-center gap-1.5 transition active:scale-95"
+            >
+              <span>🏠 Living in</span>
+              <span className="text-amber-400">{profile.city || "+ Add"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => openQuickEdit("HEIGHT")}
+              className="px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 hover:border-amber-400/40 whitespace-nowrap flex items-center gap-1.5 transition active:scale-95"
+            >
+              <span>📏 Height</span>
+              <span className="text-amber-400">{profile.height ? `${profile.height} cm` : "+ Add"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => openQuickEdit("JOB")}
+              className="px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 hover:border-amber-400/40 whitespace-nowrap flex items-center gap-1.5 transition active:scale-95"
+            >
+              <span>💼 Work</span>
+              <span className="text-amber-400">{profile.profession || "+ Add"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => openQuickEdit("EDUCATION")}
+              className="px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 hover:border-amber-400/40 whitespace-nowrap flex items-center gap-1.5 transition active:scale-95"
+            >
+              <span>🎓 Education</span>
+              <span className="text-amber-400">{profile.education || "+ Add"}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* ================= 5. MY PHOTOS (6 SLOTS) ================= */}
+        <div className="space-y-2 pt-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <h3 className="font-extrabold text-sm text-white">My Photos</h3>
+              <span className="text-xs font-bold text-amber-400">
+                {photos.length}/6
+              </span>
+            </div>
+            <Link
+              href="/settings/photos"
+              className="py-1 px-3.5 rounded-full bg-zinc-900 border border-zinc-700 hover:border-amber-400 text-[#FFC629] text-xs font-bold transition active:scale-95"
+            >
+              Manage
+            </Link>
           </div>
 
-          {/* 6 Photo Slots Row */}
+          {/* 6 Photo Slots Grid */}
           <div className="grid grid-cols-6 gap-2">
             {photoSlots.map((photo, idx) => (
               <div
                 key={idx}
                 onClick={photo ? () => router.push("/settings/photos") : handleDirectUploadClick}
-                className="relative aspect-[3/4] rounded-xl overflow-hidden bg-[#16161c] border border-zinc-800 hover:border-zinc-600 transition cursor-pointer flex items-center justify-center group"
+                className="relative aspect-[3/4] rounded-xl overflow-hidden bg-[#16161c] border border-zinc-800 hover:border-amber-400/50 transition cursor-pointer flex items-center justify-center group"
               >
                 {photo ? (
                   <>
@@ -418,209 +508,111 @@ export default function ProfileHubPage() {
                       className="w-full h-full object-cover"
                     />
                     {photo.isPrimary && (
-                      <span className="absolute bottom-1 left-1 px-1 rounded bg-black/70 text-[9px] font-bold text-white">
+                      <span className="absolute bottom-1 left-1 px-1 rounded bg-[#FFC629] text-[9px] font-black text-black">
                         ★
                       </span>
                     )}
                   </>
                 ) : (
-                  <div className="flex flex-col items-center justify-center text-zinc-500 group-hover:text-white transition">
+                  <div className="flex flex-col items-center justify-center text-zinc-500 group-hover:text-amber-400 transition">
                     <Plus className="w-5 h-5 stroke-[2.5]" />
                   </div>
                 )}
               </div>
             ))}
           </div>
-
-          {/* Bottom hint & Edit button */}
-          <div className="flex items-center justify-between pt-1">
-            <p className="text-xs text-zinc-400">
-              Get up to 2x more Likes with 6 pics.
-            </p>
-            <Link
-              href="/settings/photos"
-              className="py-1 px-4 rounded-full bg-white text-black hover:bg-zinc-200 text-xs font-bold transition active:scale-95 shadow"
-            >
-              Edit
-            </Link>
-          </div>
         </div>
 
-        {/* 5. MY PROMPTS SECTION (Matches Screenshot 1) */}
-        <div className="space-y-2">
+        {/* ================= 6. BUMBLE PROMPT & BIO CARDS ================= */}
+        <div className="space-y-2 pt-1">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <h3 className="font-extrabold text-base text-white">My Prompts</h3>
-              <span className="w-4 h-4 rounded-full bg-rose-500 text-white flex items-center justify-center text-[10px] font-black">
-                !
-              </span>
-            </div>
-            <span className="text-xs font-semibold text-rose-500">
-              Add 2 more prompts
-            </span>
+            <h3 className="font-extrabold text-sm text-white">Profile Prompts</h3>
+            <span className="text-xs font-bold text-zinc-400">Stand out</span>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             {/* Card 1: About me */}
             <div
               onClick={() => openQuickEdit("ABOUT_ME")}
-              className="relative p-4 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-zinc-700 transition cursor-pointer space-y-2 flex flex-col justify-between min-h-[110px]"
+              className="relative p-4 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-amber-400/40 transition cursor-pointer space-y-2 flex flex-col justify-between min-h-[110px]"
             >
-              <button
-                type="button"
-                className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-zinc-800 text-zinc-300 hover:text-white flex items-center justify-center"
-              >
-                <Plus className="w-3.5 h-3.5" />
-              </button>
-              <div className="space-y-1">
-                <span className="text-xl font-serif text-zinc-400">❝</span>
-                <h4 className="font-bold text-sm text-white">About me</h4>
+              <div className="flex items-center justify-between">
+                <span className="text-xl font-serif text-[#FFC629]">❝</span>
+                <span className="w-6 h-6 rounded-full bg-zinc-800 text-zinc-300 hover:text-white flex items-center justify-center">
+                  <Edit2 className="w-3 h-3 text-amber-400" />
+                </span>
               </div>
-              <p className="text-xs text-zinc-400 line-clamp-2">
-                {profile.bio || "Write something interesting about yourself..."}
-              </p>
+              <div className="space-y-1">
+                <h4 className="font-bold text-xs text-white">About me</h4>
+                <p className="text-[11px] text-zinc-400 line-clamp-3">
+                  {profile.bio || "Write something interesting about yourself..."}
+                </p>
+              </div>
             </div>
 
             {/* Card 2: Select a prompt */}
             <div
               onClick={() => openQuickEdit("PROMPT")}
-              className="relative p-4 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-zinc-700 transition cursor-pointer space-y-2 flex flex-col justify-between min-h-[110px]"
+              className="relative p-4 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-amber-400/40 transition cursor-pointer space-y-2 flex flex-col justify-between min-h-[110px]"
             >
-              <button
-                type="button"
-                className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-zinc-800 text-zinc-300 hover:text-white flex items-center justify-center"
-              >
-                <Plus className="w-3.5 h-3.5" />
-              </button>
-              <div className="space-y-1">
-                <span className="text-xl font-serif text-zinc-400">❝</span>
-                <h4 className="font-bold text-sm text-white">
-                  {profile.promptQuestion ? "My Prompt" : "Select a prompt"}
-                </h4>
+              <div className="flex items-center justify-between">
+                <span className="text-xl font-serif text-[#FFC629]">❝</span>
+                <span className="w-6 h-6 rounded-full bg-zinc-800 text-zinc-300 hover:text-white flex items-center justify-center">
+                  <Edit2 className="w-3 h-3 text-amber-400" />
+                </span>
               </div>
-              <p className="text-xs text-zinc-400 line-clamp-2">
-                {profile.promptAnswer || "Answer a fun prompt to stand out..."}
-              </p>
+              <div className="space-y-1">
+                <h4 className="font-bold text-xs text-white truncate">
+                  {profile.promptQuestion || "Prompt"}
+                </h4>
+                <p className="text-[11px] text-zinc-400 line-clamp-3">
+                  {profile.promptAnswer || "Answer a fun prompt to stand out..."}
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* 6. MY INTERESTS SECTION (Matches Screenshot 2) */}
-        <div className="space-y-2">
-          <h3 className="font-extrabold text-base text-white">My Interests</h3>
-
+        {/* ================= 7. INTERESTS & SPOTIFY ================= */}
+        <div className="space-y-2 pt-1">
           <div className="grid grid-cols-2 gap-3">
-            {/* Card 1: Currently Into */}
+            {/* Interests Card */}
             <Link
               href="/settings/edit-profile"
-              className="relative p-4 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-zinc-700 transition space-y-2 flex flex-col justify-between min-h-[110px]"
+              className="p-3.5 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-zinc-700 transition flex flex-col justify-between min-h-[96px]"
             >
-              <div className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-zinc-800 text-zinc-300 flex items-center justify-center">
-                <Plus className="w-3.5 h-3.5" />
-              </div>
-              <div className="text-2xl">🛼</div>
+              <div className="text-xl">✨</div>
               <div>
-                <h4 className="font-bold text-xs text-white">Currently Into</h4>
+                <h4 className="font-bold text-xs text-white">Interests</h4>
                 <p className="text-[11px] text-zinc-400 truncate">
                   {profile.interests?.length > 0
                     ? profile.interests.map((i) => i.interest.name).join(", ")
-                    : "Choose Interests"}
+                    : "Add your passions"}
                 </p>
               </div>
             </Link>
 
-            {/* Card 2: Listening to (Spotify Anthem) */}
+            {/* Spotify Anthem */}
             <div
               onClick={() => openQuickEdit("ANTHEM")}
-              className="relative p-4 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-zinc-700 transition cursor-pointer space-y-2 flex flex-col justify-between min-h-[110px]"
+              className="p-3.5 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-zinc-700 transition cursor-pointer flex flex-col justify-between min-h-[96px]"
             >
-              <div className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-zinc-800 text-zinc-300 flex items-center justify-center">
-                <Plus className="w-3.5 h-3.5" />
+              <div className="flex items-center gap-1 text-emerald-400">
+                <Music className="w-4 h-4" />
+                <span className="text-[10px] font-bold text-[#1DB954]">Spotify</span>
               </div>
-              <div className="text-2xl text-emerald-400">🎵</div>
               <div>
-                <h4 className="font-bold text-xs text-white">Listening to</h4>
-                <div className="flex items-center gap-1 text-[11px] text-zinc-400 truncate">
-                  <span className="text-[#1DB954]">●</span>
-                  <span className="truncate">{profile.anthemTitle || "Choose Songs"}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 3: Top Artists */}
-            <div
-              onClick={() => openQuickEdit("ANTHEM")}
-              className="relative p-4 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-zinc-700 transition cursor-pointer space-y-2 flex flex-col justify-between min-h-[110px]"
-            >
-              <div className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-zinc-800 text-zinc-300 flex items-center justify-center">
-                <Plus className="w-3.5 h-3.5" />
-              </div>
-              <div className="text-2xl text-sky-400">🎧</div>
-              <div>
-                <h4 className="font-bold text-xs text-white">Top artists</h4>
-                <div className="flex items-center gap-1 text-[11px] text-zinc-400 truncate">
-                  <span className="text-[#1DB954]">●</span>
-                  <span>{profile.anthemArtist || "Connect Spotify"}</span>
-                </div>
+                <h4 className="font-bold text-xs text-white truncate">My Anthem</h4>
+                <p className="text-[11px] text-zinc-400 truncate">
+                  {profile.anthemTitle || "Choose a song"}
+                </p>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* 7. MORE PROFILE CONTROLS BUTTON */}
-        <button
-          type="button"
-          onClick={() => setIsSettingsDrawerOpen(true)}
-          className="w-full py-3.5 px-4 rounded-2xl bg-[#15151c] hover:bg-zinc-800 text-zinc-300 font-bold text-xs transition flex items-center justify-between border border-zinc-800"
-        >
-          <span>More Profile Controls</span>
-          <ChevronRight className="w-4 h-4 text-zinc-500" />
-        </button>
-
-        {/* 8. GOLD / PRO BANNER (Exact Screenshot Styling) */}
-        <Link href="/plan" className="block">
-          <div className="p-4 rounded-2xl bg-gradient-to-r from-[#d4af37] via-[#f3e5ab] to-[#aa771c] text-black shadow-lg shadow-amber-900/20 flex items-center justify-between transition hover:opacity-95 active:scale-[0.99]">
-            <div className="space-y-0.5">
-              <div className="flex items-center gap-1.5">
-                <span className="font-black text-lg tracking-wider">TMD</span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-black bg-black text-amber-300">
-                  GOLD
-                </span>
-              </div>
-              <p className="text-xs font-semibold text-zinc-900">
-                See who Likes you. Match faster.
-              </p>
-            </div>
-            <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center shrink-0">
-              <ChevronRight className="w-4 h-4 stroke-[3]" />
-            </div>
-          </div>
-        </Link>
-
-        {/* 9. QUICK ACTION CAPSULE BAR */}
-        <div className="py-2.5 px-4 rounded-full bg-[#181822] border border-zinc-800 flex items-center justify-around text-xs font-bold text-zinc-300">
-          <Link href="/plan" className="flex items-center gap-1.5 hover:text-white transition">
-            <Star className="w-3.5 h-3.5 text-blue-400 fill-blue-400" />
-            <span>0 Super Likes</span>
-          </Link>
-
-          <span className="text-zinc-700">|</span>
-
-          <Link href="/plan" className="flex items-center gap-1.5 hover:text-white transition">
-            <Zap className="w-3.5 h-3.5 text-purple-400 fill-purple-400" />
-            <span>1 Boost</span>
-          </Link>
-
-          <span className="text-zinc-700">|</span>
-
-          <Link href="/plan" className="flex items-center gap-1.5 hover:text-white transition">
-            <Flame className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
-            <span>Subscriptions</span>
-          </Link>
         </div>
       </div>
 
-      {/* QUICK DETAIL EDIT MODAL */}
+      {/* ================= QUICK DETAIL EDIT MODAL ================= */}
       {activeQuickEdit && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-md bg-[#121217] border border-zinc-800 rounded-t-3xl sm:rounded-3xl p-5 text-white space-y-4">
@@ -628,9 +620,9 @@ export default function ProfileHubPage() {
               <h3 className="font-bold text-sm text-white">
                 {activeQuickEdit === "LIVING_IN" && "Edit City / Location"}
                 {activeQuickEdit === "HEIGHT" && "Edit Height (cm)"}
-                {activeQuickEdit === "JOB" && "Edit Profession / Job"}
+                {activeQuickEdit === "JOB" && "Edit Profession / Work"}
                 {activeQuickEdit === "EDUCATION" && "Edit Education"}
-                {activeQuickEdit === "ABOUT_ME" && "Edit About Me (Bio)"}
+                {activeQuickEdit === "ABOUT_ME" && "Edit About Me"}
                 {activeQuickEdit === "PROMPT" && "Edit Prompt & Answer"}
                 {activeQuickEdit === "ANTHEM" && "Choose Spotify Anthem"}
               </h3>
@@ -649,7 +641,7 @@ export default function ProfileHubPage() {
                 onChange={(e) => setQuickInputVal(e.target.value)}
                 placeholder="Write about yourself..."
                 rows={4}
-                className="w-full p-3 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-rose-500"
+                className="w-full p-3 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#FFC629]"
               />
             ) : activeQuickEdit === "PROMPT" ? (
               <div className="space-y-3">
@@ -662,7 +654,7 @@ export default function ProfileHubPage() {
                     value={quickInputVal}
                     onChange={(e) => setQuickInputVal(e.target.value)}
                     placeholder="e.g. I feel happiest when..."
-                    className="w-full p-2.5 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-rose-500"
+                    className="w-full p-2.5 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#FFC629]"
                   />
                 </div>
                 <div>
@@ -674,7 +666,7 @@ export default function ProfileHubPage() {
                     onChange={(e) => setPromptAnswerVal(e.target.value)}
                     placeholder="e.g. I'm around dogs and away from drama."
                     rows={3}
-                    className="w-full p-2.5 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-rose-500"
+                    className="w-full p-2.5 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#FFC629]"
                   />
                 </div>
               </div>
@@ -684,7 +676,7 @@ export default function ProfileHubPage() {
                 value={quickInputVal}
                 onChange={(e) => setQuickInputVal(e.target.value)}
                 placeholder="Enter value..."
-                className="w-full p-3 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-rose-500"
+                className="w-full p-3 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#FFC629]"
               />
             )}
 
@@ -692,7 +684,7 @@ export default function ProfileHubPage() {
               type="button"
               onClick={handleSaveQuickEdit}
               disabled={isSaving}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 text-white font-bold text-xs transition hover:opacity-95 disabled:opacity-50"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] text-black font-extrabold text-xs transition hover:brightness-105 disabled:opacity-50"
             >
               {isSaving ? "Saving..." : "Save Changes"}
             </button>
@@ -700,7 +692,7 @@ export default function ProfileHubPage() {
         </div>
       )}
 
-      {/* FULL ACCOUNT SETTINGS DRAWER / MODAL */}
+      {/* ================= FULL ACCOUNT SETTINGS DRAWER ================= */}
       {isSettingsDrawerOpen && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-md bg-[#121217] border border-zinc-800 rounded-t-3xl sm:rounded-3xl p-5 text-white space-y-4 max-h-[85vh] overflow-y-auto">
@@ -721,7 +713,7 @@ export default function ProfileHubPage() {
                 className="flex items-center justify-between p-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-xs font-semibold text-white transition"
               >
                 <div className="flex items-center gap-3">
-                  <User className="w-4 h-4 text-rose-500" />
+                  <User className="w-4 h-4 text-amber-400" />
                   <span>Full Profile Editor</span>
                 </div>
                 <ChevronRight className="w-4 h-4 text-zinc-500" />
@@ -732,7 +724,7 @@ export default function ProfileHubPage() {
                 className="flex items-center justify-between p-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-xs font-semibold text-white transition"
               >
                 <div className="flex items-center gap-3">
-                  <Camera className="w-4 h-4 text-rose-500" />
+                  <Camera className="w-4 h-4 text-amber-400" />
                   <span>Manage 6 Photos</span>
                 </div>
                 <ChevronRight className="w-4 h-4 text-zinc-500" />
@@ -743,8 +735,8 @@ export default function ProfileHubPage() {
                 className="flex items-center justify-between p-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-xs font-semibold text-white transition"
               >
                 <div className="flex items-center gap-3">
-                  <ShieldCheck className="w-4 h-4 text-blue-400" />
-                  <span>Face Verification & Blue Tick</span>
+                  <ShieldCheck className="w-4 h-4 text-amber-400" />
+                  <span>Face Verification & Verified Badge</span>
                 </div>
                 <ChevronRight className="w-4 h-4 text-zinc-500" />
               </Link>
@@ -764,7 +756,7 @@ export default function ProfileHubPage() {
             <button
               type="button"
               onClick={handleLogout}
-              className="w-full mt-4 py-3 rounded-xl bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 font-bold text-xs flex items-center justify-center gap-2 border border-rose-500/20 transition"
+              className="w-full mt-4 py-3 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 font-bold text-xs flex items-center justify-center gap-2 border border-red-500/20 transition"
             >
               <LogOut className="w-4 h-4" />
               <span>Log Out</span>
@@ -773,7 +765,7 @@ export default function ProfileHubPage() {
         </div>
       )}
 
-      {/* LIVE PROFILE PREVIEW SHEET (What other users see!) */}
+      {/* ================= LIVE PROFILE PREVIEW SHEET ================= */}
       <ProfileDetailSheet
         candidate={userCandidateView}
         isOpen={isPreviewOpen}

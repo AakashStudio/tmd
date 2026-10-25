@@ -31,7 +31,7 @@ export const BottomNav: React.FC = () => {
               key={item.label}
               href={item.href}
               className={`flex flex-col items-center justify-center flex-1 py-1 transition-colors select-none ${
-                isActive ? "text-[#ff1475]" : "text-[#7a7a88] hover:text-white"
+                isActive ? "text-[#F59E0B]" : "text-[#7a7a88] hover:text-white"
               }`}
             >
               <Icon

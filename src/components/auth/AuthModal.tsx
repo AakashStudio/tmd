@@ -174,7 +174,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
         {/* TMD Tiny Brand Pill */}
         <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 border border-white/10 text-[11px] font-bold text-zinc-400">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#ff1475]" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#FFC629]" />
           <span>TMD SECURE</span>
         </div>
       </div>
@@ -196,7 +196,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
             {/* Premium Underlined Phone Input with IN Country Pill */}
             <div className="pt-4">
-              <div className="flex items-center gap-3 pb-3 border-b-2 border-zinc-700 focus-within:border-[#ff1475] transition-colors">
+              <div className="flex items-center gap-3 pb-3 border-b-2 border-zinc-700 focus-within:border-[#FFC629] transition-colors">
                 {/* Country Code Pill */}
                 <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-bold text-zinc-200 select-none shrink-0 shadow-sm">
                   <span>🇮🇳 IN</span>
@@ -224,7 +224,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setPhoneNumber("7566548512")}
-                  className="text-[11px] font-bold text-[#ff6b8b] hover:text-[#ff1475] flex items-center gap-1 underline underline-offset-2 transition"
+                  className="text-[11px] font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 underline underline-offset-2 transition"
                 >
                   <Sparkles className="w-3 h-3" /> Fill 7566548512
                 </button>
@@ -268,7 +268,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     setOtp(["", "", "", "", "", ""]);
                     setError(null);
                   }}
-                  className="text-[#ff1475] hover:text-[#ff4088] font-bold underline underline-offset-2 transition"
+                  className="text-amber-400 hover:text-amber-300 font-bold underline underline-offset-2 transition"
                 >
                   Edit number
                 </button>
@@ -294,8 +294,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     disabled={isLoading}
                     className={`w-12 h-14 text-center text-2xl font-black rounded-xl border transition-all ${
                       otp[index]
-                        ? "border-[#ff1475] bg-[#ff1475]/10 text-white shadow-[0_0_15px_rgba(255,20,117,0.35)]"
-                        : "border-zinc-800 bg-zinc-900/90 text-white focus:border-[#ff1475] focus:bg-zinc-900"
+                        ? "border-[#FFC629] bg-amber-400/10 text-white shadow-[0_0_15px_rgba(255,198,41,0.35)]"
+                        : "border-zinc-800 bg-zinc-900/90 text-white focus:border-[#FFC629] focus:bg-zinc-900"
                     } outline-none`}
                   />
                 ))}
@@ -341,7 +341,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   type="button"
                   onClick={() => handleSendOtp()}
                   disabled={isLoading}
-                  className="text-xs text-[#ff1475] hover:text-[#ff4088] font-bold underline underline-offset-4 transition"
+                  className="text-xs text-amber-400 hover:text-amber-300 font-bold underline underline-offset-4 transition"
                 >
                   Didn&apos;t get a code? Resend
                 </button>
@@ -360,7 +360,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             disabled={!isPhoneValid || isLoading}
             className={`w-full py-4 px-6 rounded-full font-black text-sm tracking-wide transition-all shadow-xl active:scale-[0.98] ${
               isPhoneValid && !isLoading
-                ? "bg-gradient-to-r from-[#FF1475] via-[#FF3B69] to-[#FF6079] text-white shadow-[#FF1475]/35 hover:opacity-95 cursor-pointer"
+                ? "bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] text-black font-extrabold shadow-amber-500/35 hover:brightness-105 cursor-pointer"
                 : "bg-zinc-800 text-zinc-500 cursor-not-allowed"
             }`}
           >
@@ -373,7 +373,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             disabled={!isOtpValid || isLoading}
             className={`w-full py-4 px-6 rounded-full font-black text-sm tracking-wide transition-all shadow-xl active:scale-[0.98] ${
               isOtpValid && !isLoading
-                ? "bg-gradient-to-r from-[#FF1475] via-[#FF3B69] to-[#FF6079] text-white shadow-[#FF1475]/35 hover:opacity-95 cursor-pointer"
+                ? "bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] text-black font-extrabold shadow-amber-500/35 hover:brightness-105 cursor-pointer"
                 : "bg-zinc-800 text-zinc-500 cursor-not-allowed"
             }`}
           >
