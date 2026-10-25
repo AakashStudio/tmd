@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
@@ -21,7 +21,49 @@ import {
   LogOut,
   X,
   Eye,
+  Check,
 } from "lucide-react";
+
+const POPULAR_MOODS = [
+  "☕ Looking for coffee & deep talks",
+  "🍕 Casual dinner, good food & chill",
+  "🏔️ Spontaneous outdoor adventure",
+  "🍸 Nightlife, drinks & partying",
+  "🎬 Movie marathon & chill popcorn",
+  "🛋️ Cozy, low-key conversations",
+  "🏃 Workout or morning run buddy",
+  "🎨 Art gallery, museum & exhibitions",
+  "🏎️ Late night drive & chai tapri",
+  "🤍 Looking for something real & long-term",
+  "✨ Just exploring & meeting fun people",
+  "📚 Bookstore hopping & quiet vibes",
+];
+
+const POPULAR_MUSIC_TAGS = [
+  "🎧 Bollywood",
+  "🪕 Punjabi Pop",
+  "🎤 Hip Hop / Rap",
+  "🎹 Lo-Fi Beats",
+  "🎶 Indie Pop",
+  "🪘 Acoustic / Unplugged",
+  "💖 Romantic Melodies",
+  "🎸 Rock / Classic Rock",
+  "🎛️ EDM & House",
+  "🕯️ Sufi & Ghazal",
+  "🕺 Techno & Rave",
+  "🌟 K-Pop",
+  "🥁 R&B / Soul",
+  "🎷 Jazz & Blues",
+  "📻 Old Retro Classics",
+  "⚡ Heavy Metal",
+  "🌍 International Pop",
+  "🎼 Classical & Instrumental",
+  "🕊️ Devotional & Spiritual",
+  "🏖️ Reggae & Chill",
+  "🌸 Gujarati Beats",
+  "🎙️ Bhojpuri Hits",
+  "🎻 South Indian Hits",
+];
 
 export default function ProfileHubPage() {
   const router = useRouter();
@@ -31,16 +73,34 @@ export default function ProfileHubPage() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isSettingsDrawerOpen, setIsSettingsDrawerOpen] = useState(false);
   const [activeQuickEdit, setActiveQuickEdit] = useState<
-    "LIVING_IN" | "HEIGHT" | "JOB" | "EDUCATION" | "ABOUT_ME" | "PROMPT" | "ANTHEM" | null
+    "LIVING_IN" | "HEIGHT" | "JOB" | "EDUCATION" | "ABOUT_ME" | "MOOD" | "INTERESTS" | "MUSIC" | null
   >(null);
 
   const [quickInputVal, setQuickInputVal] = useState("");
-  const [promptAnswerVal, setPromptAnswerVal] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [uploadToast, setUploadToast] = useState<string | null>(null);
 
+  // Selected tags for Interests and Music
+  const [selectedInterestIds, setSelectedInterestIds] = useState<string[]>([]);
+  const [availableInterests, setAvailableInterests] = useState<
+    Array<{ id: string; name: string; icon?: string | null; category?: string | null }>
+  >([]);
+  const [selectedMusicList, setSelectedMusicList] = useState<string[]>([]);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch all catalog interests once on mount
+  useEffect(() => {
+    fetch("/api/catalogs")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.interests?.length) {
+          setAvailableInterests(data.interests);
+        }
+      })
+      .catch((err) => console.error("Failed to load catalog interests:", err));
+  }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -89,7 +149,7 @@ export default function ProfileHubPage() {
   };
 
   const openQuickEdit = (
-    type: "LIVING_IN" | "HEIGHT" | "JOB" | "EDUCATION" | "ABOUT_ME" | "PROMPT" | "ANTHEM"
+    type: "LIVING_IN" | "HEIGHT" | "JOB" | "EDUCATION" | "ABOUT_ME" | "MOOD" | "INTERESTS" | "MUSIC"
   ) => {
     setActiveQuickEdit(type);
     if (!profile) return;
@@ -98,12 +158,43 @@ export default function ProfileHubPage() {
     if (type === "JOB") setQuickInputVal(profile.profession || "");
     if (type === "EDUCATION") setQuickInputVal(profile.education || "");
     if (type === "ABOUT_ME") setQuickInputVal(profile.bio || "");
-    if (type === "PROMPT") {
-      setQuickInputVal(profile.promptQuestion || "I feel happiest when...");
-      setPromptAnswerVal(profile.promptAnswer || "");
+    if (type === "MOOD") {
+      setQuickInputVal(profile.promptAnswer || "");
     }
-    if (type === "ANTHEM") {
-      setQuickInputVal(profile.anthemTitle || 'Tum Ho Toh (From "Saiyaara")');
+    if (type === "INTERESTS") {
+      const currentIds = (profile.interests || []).map((pi) => pi.interest.id);
+      setSelectedInterestIds(currentIds.slice(0, 5));
+    }
+    if (type === "MUSIC") {
+      const currentMusicStr = profile.anthemTitle || "";
+      const parsed = currentMusicStr
+        ? currentMusicStr.split(",").map((s) => s.trim()).filter(Boolean)
+        : [];
+      setSelectedMusicList(parsed.slice(0, 5));
+    }
+  };
+
+  const toggleInterest = (id: string) => {
+    if (selectedInterestIds.includes(id)) {
+      setSelectedInterestIds((prev) => prev.filter((i) => i !== id));
+    } else {
+      if (selectedInterestIds.length >= 5) {
+        alert("You can select up to 5 interests maximum.");
+        return;
+      }
+      setSelectedInterestIds((prev) => [...prev, id]);
+    }
+  };
+
+  const toggleMusic = (tag: string) => {
+    if (selectedMusicList.includes(tag)) {
+      setSelectedMusicList((prev) => prev.filter((m) => m !== tag));
+    } else {
+      if (selectedMusicList.length >= 5) {
+        alert("You can select up to 5 music styles maximum.");
+        return;
+      }
+      setSelectedMusicList((prev) => [...prev, tag]);
     }
   };
 
@@ -117,16 +208,31 @@ export default function ProfileHubPage() {
       if (activeQuickEdit === "JOB") updates.profession = quickInputVal.trim() || null;
       if (activeQuickEdit === "EDUCATION") updates.education = quickInputVal.trim() || null;
       if (activeQuickEdit === "ABOUT_ME") updates.bio = quickInputVal.trim() || null;
-      if (activeQuickEdit === "PROMPT") {
-        updates.promptQuestion = quickInputVal.trim();
-        updates.promptAnswer = promptAnswerVal.trim();
+      if (activeQuickEdit === "MOOD") {
+        updates.promptQuestion = "My Mood";
+        updates.promptAnswer = quickInputVal.trim();
       }
-      if (activeQuickEdit === "ANTHEM") {
-        updates.anthemTitle = quickInputVal.trim();
-        updates.anthemArtist = "Spotify";
+      if (activeQuickEdit === "INTERESTS") {
+        updates.interestIds = selectedInterestIds;
+      }
+      if (activeQuickEdit === "MUSIC") {
+        updates.anthemTitle = selectedMusicList.join(", ");
+        updates.anthemArtist = "Music";
       }
 
       await updateProfile(updates);
+      setUploadToast(
+        activeQuickEdit === "ABOUT_ME"
+          ? "About Me saved! ✨"
+          : activeQuickEdit === "MOOD"
+          ? "Mood updated! ✨"
+          : activeQuickEdit === "INTERESTS"
+          ? "Interests updated! ✨"
+          : activeQuickEdit === "MUSIC"
+          ? "Music updated! ✨"
+          : "Saved successfully!"
+      );
+      setTimeout(() => setUploadToast(null), 3000);
       setActiveQuickEdit(null);
     } catch (err: any) {
       alert(err.message || "Failed to update detail");
@@ -179,11 +285,11 @@ export default function ProfileHubPage() {
       order: p.order,
     })),
     interests: profile.interests.map((pi) => pi.interest),
-    promptQuestion: profile.promptQuestion || "I feel happiest when...",
-    promptAnswer: profile.promptAnswer || "I'm around dogs and away from drama.",
-    anthemTitle: profile.anthemTitle || 'Tum Ho Toh (From "Saiyaara")',
-    anthemArtist: profile.anthemArtist || "Vishal Mishra · Spotify",
-    anthemCoverUrl: profile.anthemCoverUrl || "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200",
+    promptQuestion: profile.promptQuestion || "My Mood",
+    promptAnswer: profile.promptAnswer || "Looking for coffee & good conversations ☕",
+    anthemTitle: profile.anthemTitle || "Bollywood, Lo-Fi, Indie",
+    anthemArtist: "Music",
+    anthemCoverUrl: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200",
   };
 
   // Completion calculation
@@ -351,6 +457,7 @@ export default function ProfileHubPage() {
         </div>
       </div>
 
+      {/* ================= 3. PROFILE CONTENT ================= */}
       <div className="px-5 space-y-4">
         {/* ================= MY BASICS ================= */}
         <div className="space-y-1.5 pt-1">
@@ -402,7 +509,7 @@ export default function ProfileHubPage() {
           </div>
         </div>
 
-        {/* ================= 5. MY PHOTOS (6 SLOTS) ================= */}
+        {/* ================= 4. MY PHOTOS (6 SLOTS) ================= */}
         <div className="space-y-2 pt-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -451,7 +558,7 @@ export default function ProfileHubPage() {
           </div>
         </div>
 
-        {/* ================= 6. BUMBLE PROMPT & BIO CARDS ================= */}
+        {/* ================= 5. ABOUT ME & MY MOOD ================= */}
         <div className="space-y-2 pt-1">
           <div className="flex items-center justify-between">
             <h3 className="font-extrabold text-sm text-white">Profile Prompts</h3>
@@ -462,7 +569,7 @@ export default function ProfileHubPage() {
             {/* Card 1: About me */}
             <div
               onClick={() => openQuickEdit("ABOUT_ME")}
-              className="relative p-4 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-amber-400/40 transition cursor-pointer space-y-2 flex flex-col justify-between min-h-[110px]"
+              className="relative p-4 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-amber-400/40 transition cursor-pointer space-y-2 flex flex-col justify-between min-h-[112px] active:scale-[0.98]"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xl font-serif text-[#FFC629]">❝</span>
@@ -478,10 +585,10 @@ export default function ProfileHubPage() {
               </div>
             </div>
 
-            {/* Card 2: Select a prompt */}
+            {/* Card 2: My Mood (replacing generic Prompt) */}
             <div
-              onClick={() => openQuickEdit("PROMPT")}
-              className="relative p-4 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-amber-400/40 transition cursor-pointer space-y-2 flex flex-col justify-between min-h-[110px]"
+              onClick={() => openQuickEdit("MOOD")}
+              className="relative p-4 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-amber-400/40 transition cursor-pointer space-y-2 flex flex-col justify-between min-h-[112px] active:scale-[0.98]"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xl font-serif text-[#FFC629]">❝</span>
@@ -491,48 +598,55 @@ export default function ProfileHubPage() {
               </div>
               <div className="space-y-1">
                 <h4 className="font-bold text-xs text-white truncate">
-                  {profile.promptQuestion || "Prompt"}
+                  My Mood
                 </h4>
                 <p className="text-[11px] text-zinc-400 line-clamp-3">
-                  {profile.promptAnswer || "Answer a fun prompt to stand out..."}
+                  {profile.promptAnswer || "What's your mood today? Coffee, party, chill..."}
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ================= 7. INTERESTS & SPOTIFY ================= */}
+        {/* ================= 6. INTERESTS & MUSIC ================= */}
         <div className="space-y-2 pt-1">
           <div className="grid grid-cols-2 gap-3">
             {/* Interests Card */}
-            <Link
-              href="/settings/edit-profile"
-              className="p-3.5 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-zinc-700 transition flex flex-col justify-between min-h-[96px]"
+            <div
+              onClick={() => openQuickEdit("INTERESTS")}
+              className="relative p-4 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-amber-400/40 transition cursor-pointer flex flex-col justify-between min-h-[112px] active:scale-[0.98]"
             >
-              <div className="text-xl">✨</div>
-              <div>
+              <div className="flex items-center justify-between">
+                <span className="text-xl">✨</span>
+                <span className="w-6 h-6 rounded-full bg-zinc-800 text-zinc-300 hover:text-white flex items-center justify-center">
+                  <Edit2 className="w-3 h-3 text-amber-400" />
+                </span>
+              </div>
+              <div className="space-y-1">
                 <h4 className="font-bold text-xs text-white">Interests</h4>
-                <p className="text-[11px] text-zinc-400 truncate">
+                <p className="text-[11px] text-zinc-400 line-clamp-2">
                   {profile.interests?.length > 0
-                    ? profile.interests.map((i) => i.interest.name).join(", ")
-                    : "Add your passions"}
+                    ? profile.interests.slice(0, 5).map((i) => i.interest.name).join(", ")
+                    : "Choose up to 5 interests"}
                 </p>
               </div>
-            </Link>
+            </div>
 
-            {/* Spotify Anthem */}
+            {/* Music Card */}
             <div
-              onClick={() => openQuickEdit("ANTHEM")}
-              className="p-3.5 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-zinc-700 transition cursor-pointer flex flex-col justify-between min-h-[96px]"
+              onClick={() => openQuickEdit("MUSIC")}
+              className="relative p-4 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-amber-400/40 transition cursor-pointer flex flex-col justify-between min-h-[112px] active:scale-[0.98]"
             >
-              <div className="flex items-center gap-1 text-emerald-400">
-                <Music className="w-4 h-4" />
-                <span className="text-[10px] font-bold text-[#1DB954]">Spotify</span>
+              <div className="flex items-center justify-between">
+                <span className="text-xl">🎵</span>
+                <span className="w-6 h-6 rounded-full bg-zinc-800 text-zinc-300 hover:text-white flex items-center justify-center">
+                  <Edit2 className="w-3 h-3 text-amber-400" />
+                </span>
               </div>
-              <div>
-                <h4 className="font-bold text-xs text-white truncate">My Anthem</h4>
-                <p className="text-[11px] text-zinc-400 truncate">
-                  {profile.anthemTitle || "Choose a song"}
+              <div className="space-y-1">
+                <h4 className="font-bold text-xs text-white truncate">Music</h4>
+                <p className="text-[11px] text-zinc-400 line-clamp-2">
+                  {profile.anthemTitle || "Select your favorite music vibes"}
                 </p>
               </div>
             </div>
@@ -540,8 +654,247 @@ export default function ProfileHubPage() {
         </div>
       </div>
 
-      {/* ================= QUICK DETAIL EDIT MODAL ================= */}
-      {activeQuickEdit && (
+      {/* ================= POPUP MODALS ================= */}
+
+      {/* 1. ABOUT ME POPUP */}
+      {activeQuickEdit === "ABOUT_ME" && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-md bg-[#121217] border border-zinc-800 rounded-t-3xl sm:rounded-3xl p-5 text-white space-y-4">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <div>
+                <h3 className="font-bold text-base text-white">About Me</h3>
+                <p className="text-xs text-zinc-400">Tell matches what makes you unique</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveQuickEdit(null)}
+                className="w-8 h-8 rounded-full bg-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-1.5">
+              <textarea
+                value={quickInputVal}
+                onChange={(e) => setQuickInputVal(e.target.value.slice(0, 500))}
+                placeholder="Write about yourself, your hobbies, what you love doing on weekends, or what kind of date you enjoy..."
+                rows={5}
+                className="w-full p-3.5 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#FFC629] resize-none leading-relaxed"
+              />
+              <div className="flex justify-end text-[11px] text-zinc-500 font-mono">
+                {quickInputVal.length}/500
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleSaveQuickEdit}
+              disabled={isSaving}
+              className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] text-black font-extrabold text-sm transition hover:brightness-105 active:scale-95 shadow-lg shadow-amber-500/20 disabled:opacity-50"
+            >
+              {isSaving ? "Saving..." : "Confirm & Save"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 2. MY MOOD POPUP */}
+      {activeQuickEdit === "MOOD" && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-md bg-[#121217] border border-zinc-800 rounded-t-3xl sm:rounded-3xl p-5 text-white space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <div>
+                <h3 className="font-bold text-base text-white">What&apos;s your Mood?</h3>
+                <p className="text-xs text-zinc-400">Let matches know what date or vibe you&apos;re in for</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveQuickEdit(null)}
+                className="w-8 h-8 rounded-full bg-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Quick One-Tap Mood Chips */}
+            <div className="space-y-2">
+              <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider block">
+                Tap to pick a mood:
+              </span>
+              <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto pr-1 scrollbar-thin">
+                {POPULAR_MOODS.map((mood) => {
+                  const isSelected = quickInputVal.trim() === mood;
+                  return (
+                    <button
+                      key={mood}
+                      type="button"
+                      onClick={() => setQuickInputVal(mood)}
+                      className={`text-xs px-3 py-1.5 rounded-full transition active:scale-95 text-left border ${
+                        isSelected
+                          ? "bg-[#FFC629] text-black font-extrabold border-[#FFC629] shadow-md shadow-amber-500/20"
+                          : "bg-zinc-900 text-zinc-300 border-zinc-800 hover:border-zinc-700"
+                      }`}
+                    >
+                      {mood}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Custom Input */}
+            <div className="space-y-1 pt-1">
+              <label className="text-[11px] font-bold text-zinc-400 block">
+                Or write your own mood:
+              </label>
+              <textarea
+                value={quickInputVal}
+                onChange={(e) => setQuickInputVal(e.target.value.slice(0, 150))}
+                placeholder="e.g. Free this Sunday for coffee, sushi & walks..."
+                rows={2}
+                className="w-full p-3 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#FFC629] resize-none"
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={handleSaveQuickEdit}
+              disabled={isSaving || !quickInputVal.trim()}
+              className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] text-black font-extrabold text-sm transition hover:brightness-105 active:scale-95 shadow-lg shadow-amber-500/20 disabled:opacity-50"
+            >
+              {isSaving ? "Saving..." : "Confirm Mood"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 3. INTERESTS POPUP (FULL SCREEN TAGS CLOUD + CONFIRM) */}
+      {activeQuickEdit === "INTERESTS" && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-md bg-[#121217] border border-zinc-800 rounded-t-3xl sm:rounded-3xl p-5 text-white flex flex-col max-h-[85vh] h-[600px]">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3 shrink-0">
+              <div>
+                <h3 className="font-bold text-base text-white">Select Interests</h3>
+                <p className="text-xs text-zinc-400">
+                  Pick up to 5 passions ({selectedInterestIds.length}/5 selected)
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveQuickEdit(null)}
+                className="w-8 h-8 rounded-full bg-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Scrollable Tags Area */}
+            <div className="flex-1 overflow-y-auto py-4 space-y-3 pr-1 scrollbar-thin">
+              <div className="flex flex-wrap gap-2">
+                {availableInterests.map((item) => {
+                  const isSelected = selectedInterestIds.includes(item.id);
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => toggleInterest(item.id)}
+                      className={`px-3.5 py-2 rounded-full text-xs transition active:scale-95 flex items-center gap-1.5 border ${
+                        isSelected
+                          ? "bg-[#FFC629] text-black font-black border-[#FFC629] shadow-md shadow-amber-500/25"
+                          : "bg-zinc-900 text-zinc-200 border-zinc-800 hover:border-zinc-700"
+                      }`}
+                    >
+                      {item.icon && <span>{item.icon}</span>}
+                      <span>{item.name}</span>
+                      {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Sticky Bottom Confirm Button */}
+            <div className="pt-3 border-t border-zinc-800 shrink-0">
+              <button
+                type="button"
+                onClick={handleSaveQuickEdit}
+                disabled={isSaving || selectedInterestIds.length === 0}
+                className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] text-black font-extrabold text-sm transition hover:brightness-105 active:scale-95 shadow-lg shadow-amber-500/20 disabled:opacity-50"
+              >
+                {isSaving ? "Saving..." : `Confirm (${selectedInterestIds.length}/5)`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. MUSIC POPUP (FULL SCREEN TAGS CLOUD + CONFIRM) */}
+      {activeQuickEdit === "MUSIC" && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-md bg-[#121217] border border-zinc-800 rounded-t-3xl sm:rounded-3xl p-5 text-white flex flex-col max-h-[85vh] h-[600px]">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3 shrink-0">
+              <div>
+                <h3 className="font-bold text-base text-white">Select Music</h3>
+                <p className="text-xs text-zinc-400">
+                  Pick up to 5 music styles ({selectedMusicList.length}/5 selected)
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveQuickEdit(null)}
+                className="w-8 h-8 rounded-full bg-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Scrollable Tags Area */}
+            <div className="flex-1 overflow-y-auto py-4 space-y-3 pr-1 scrollbar-thin">
+              <div className="flex flex-wrap gap-2">
+                {POPULAR_MUSIC_TAGS.map((tag) => {
+                  const isSelected = selectedMusicList.includes(tag);
+                  return (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => toggleMusic(tag)}
+                      className={`px-3.5 py-2 rounded-full text-xs transition active:scale-95 flex items-center gap-1.5 border ${
+                        isSelected
+                          ? "bg-[#FFC629] text-black font-black border-[#FFC629] shadow-md shadow-amber-500/25"
+                          : "bg-zinc-900 text-zinc-200 border-zinc-800 hover:border-zinc-700"
+                      }`}
+                    >
+                      <span>{tag}</span>
+                      {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Sticky Bottom Confirm Button */}
+            <div className="pt-3 border-t border-zinc-800 shrink-0">
+              <button
+                type="button"
+                onClick={handleSaveQuickEdit}
+                disabled={isSaving || selectedMusicList.length === 0}
+                className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] text-black font-extrabold text-sm transition hover:brightness-105 active:scale-95 shadow-lg shadow-amber-500/20 disabled:opacity-50"
+              >
+                {isSaving ? "Saving..." : `Confirm (${selectedMusicList.length}/5)`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 5. GENERIC QUICK EDIT FOR BASICS (City, Height, Work, Education) */}
+      {(activeQuickEdit === "LIVING_IN" ||
+        activeQuickEdit === "HEIGHT" ||
+        activeQuickEdit === "JOB" ||
+        activeQuickEdit === "EDUCATION") && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-md bg-[#121217] border border-zinc-800 rounded-t-3xl sm:rounded-3xl p-5 text-white space-y-4">
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
@@ -550,9 +903,6 @@ export default function ProfileHubPage() {
                 {activeQuickEdit === "HEIGHT" && "Edit Height (cm)"}
                 {activeQuickEdit === "JOB" && "Edit Profession / Work"}
                 {activeQuickEdit === "EDUCATION" && "Edit Education"}
-                {activeQuickEdit === "ABOUT_ME" && "Edit About Me"}
-                {activeQuickEdit === "PROMPT" && "Edit Prompt & Answer"}
-                {activeQuickEdit === "ANTHEM" && "Choose Spotify Anthem"}
               </h3>
               <button
                 type="button"
@@ -563,50 +913,13 @@ export default function ProfileHubPage() {
               </button>
             </div>
 
-            {activeQuickEdit === "ABOUT_ME" ? (
-              <textarea
-                value={quickInputVal}
-                onChange={(e) => setQuickInputVal(e.target.value)}
-                placeholder="Write about yourself..."
-                rows={4}
-                className="w-full p-3 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#FFC629]"
-              />
-            ) : activeQuickEdit === "PROMPT" ? (
-              <div className="space-y-3">
-                <div>
-                  <label className="text-[11px] text-zinc-400 font-semibold mb-1 block">
-                    Prompt Question
-                  </label>
-                  <input
-                    type="text"
-                    value={quickInputVal}
-                    onChange={(e) => setQuickInputVal(e.target.value)}
-                    placeholder="e.g. I feel happiest when..."
-                    className="w-full p-2.5 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#FFC629]"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] text-zinc-400 font-semibold mb-1 block">
-                    Your Answer
-                  </label>
-                  <textarea
-                    value={promptAnswerVal}
-                    onChange={(e) => setPromptAnswerVal(e.target.value)}
-                    placeholder="e.g. I'm around dogs and away from drama."
-                    rows={3}
-                    className="w-full p-2.5 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#FFC629]"
-                  />
-                </div>
-              </div>
-            ) : (
-              <input
-                type={activeQuickEdit === "HEIGHT" ? "number" : "text"}
-                value={quickInputVal}
-                onChange={(e) => setQuickInputVal(e.target.value)}
-                placeholder="Enter value..."
-                className="w-full p-3 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#FFC629]"
-              />
-            )}
+            <input
+              type={activeQuickEdit === "HEIGHT" ? "number" : "text"}
+              value={quickInputVal}
+              onChange={(e) => setQuickInputVal(e.target.value)}
+              placeholder="Enter value..."
+              className="w-full p-3 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#FFC629]"
+            />
 
             <button
               type="button"
@@ -614,7 +927,7 @@ export default function ProfileHubPage() {
               disabled={isSaving}
               className="w-full py-3 rounded-xl bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] text-black font-extrabold text-xs transition hover:brightness-105 disabled:opacity-50"
             >
-              {isSaving ? "Saving..." : "Save Changes"}
+              {isSaving ? "Saving..." : "Confirm & Save"}
             </button>
           </div>
         </div>
