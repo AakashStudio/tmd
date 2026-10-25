@@ -35,9 +35,27 @@ interface PlanItem {
   isActive: boolean;
 }
 
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window === "undefined") return resolve(false);
+    if ((window as any).Razorpay) return resolve(true);
+    const existing = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve(true));
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
 export default function PlansPage() {
   const router = useRouter();
-  const { entitlements, refreshProfile } = useProfile();
+  const { profile, entitlements, refreshProfile } = useProfile();
   const { user, refreshUser } = useAuth();
 
   const [plans, setPlans] = useState<PlanItem[]>([]);
@@ -114,6 +132,43 @@ export default function PlansPage() {
   const currentSelectedPkg =
     planPackages.find((p) => p.code === selectedPlanCode) || planPackages[0];
 
+  const verifyAndActivate = async (
+    orderId: string,
+    paymentId: string,
+    signature: string
+  ) => {
+    const verifyRes = await fetch("/api/payments/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        orderId,
+        paymentId,
+        signature,
+        planCode: selectedPlanCode,
+      }),
+    });
+
+    if (!verifyRes.ok) {
+      const verifyErr = await verifyRes.json().catch(() => ({}));
+      throw new Error(verifyErr.error || "Payment verification failed");
+    }
+
+    await refreshProfile();
+    await refreshUser();
+
+    setSuccessMessage(
+      `Success! You are now upgraded to ${currentSelectedPkg.title} TMD Gold. All features are active! 🎉`
+    );
+
+    // Reload plans
+    const plansRes = await fetch("/api/plans");
+    if (plansRes.ok) {
+      const pData = await plansRes.json();
+      setPlans(pData.plans || []);
+      setSubscription(pData.subscription || null);
+    }
+  };
+
   const handleExecutePayment = async () => {
     if (!user) {
       setShowAuthModal(true);
@@ -122,7 +177,7 @@ export default function PlansPage() {
 
     setIsProcessing(true);
     try {
-      // 1. Create order
+      // 1. Create order on server
       const orderRes = await fetch("/api/payments/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -140,40 +195,74 @@ export default function PlansPage() {
 
       const orderData = await orderRes.json();
 
-      // 2. Verify payment
-      const verifyRes = await fetch("/api/payments/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId: orderData.orderId,
-          paymentId: `pay_${Date.now()}`,
-          signature: "dev_signature",
-          planCode: selectedPlanCode,
-        }),
+      // Check if Razorpay keys are configured (not placeholder)
+      const isPlaceholderKey =
+        !orderData.keyId || orderData.keyId.includes("placeholder");
+
+      if (isPlaceholderKey) {
+        // Fallback for dev / unconfigured test environment
+        await verifyAndActivate(
+          orderData.orderId,
+          `pay_dev_${Date.now()}`,
+          "dev_signature"
+        );
+        setIsProcessing(false);
+        return;
+      }
+
+      // Load official Razorpay Checkout SDK
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        throw new Error(
+          "Failed to load Razorpay checkout SDK. Please check your internet connection."
+        );
+      }
+
+      // Standard Razorpay Checkout Modal
+      const options = {
+        key: orderData.keyId,
+        amount: orderData.amountInPaise,
+        currency: orderData.currency || "INR",
+        name: "TMD — The Match Date",
+        description: `${orderData.plan?.name || "Premium"} Plan Subscription`,
+        order_id: orderData.orderId,
+        prefill: {
+          name: profile?.name || "",
+          contact: user?.phone || "",
+        },
+        theme: {
+          color: "#FFC629", // Aura Gold accent
+        },
+        modal: {
+          ondismiss: function () {
+            setIsProcessing(false);
+          },
+        },
+        handler: async function (response: any) {
+          try {
+            await verifyAndActivate(
+              response.razorpay_order_id,
+              response.razorpay_payment_id,
+              response.razorpay_signature
+            );
+          } catch (vErr: any) {
+            alert(vErr.message || "Payment verification failed.");
+          } finally {
+            setIsProcessing(false);
+          }
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.on("payment.failed", function (response: any) {
+        setIsProcessing(false);
+        alert(
+          `Payment failed: ${response.error?.description || "Transaction declined"}`
+        );
       });
-
-      if (!verifyRes.ok) {
-        const verifyErr = await verifyRes.json().catch(() => ({}));
-        throw new Error(verifyErr.error || "Payment verification failed");
-      }
-
-      await refreshProfile();
-      await refreshUser();
-
-      setSuccessMessage(
-        `Success! You are now upgraded to ${currentSelectedPkg.title} TMD Gold. All features are active! 🎉`
-      );
-
-      // Reload plans
-      const plansRes = await fetch("/api/plans");
-      if (plansRes.ok) {
-        const pData = await plansRes.json();
-        setPlans(pData.plans || []);
-        setSubscription(pData.subscription || null);
-      }
+      rzp.open();
     } catch (err: any) {
       alert(err.message || "Payment could not be completed.");
-    } finally {
       setIsProcessing(false);
     }
   };

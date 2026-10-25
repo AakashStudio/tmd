@@ -33,10 +33,53 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate unique Razorpay order ID
-    // In production, Razorpay orders.create is invoked; in dev, deterministic order id
-    const razorpayOrderId = `order_${plan.code.toLowerCase()}_${Date.now()}_${crypto
-      .randomBytes(4)
-      .toString("hex")}`;
+    let razorpayOrderId: string;
+
+    const hasRealRazorpayKeys =
+      config.payments.razorpayKeyId &&
+      config.payments.razorpayKeySecret &&
+      !config.payments.razorpayKeyId.includes("placeholder");
+
+    if (hasRealRazorpayKeys) {
+      // Call official Razorpay Orders API
+      const authHeader = Buffer.from(
+        `${config.payments.razorpayKeyId}:${config.payments.razorpayKeySecret}`
+      ).toString("base64");
+
+      const rzpRes = await fetch("https://api.razorpay.com/v1/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${authHeader}`,
+        },
+        body: JSON.stringify({
+          amount: plan.priceInPaise,
+          currency: "INR",
+          receipt: `rcpt_${user.id.slice(-6)}_${Date.now()}`,
+          notes: {
+            userId: user.id,
+            planCode: plan.code,
+          },
+        }),
+      });
+
+      if (!rzpRes.ok) {
+        const rzpErr = await rzpRes.json().catch(() => ({}));
+        console.error("Razorpay orders.create failed:", rzpErr);
+        return NextResponse.json(
+          { error: rzpErr.error?.description || "Failed to create Razorpay order." },
+          { status: 502 }
+        );
+      }
+
+      const rzpData = await rzpRes.json();
+      razorpayOrderId = rzpData.id;
+    } else {
+      // In development or when keys are placeholders, fallback to deterministic order id
+      razorpayOrderId = `order_${plan.code.toLowerCase()}_${Date.now()}_${crypto
+        .randomBytes(4)
+        .toString("hex")}`;
+    }
 
     // Record pending payment in database
     const payment = await prisma.payment.create({
