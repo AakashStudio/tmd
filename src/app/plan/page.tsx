@@ -218,7 +218,7 @@ export default function PlansPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0d0d12] text-white pb-36 max-w-md mx-auto relative select-none">
+    <div className="min-h-screen bg-[#0d0d12] text-white pb-52 max-w-md mx-auto relative select-none">
       {/* 1. TOP HEADER (Exact Screenshot Layout) */}
       <div className="sticky top-0 inset-x-0 z-40 bg-[#0d0d12]/90 backdrop-blur-md px-5 py-3.5 flex items-center justify-between">
         {/* Close Button */}
@@ -377,11 +377,11 @@ export default function PlansPage() {
         </div>
       </div>
 
-      {/* 5. FIXED BOTTOM PURCHASE BAR (Exact Screenshot Copy & Style) */}
-      <div className="fixed bottom-0 inset-x-0 z-40 bg-gradient-to-t from-black via-[#0d0d12] to-[#0d0d12]/95 backdrop-blur-md max-w-md mx-auto px-5 pt-3 pb-6 border-t border-zinc-900/80 space-y-3">
+      {/* 5. FIXED PURCHASE BAR (Above BottomNav) */}
+      <div className="fixed bottom-16 inset-x-0 z-40 bg-gradient-to-t from-black via-[#0d0d12]/95 to-[#0d0d12]/90 backdrop-blur-md max-w-md mx-auto px-5 pt-2 pb-2.5 border-t border-zinc-900/80 space-y-2">
         {/* Fine Print Legal Text */}
         <p className="text-[10px] text-zinc-400 leading-tight">
-          Recurring billing. Cancel anytime. By tapping Continue, your payment will be charged, your subscription will auto-renew for the same price and package length until you cancel, at any time, via settings, and you agree to our{" "}
+          Recurring billing. Cancel anytime. By tapping Continue, you agree to our{" "}
           <span className="underline font-semibold text-zinc-300 cursor-pointer">Terms</span>.
         </p>
 
@@ -390,7 +390,7 @@ export default function PlansPage() {
           type="button"
           onClick={handleExecutePayment}
           disabled={isProcessing}
-          className="w-full py-4 rounded-full bg-white hover:bg-zinc-100 text-black font-extrabold text-sm tracking-tight transition active:scale-[0.98] shadow-2xl flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] hover:brightness-105 text-black font-black text-sm tracking-tight transition active:scale-[0.98] shadow-xl shadow-amber-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
         >
           {isProcessing ? (
             <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
@@ -399,6 +399,9 @@ export default function PlansPage() {
           )}
         </button>
       </div>
+
+      {/* 6. ALWAYS VISIBLE BOTTOM NAVIGATION */}
+      <BottomNav />
 
       {/* Auth Modal if unauthenticated */}
       {showAuthModal && (

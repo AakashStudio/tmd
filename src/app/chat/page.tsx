@@ -153,8 +153,8 @@ export default function ChatPage() {
       {/* Top Header */}
       <header className="px-5 py-4 border-b border-[#1e1e26] flex items-center justify-between sticky top-0 bg-[#0a0a0c]/90 backdrop-blur-md z-30">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-rose-500 to-pink-500 flex items-center justify-center text-white font-black text-sm">
-            <MessageCircle className="w-4 h-4" />
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#D4AF37] via-[#F59E0B] to-[#FFC629] flex items-center justify-center text-black font-black text-sm shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+            <MessageCircle className="w-4 h-4 fill-current" />
           </div>
           <h1 className="font-bold text-lg tracking-tight">Messages & Matches</h1>
         </div>
@@ -170,13 +170,13 @@ export default function ChatPage() {
           onClick={() => setActiveTab("REQUESTS")}
           className={`flex-1 py-2.5 text-center transition-all flex items-center justify-center gap-1.5 ${
             activeTab === "REQUESTS"
-              ? "text-rose-500 border-b-2 border-rose-500"
+              ? "text-[#FFC629] border-b-2 border-[#FFC629]"
               : "text-zinc-500 hover:text-zinc-300"
           }`}
         >
           <span>REQUESTS</span>
           {requests.length > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full bg-rose-500 text-white text-[10px] font-extrabold animate-pulse">
+            <span className="px-1.5 py-0.2 rounded-full bg-[#FFC629] text-black text-[10px] font-black animate-pulse">
               {requests.length}
             </span>
           )}
@@ -186,7 +186,7 @@ export default function ChatPage() {
           onClick={() => setActiveTab("MATCHES")}
           className={`flex-1 py-2.5 text-center transition-all ${
             activeTab === "MATCHES"
-              ? "text-rose-500 border-b-2 border-rose-500"
+              ? "text-[#FFC629] border-b-2 border-[#FFC629]"
               : "text-zinc-500 hover:text-zinc-300"
           }`}
         >
@@ -197,7 +197,7 @@ export default function ChatPage() {
           onClick={() => setActiveTab("CHAT")}
           className={`flex-1 py-2.5 text-center transition-all ${
             activeTab === "CHAT"
-              ? "text-rose-500 border-b-2 border-rose-500"
+              ? "text-[#FFC629] border-b-2 border-[#FFC629]"
               : "text-zinc-500 hover:text-zinc-300"
           }`}
         >
@@ -209,7 +209,7 @@ export default function ChatPage() {
       <div className="flex-1 flex flex-col px-5 py-3">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <div className="w-7 h-7 rounded-full border-2 border-rose-500 border-t-transparent animate-spin" />
+            <div className="w-7 h-7 rounded-full border-2 border-[#FFC629] border-t-transparent animate-spin" />
             <p className="text-xs text-zinc-400">Loading your dating connections...</p>
           </div>
         ) : activeTab === "REQUESTS" ? (
@@ -222,7 +222,7 @@ export default function ChatPage() {
 
             {requests.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-14 px-4 text-center space-y-3">
-                <div className="w-14 h-14 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-rose-400">
+                <div className="w-14 h-14 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-amber-400">
                   <Send className="w-6 h-6 rotate-[-20deg]" />
                 </div>
                 <div className="space-y-1">
@@ -278,7 +278,7 @@ export default function ChatPage() {
                       </div>
 
                       {req.replyContext && (
-                        <p className="text-[11px] text-zinc-400 italic line-clamp-1 border-l-2 border-rose-500/80 pl-2">
+                        <p className="text-[11px] text-zinc-400 italic line-clamp-1 border-l-2 border-amber-400/80 pl-2">
                           "{req.replyContext}"
                         </p>
                       )}
@@ -298,7 +298,7 @@ export default function ChatPage() {
                           </div>
                           <Link
                             href="/plan"
-                            className="inline-block py-1.5 px-3 rounded-lg bg-gradient-to-r from-rose-500 to-pink-500 text-[11px] font-bold text-white shadow"
+                            className="inline-block py-1.5 px-3 rounded-lg bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] text-[11px] font-black text-black shadow"
                           >
                             Upgrade Plan →
                           </Link>
@@ -322,7 +322,7 @@ export default function ChatPage() {
                         type="button"
                         onClick={() => handleAcceptRequest(req.id)}
                         disabled={actionInProgress === req.id}
-                        className="flex-1 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:opacity-95 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition active:scale-95 shadow-md shadow-rose-600/20 disabled:opacity-50"
+                        className="flex-1 py-2 rounded-xl bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] hover:brightness-105 text-black text-xs font-black flex items-center justify-center gap-1.5 transition active:scale-95 shadow-md shadow-amber-500/20 disabled:opacity-50"
                       >
                         {actionInProgress === req.id ? (
                           <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -349,7 +349,7 @@ export default function ChatPage() {
 
             {matches.length === 0 ? (
               <div className="flex-1 flex flex-col items-center justify-center py-12 px-4 text-center space-y-3.5">
-                <div className="w-14 h-14 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-rose-500 shadow-inner">
+                <div className="w-14 h-14 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-amber-400 shadow-inner">
                   <Heart className="w-7 h-7 animate-pulse" />
                 </div>
                 <div className="space-y-1">
@@ -360,7 +360,7 @@ export default function ChatPage() {
                 </div>
                 <Link
                   href="/"
-                  className="py-2.5 px-5 rounded-lg bg-gradient-to-r from-rose-600 to-pink-600 font-bold text-xs text-white shadow-lg shadow-rose-600/30 hover:opacity-95 transition"
+                  className="py-2.5 px-5 rounded-lg bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] font-black text-xs text-black shadow-lg shadow-amber-500/30 hover:brightness-105 transition"
                 >
                   Start Exploring Profiles →
                 </Link>
@@ -373,7 +373,7 @@ export default function ChatPage() {
                     onClick={() =>
                       m.conversationId && router.push(`/chat/${m.conversationId}`)
                     }
-                    className="group relative rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800 hover:border-rose-500/60 transition cursor-pointer flex flex-col aspect-[4/5] shadow-md"
+                    className="group relative rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800 hover:border-amber-400/60 transition cursor-pointer flex flex-col aspect-[4/5] shadow-md"
                   >
                     {/* Photo */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -397,7 +397,7 @@ export default function ChatPage() {
 
                       <button
                         type="button"
-                        className="w-full mt-1.5 py-1 px-2 rounded-lg bg-rose-600/90 hover:bg-rose-500 text-white text-[11px] font-bold text-center transition"
+                        className="w-full mt-1.5 py-1 px-2 rounded-lg bg-[#FFC629] hover:bg-[#ffcf4b] text-black text-[11px] font-black text-center transition"
                       >
                         {m.lastMessage ? "Open Chat" : "Say Hi 💬"}
                       </button>
@@ -418,7 +418,7 @@ export default function ChatPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search conversations..."
-                  className="w-full pl-9 pr-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500/60"
+                  className="w-full pl-9 pr-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFC629]"
                 />
               </div>
             )}
@@ -429,7 +429,7 @@ export default function ChatPage() {
                 <button
                   type="button"
                   onClick={() => setActiveTab("MATCHES")}
-                  className="text-rose-400 font-semibold underline text-xs"
+                  className="text-amber-400 font-semibold underline text-xs"
                 >
                   Pick a match from the MATCHES tab to begin →
                 </button>
@@ -487,7 +487,7 @@ export default function ChatPage() {
                         </p>
 
                         {!c.lastMessage?.isFromMe && c.lastMessage?.status !== "READ" && (
-                          <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0 ml-2" />
+                          <span className="w-2.5 h-2.5 rounded-full bg-[#FFC629] shrink-0 ml-2 shadow-sm shadow-amber-500/40" />
                         )}
                       </div>
                     </div>
