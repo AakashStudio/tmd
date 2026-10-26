@@ -1,6 +1,6 @@
 # Stage 1: Dependencies
 FROM node:20-alpine AS deps
-RUN apk add --no-cache libc6-compat openssl
+RUN apk add --no-cache libc6-compat openssl || (sleep 2 && apk add --no-cache libc6-compat openssl)
 WORKDIR /app
 
 ENV NODE_ENV=development
@@ -12,7 +12,7 @@ RUN npm ci --include=dev
 # Stage 2: Builder
 FROM node:20-alpine AS builder
 WORKDIR /app
-RUN apk add --no-cache libc6-compat openssl
+RUN apk add --no-cache libc6-compat openssl || (sleep 2 && apk add --no-cache libc6-compat openssl)
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
@@ -29,16 +29,17 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN apk add --no-cache openssl
+RUN apk add --no-cache openssl || (sleep 2 && apk add --no-cache openssl)
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
 
-# Set the correct permission for prerender cache
+# Set the correct permission for prerender cache and persistent mounts
 RUN mkdir .next
-RUN chown nextjs:nodejs .next
+RUN mkdir -p /app/public/uploads/photos /app/storage/private_media/view_once
+RUN chown -R nextjs:nodejs .next /app/public/uploads /app/storage
 
 # Automatically leverage output traces to reduce image size
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
