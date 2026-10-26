@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { config } from "@/lib/config";
 import { PlanCode } from "@prisma/client";
+import Razorpay from "razorpay";
 import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
@@ -15,97 +16,114 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json().catch(() => ({}));
-    const { planCode } = body;
+    const { planCode, amount } = body;
 
-    if (!planCode || planCode === PlanCode.FREE) {
+    let targetAmountInPaise: number = 0;
+    let targetPlan: any = null;
+
+    if (planCode && planCode !== PlanCode.FREE) {
+      targetPlan = await prisma.plan.findUnique({
+        where: { code: planCode as PlanCode },
+      });
+      if (!targetPlan) {
+        return NextResponse.json({ error: "Plan not found." }, { status: 404 });
+      }
+      targetAmountInPaise = targetPlan.priceInPaise;
+    } else if (typeof amount === "number") {
+      targetAmountInPaise = amount;
+    } else {
       return NextResponse.json(
-        { error: "A valid paid plan code must be provided." },
+        { error: "A valid paid plan code or amount in paise must be provided." },
         { status: 400 }
       );
     }
 
-    const plan = await prisma.plan.findUnique({
-      where: { code: planCode as PlanCode },
-    });
-
-    if (!plan) {
-      return NextResponse.json({ error: "Plan not found." }, { status: 404 });
+    // Razorpay minimum amount validation (>= 100 paise / ₹1)
+    if (!targetAmountInPaise || targetAmountInPaise < 100) {
+      return NextResponse.json(
+        { error: "Order amount must be at least 100 paise (₹1)." },
+        { status: 400 }
+      );
     }
 
-    // Generate unique Razorpay order ID
+    // Generate unique Razorpay order ID using official Razorpay SDK
     let razorpayOrderId: string;
-
     const hasRealRazorpayKeys =
       config.payments.razorpayKeyId &&
       config.payments.razorpayKeySecret &&
       !config.payments.razorpayKeyId.includes("placeholder");
 
     if (hasRealRazorpayKeys) {
-      // Call official Razorpay Orders API
-      const authHeader = Buffer.from(
-        `${config.payments.razorpayKeyId}:${config.payments.razorpayKeySecret}`
-      ).toString("base64");
+      try {
+        const razorpay = new Razorpay({
+          key_id: config.payments.razorpayKeyId,
+          key_secret: config.payments.razorpayKeySecret,
+        });
 
-      const rzpRes = await fetch("https://api.razorpay.com/v1/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Basic ${authHeader}`,
-        },
-        body: JSON.stringify({
-          amount: plan.priceInPaise,
+        const rzpOrder = await razorpay.orders.create({
+          amount: targetAmountInPaise,
           currency: "INR",
           receipt: `rcpt_${user.id.slice(-6)}_${Date.now()}`,
           notes: {
             userId: user.id,
-            planCode: plan.code,
+            planCode: targetPlan ? targetPlan.code : "CUSTOM",
           },
-        }),
-      });
+        });
 
-      if (!rzpRes.ok) {
-        const rzpErr = await rzpRes.json().catch(() => ({}));
+        razorpayOrderId = rzpOrder.id;
+      } catch (rzpErr: any) {
         console.error("Razorpay orders.create failed:", rzpErr);
         return NextResponse.json(
-          { error: rzpErr.error?.description || "Failed to create Razorpay order." },
-          { status: 502 }
+          {
+            error:
+              rzpErr.error?.description ||
+              rzpErr.message ||
+              "Failed to create Razorpay order.",
+          },
+          { status: 500 }
         );
       }
-
-      const rzpData = await rzpRes.json();
-      razorpayOrderId = rzpData.id;
     } else {
-      // In development or when keys are placeholders, fallback to deterministic order id
-      razorpayOrderId = `order_${plan.code.toLowerCase()}_${Date.now()}_${crypto
+      // In development fallback if placeholder keys
+      razorpayOrderId = `order_${(targetPlan?.code || "custom").toLowerCase()}_${Date.now()}_${crypto
         .randomBytes(4)
         .toString("hex")}`;
     }
 
-    // Record pending payment in database
-    const payment = await prisma.payment.create({
-      data: {
-        userId: user.id,
-        planId: plan.id,
-        razorpayOrderId,
-        amountInPaise: plan.priceInPaise,
-        status: "PENDING",
-      },
-    });
+    // Record pending payment in database if plan exists
+    let paymentId: string | null = null;
+    if (targetPlan) {
+      const payment = await prisma.payment.create({
+        data: {
+          userId: user.id,
+          planId: targetPlan.id,
+          razorpayOrderId,
+          amountInPaise: targetAmountInPaise,
+          status: "PENDING",
+        },
+      });
+      paymentId = payment.id;
+    }
 
     return NextResponse.json({
       success: true,
+      order_id: razorpayOrderId,
       orderId: razorpayOrderId,
-      amountInPaise: plan.priceInPaise,
+      amount: targetAmountInPaise,
+      amountInPaise: targetAmountInPaise,
       currency: "INR",
+      key_id: config.payments.razorpayKeyId,
       keyId: config.payments.razorpayKeyId,
-      plan: {
-        code: plan.code,
-        name: plan.name,
-        priceInPaise: plan.priceInPaise,
-        durationDays: plan.durationDays,
-        isPro: plan.isPro,
-      },
-      paymentId: payment.id,
+      plan: targetPlan
+        ? {
+            code: targetPlan.code,
+            name: targetPlan.name,
+            priceInPaise: targetPlan.priceInPaise,
+            durationDays: targetPlan.durationDays,
+            isPro: targetPlan.isPro,
+          }
+        : null,
+      paymentId,
     });
   } catch (error: any) {
     console.error("Payment create order error:", error);

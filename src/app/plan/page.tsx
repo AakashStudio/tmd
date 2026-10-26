@@ -220,12 +220,15 @@ export default function PlansPage() {
 
       // Standard Razorpay Checkout Modal
       const options = {
-        key: orderData.keyId,
-        amount: orderData.amountInPaise,
+        key:
+          process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
+          orderData.key_id ||
+          orderData.keyId,
+        amount: orderData.amount || orderData.amountInPaise,
         currency: orderData.currency || "INR",
         name: "TMD — The Match Date",
         description: `${orderData.plan?.name || "Premium"} Plan Subscription`,
-        order_id: orderData.orderId,
+        order_id: orderData.order_id || orderData.orderId,
         prefill: {
           name: profile?.name || "",
           contact: user?.phone || "",
@@ -307,8 +310,9 @@ export default function PlansPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0d0d12] text-white pb-52 max-w-md mx-auto relative select-none">
-      {/* 1. TOP HEADER */}
+    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start sm:py-6 sm:px-4 w-full overflow-x-hidden">
+      <div className="min-h-screen sm:min-h-[844px] sm:max-h-[92vh] bg-[#0d0d12] text-white pb-52 max-w-md w-full mx-auto relative select-none sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl overflow-x-hidden box-border">
+        {/* 1. TOP HEADER */}
       <div className="sticky top-0 inset-x-0 z-40 bg-[#0d0d12]/90 backdrop-blur-md px-5 py-4 flex items-center justify-center border-b border-white/[0.06]">
         {/* Center Logo Branding: TMD GOLD */}
         <div className="flex items-center gap-2">
@@ -491,6 +495,7 @@ export default function PlansPage() {
           onCancel={() => setShowAuthModal(false)}
         />
       )}
+      </div>
     </div>
   );
 }
