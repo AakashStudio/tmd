@@ -35,10 +35,12 @@ export async function POST(req: NextRequest) {
       .update(text)
       .digest("hex");
 
-    const isMatch = crypto.timingSafeEqual(
-      Buffer.from(expectedSignature, "utf-8"),
-      Buffer.from(razorpay_signature, "utf-8")
-    );
+    const expectedBuf = Buffer.from(expectedSignature, "utf-8");
+    const receivedBuf = Buffer.from(razorpay_signature, "utf-8");
+
+    const isMatch =
+      expectedBuf.length === receivedBuf.length &&
+      crypto.timingSafeEqual(expectedBuf, receivedBuf);
 
     if (!isMatch) {
       return NextResponse.json(
