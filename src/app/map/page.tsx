@@ -304,86 +304,90 @@ export default function MapPage() {
   // 1. Non-PRO Gate Screen
   if (!isPro) {
     return (
-      <div className="min-h-screen bg-[#0a0a0c] text-white pb-24 max-w-md mx-auto px-5 py-6 flex flex-col justify-center">
-        <div className="space-y-4 text-center">
-          <div className="relative w-16 h-16 mx-auto rounded-lg bg-gradient-to-tr from-rose-600 via-pink-600 to-amber-400 p-0.5 shadow-xl shadow-rose-600/30">
-            <div className="w-full h-full rounded-lg bg-zinc-950 flex items-center justify-center">
-              <MapPin className="w-8 h-8 text-rose-500 animate-bounce" />
+      <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start sm:py-6 sm:px-4 w-full overflow-x-hidden">
+        <div className="min-h-screen sm:min-h-[720px] bg-[#0a0a0c] text-white pb-24 sm:pb-8 max-w-md w-full px-5 py-6 flex flex-col justify-center sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl relative overflow-x-hidden box-border">
+          <div className="space-y-4 text-center">
+            <div className="relative w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-[#FFC629] via-[#F59E0B] to-amber-600 p-0.5 shadow-xl shadow-[#FFC629]/20">
+              <div className="w-full h-full rounded-2xl bg-[#0e0e14] flex items-center justify-center">
+                <MapPin className="w-8 h-8 text-[#FFC629] animate-bounce" />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFC629]/15 text-[#FFC629] border border-[#FFC629]/30 text-[11px] font-extrabold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5 text-[#FFC629]" /> TMD VIP PRO Exclusives
+              </div>
+              <h1 className="text-2xl font-black tracking-tight text-white">Events Map</h1>
+              <p className="text-xs text-zinc-400 max-w-xs mx-auto leading-relaxed">
+                Meet real people in real life. Curated house parties, standup comedy nights, weekend brunches, and rooftop mixers in your city.
+              </p>
+            </div>
+
+            {/* Feature Highlights */}
+            <div className="space-y-2 text-left w-full pt-1">
+              <Card className="p-3.5 bg-[#121217] border border-white/10 hover:border-[#FFC629]/30 transition flex items-center gap-3 rounded-2xl">
+                <div className="w-10 h-10 rounded-xl bg-[#FFC629]/10 border border-[#FFC629]/20 flex items-center justify-center text-[#FFC629] shrink-0 text-base font-bold">
+                  🎉
+                </div>
+                <div className="text-xs">
+                  <span className="font-bold text-white block">Exclusive Local Events</span>
+                  <span className="text-zinc-400">Discover and join verified singles gatherings.</span>
+                </div>
+              </Card>
+
+              <Card className="p-3.5 bg-[#121217] border border-white/10 hover:border-[#FFC629]/30 transition flex items-center gap-3 rounded-2xl">
+                <div className="w-10 h-10 rounded-xl bg-[#FFC629]/10 border border-[#FFC629]/20 flex items-center justify-center text-[#FFC629] shrink-0 text-base font-bold">
+                  🛡️
+                </div>
+                <div className="text-xs">
+                  <span className="font-bold text-white block">Residential Privacy Guard</span>
+                  <span className="text-zinc-400">Exact home locations revealed only after organizer approval.</span>
+                </div>
+              </Card>
+
+              <Card className="p-3.5 bg-[#121217] border border-white/10 hover:border-[#FFC629]/30 transition flex items-center gap-3 rounded-2xl">
+                <div className="w-10 h-10 rounded-xl bg-[#FFC629]/10 border border-[#FFC629]/20 flex items-center justify-center text-[#FFC629] shrink-0 text-base font-bold">
+                  👑
+                </div>
+                <div className="text-xs">
+                  <span className="font-bold text-white block">Host Your Own Events</span>
+                  <span className="text-zinc-400">Create private or open meetups and approve guest lists.</span>
+                </div>
+              </Card>
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[11px] font-extrabold uppercase tracking-wider">
-              <Sparkles className="w-3 h-3" /> TMD PRO Differentiator
-            </div>
-            <h1 className="text-2xl font-black tracking-tight">Events Map</h1>
-            <p className="text-xs text-zinc-400 max-w-xs mx-auto leading-relaxed">
-              Meet real people in real life. Curated house parties, standup comedy nights, weekend brunches, and rooftop mixers in your city.
+          <div className="pt-5 space-y-2">
+            <Link
+              href="/plan"
+              className="w-full py-3.5 px-4 rounded-2xl font-extrabold text-xs text-black bg-gradient-to-r from-[#FFC629] to-[#F59E0B] hover:brightness-110 active:scale-95 shadow-lg shadow-[#FFC629]/25 flex items-center justify-center gap-2 transition"
+            >
+              <Sparkles className="w-4 h-4 text-black" />
+              Upgrade to TMD VIP PRO (₹499) to Unlock →
+            </Link>
+            <p className="text-[11px] text-center text-zinc-500">
+              Includes unlimited swipes, all Who Liked You, rewind, and zero ads.
             </p>
           </div>
 
-          {/* Feature Highlights */}
-          <div className="space-y-2 text-left w-full pt-1">
-            <Card className="p-3 bg-zinc-900/60 border-zinc-800 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-rose-500/15 flex items-center justify-center text-rose-400 shrink-0 text-sm font-bold">
-                🎉
-              </div>
-              <div className="text-xs">
-                <span className="font-bold text-white block">Exclusive Local Events</span>
-                <span className="text-zinc-400">Discover and join verified singles gatherings.</span>
-              </div>
-            </Card>
-
-            <Card className="p-3 bg-zinc-900/60 border-zinc-800 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-pink-500/15 flex items-center justify-center text-pink-400 shrink-0 text-sm font-bold">
-                🛡️
-              </div>
-              <div className="text-xs">
-                <span className="font-bold text-white block">Residential Privacy Guard</span>
-                <span className="text-zinc-400">Exact home locations revealed only after organizer approval.</span>
-              </div>
-            </Card>
-
-            <Card className="p-3 bg-zinc-900/60 border-zinc-800 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-amber-500/15 flex items-center justify-center text-amber-400 shrink-0 text-sm font-bold">
-                👑
-              </div>
-              <div className="text-xs">
-                <span className="font-bold text-white block">Host Your Own Events</span>
-                <span className="text-zinc-400">Create private or open meetups and approve guest lists.</span>
-              </div>
-            </Card>
-          </div>
+          <BottomNav />
         </div>
-
-        <div className="pt-5 space-y-2">
-          <Link
-            href="/plan"
-            className="w-full py-3 px-4 rounded-lg font-bold text-xs text-white bg-gradient-to-r from-rose-600 via-pink-600 to-purple-600 hover:opacity-95 shadow-lg shadow-rose-600/30 flex items-center justify-center gap-2 transition"
-          >
-            Upgrade to TMD PRO (₹499) to Unlock →
-          </Link>
-          <p className="text-[11px] text-center text-zinc-500">
-            Includes unlimited swipes, all Who Liked You, rewind, and zero ads.
-          </p>
-        </div>
-
-        <BottomNav />
       </div>
     );
   }
 
   // 2. Full PRO Events Hub
   return (
-    <div className="min-h-screen bg-[#0a0a0c] text-white pb-24 max-w-md mx-auto flex flex-col justify-between">
+    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start sm:py-6 sm:px-4 w-full overflow-x-hidden">
+      <div className="min-h-screen sm:min-h-[780px] bg-[#0a0a0c] text-white pb-24 max-w-md w-full flex flex-col justify-between sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl relative overflow-x-hidden box-border">
       {/* Top Header */}
-      <header className="px-5 py-3 border-b border-[#1e1e26] flex items-center justify-between sticky top-0 bg-[#0a0a0c]/90 backdrop-blur-md z-30">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-rose-500 to-pink-500 flex items-center justify-center text-white">
-            <MapPin className="w-4 h-4" />
+      <header className="px-5 py-3 border-b border-white/[0.08] flex items-center justify-between sticky top-0 bg-[#0a0a0c]/95 backdrop-blur-md z-30">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#FFC629]/20 to-[#F59E0B]/20 border border-[#FFC629]/30 flex items-center justify-center text-[#FFC629] shadow-sm">
+            <MapPin className="w-4 h-4 stroke-[2.2]" />
           </div>
           <div>
-            <h1 className="font-bold text-sm tracking-tight">Events Map</h1>
+            <h1 className="font-extrabold text-sm tracking-tight text-white">Events Map</h1>
             <span className="text-[10px] text-zinc-400">Curated Singles Dates</span>
           </div>
         </div>
@@ -391,22 +395,22 @@ export default function MapPage() {
         <button
           type="button"
           onClick={() => setShowCreateModal(true)}
-          className="py-1.5 px-3 rounded-full bg-gradient-to-r from-rose-600 to-pink-600 hover:opacity-95 text-white text-xs font-bold flex items-center gap-1 shadow-md shadow-rose-600/20"
+          className="py-1.5 px-3.5 rounded-full bg-gradient-to-r from-[#FFC629] to-[#F59E0B] hover:brightness-110 active:scale-95 text-black text-xs font-extrabold flex items-center gap-1.5 shadow-md shadow-[#FFC629]/20 transition"
         >
-          <Plus className="w-3.5 h-3.5" /> Host Event
+          <Plus className="w-3.5 h-3.5 stroke-[2.5]" /> Host Event
         </button>
       </header>
 
       {/* Category Filter Chips */}
-      <div className="px-5 py-2.5 flex gap-2 overflow-x-auto scrollbar-none border-b border-zinc-900 bg-zinc-950/60">
+      <div className="px-5 py-2.5 flex gap-2 overflow-x-auto scrollbar-none border-b border-white/[0.06] bg-[#0c0c10]">
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition ${
+            className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition ${
               selectedCategory === cat
-                ? "bg-rose-500 text-white shadow"
-                : "bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800"
+                ? "bg-gradient-to-r from-[#FFC629] to-[#F59E0B] text-black font-extrabold shadow-md shadow-[#FFC629]/20 border border-[#FFC629]"
+                : "bg-[#14141c] text-zinc-400 hover:text-white border border-white/10 hover:border-[#FFC629]/30"
             }`}
           >
             {cat}
@@ -415,14 +419,14 @@ export default function MapPage() {
       </div>
 
       {/* View Switcher Bar */}
-      <div className="px-5 py-2 flex items-center justify-between border-b border-zinc-900 bg-[#0c0c10]">
-        <div className="flex items-center gap-1 bg-zinc-900/90 p-1 rounded-xl border border-zinc-800 text-xs">
+      <div className="px-5 py-2 flex items-center justify-between border-b border-white/[0.06] bg-[#0e0e14]">
+        <div className="flex items-center gap-1 bg-[#161620] p-1 rounded-xl border border-white/10 text-xs">
           <button
             type="button"
             onClick={() => setViewMode("map")}
-            className={`px-3 py-1 rounded-lg font-bold flex items-center gap-1.5 transition ${
+            className={`px-3 py-1 rounded-lg font-extrabold flex items-center gap-1.5 transition ${
               viewMode === "map"
-                ? "bg-gradient-to-r from-rose-600 to-pink-600 text-white shadow-sm"
+                ? "bg-[#FFC629] text-black shadow-md shadow-[#FFC629]/20"
                 : "text-zinc-400 hover:text-white"
             }`}
           >
@@ -431,9 +435,9 @@ export default function MapPage() {
           <button
             type="button"
             onClick={() => setViewMode("list")}
-            className={`px-3 py-1 rounded-lg font-bold flex items-center gap-1.5 transition ${
+            className={`px-3 py-1 rounded-lg font-extrabold flex items-center gap-1.5 transition ${
               viewMode === "list"
-                ? "bg-gradient-to-r from-rose-600 to-pink-600 text-white shadow-sm"
+                ? "bg-[#FFC629] text-black shadow-md shadow-[#FFC629]/20"
                 : "text-zinc-400 hover:text-white"
             }`}
           >
@@ -441,8 +445,8 @@ export default function MapPage() {
           </button>
         </div>
 
-        <div className="text-[11px] text-zinc-400 flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+        <div className="text-[11px] text-zinc-400 flex items-center gap-1.5 font-medium">
+          <span className="w-2 h-2 rounded-full bg-[#FFC629] animate-pulse" />
           <span>{events.length} active events</span>
         </div>
       </div>
@@ -451,65 +455,78 @@ export default function MapPage() {
       <main className="flex-1 px-5 py-4 space-y-4">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
-            <div className="w-8 h-8 rounded-full border-2 border-rose-500 border-t-transparent animate-spin" />
+            <div className="w-8 h-8 rounded-full border-2 border-[#FFC629] border-t-transparent animate-spin" />
             <p className="text-xs text-zinc-400">Locating events near you...</p>
           </div>
         ) : events.length === 0 ? (
-          <div className="text-center py-16 px-4 space-y-3 text-zinc-400">
-            <div className="w-16 h-16 mx-auto rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-2xl">
-              🗺️
+          <div className="relative w-full rounded-3xl bg-[#0e0e14] border border-white/10 p-8 py-12 text-center overflow-hidden shadow-2xl">
+            {/* Ambient Golden Glow & Concentric Radar Rings */}
+            <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+              <div className="w-40 h-40 rounded-full border border-[#FFC629]/15 animate-ping opacity-25" />
+              <div className="absolute w-60 h-60 rounded-full border border-[#FFC629]/10" />
+              <div className="absolute w-80 h-80 rounded-full border border-[#FFC629]/5" />
             </div>
-            <h3 className="font-bold text-white text-base">No Events in this Category Yet</h3>
-            <p className="text-xs max-w-xs mx-auto">
-              Be the first to host a meetup, house party, or activity for local singles!
-            </p>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="py-2.5 px-5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-xs transition"
-            >
-              Create the First Event
-            </button>
+
+            <div className="relative z-10 space-y-4 max-w-xs mx-auto">
+              <div className="relative w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-[#FFC629]/20 via-[#F59E0B]/15 to-transparent border border-[#FFC629]/30 flex items-center justify-center shadow-lg shadow-[#FFC629]/10">
+                <Compass className="w-8 h-8 text-[#FFC629] animate-pulse" />
+              </div>
+              <div className="space-y-1.5">
+                <h3 className="font-extrabold text-white text-base tracking-tight">
+                  No Events in this Category Yet
+                </h3>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Be the first to host a meetup, house party, or activity for local singles in your city!
+                </p>
+              </div>
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="w-full py-3 px-5 rounded-xl bg-gradient-to-r from-[#FFC629] to-[#F59E0B] hover:brightness-110 active:scale-95 text-black font-extrabold text-xs transition shadow-lg shadow-[#FFC629]/25 flex items-center justify-center gap-1.5"
+              >
+                <Plus className="w-4 h-4 stroke-[2.5]" /> Create the First Event
+              </button>
+            </div>
           </div>
         ) : viewMode === "map" ? (
           /* INTERACTIVE RADAR / MAP VIEW */
           <div className="space-y-3">
-            <div className="relative w-full h-[460px] rounded-2xl bg-[#0d0e14] border border-zinc-800 overflow-hidden shadow-2xl flex flex-col justify-between p-4">
+            <div className="relative w-full h-[460px] rounded-3xl bg-[#0a0a10] border border-white/10 overflow-hidden shadow-2xl flex flex-col justify-between p-4">
               {/* Map Background Grid & Radar Rings */}
               <div
                 className="absolute inset-0 pointer-events-none transition-transform duration-300"
                 style={{
                   transform: `scale(${zoomLevel})`,
                   backgroundImage:
-                    "radial-gradient(circle at center, rgba(244,63,94,0.06) 0, rgba(15,23,42,0) 65%), linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
+                    "radial-gradient(circle at center, rgba(255,198,41,0.08) 0, rgba(15,23,42,0) 65%), linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
                   backgroundSize: "100% 100%, 32px 32px, 32px 32px",
                 }}
               >
                 {/* Radar Rings */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full border border-rose-500/15" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full border border-rose-500/10" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] rounded-full border border-rose-500/5" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full border border-[#FFC629]/20" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full border border-[#FFC629]/10" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] rounded-full border border-[#FFC629]/5" />
                 
                 {/* Center User Location Beacon */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-auto">
                   <div className="relative">
-                    <div className="w-5 h-5 rounded-full bg-rose-500 border-2 border-white shadow-lg animate-pulse" />
-                    <div className="absolute -inset-2 rounded-full border border-rose-500/50 animate-ping" />
+                    <div className="w-5 h-5 rounded-full bg-[#FFC629] border-2 border-black shadow-lg shadow-[#FFC629]/50 animate-pulse" />
+                    <div className="absolute -inset-2 rounded-full border border-[#FFC629]/50 animate-ping" />
                   </div>
                 </div>
               </div>
 
               {/* Map Floating Controls */}
               <div className="relative z-10 flex items-center justify-between pointer-events-auto">
-                <div className="bg-zinc-900/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-zinc-800 text-[11px] font-bold text-zinc-300 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-rose-500" />
+                <div className="bg-[#14141c]/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-[11px] font-bold text-zinc-300 flex items-center gap-1.5 shadow-md">
+                  <span className="w-2 h-2 rounded-full bg-[#FFC629]" />
                   <span>Interactive Map ({Math.round(zoomLevel * 100)}%)</span>
                 </div>
 
-                <div className="flex items-center gap-1 bg-zinc-900/90 backdrop-blur-md p-1 rounded-xl border border-zinc-800">
+                <div className="flex items-center gap-1 bg-[#14141c]/90 backdrop-blur-md p-1 rounded-xl border border-white/10 shadow-md">
                   <button
                     type="button"
                     onClick={() => setZoomLevel((prev) => Math.min(prev + 0.25, 2.0))}
-                    className="p-1.5 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-800 transition"
+                    className="p-1.5 rounded-lg text-zinc-300 hover:text-white hover:bg-white/10 transition"
                     title="Zoom In"
                   >
                     <ZoomIn className="w-3.5 h-3.5" />
@@ -517,7 +534,7 @@ export default function MapPage() {
                   <button
                     type="button"
                     onClick={() => setZoomLevel((prev) => Math.max(prev - 0.25, 0.75))}
-                    className="p-1.5 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-800 transition"
+                    className="p-1.5 rounded-lg text-zinc-300 hover:text-white hover:bg-white/10 transition"
                     title="Zoom Out"
                   >
                     <ZoomOut className="w-3.5 h-3.5" />
@@ -550,20 +567,24 @@ export default function MapPage() {
                       <div
                         className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold shadow-xl transition-all duration-200 ${
                           isSelected
-                            ? "bg-white text-zinc-950 scale-110 ring-2 ring-rose-500 shadow-rose-500/50 z-30"
-                            : "bg-zinc-900/90 text-zinc-200 border border-zinc-700/80 hover:bg-zinc-800 hover:border-rose-500"
+                            ? "bg-[#FFC629] text-black font-extrabold scale-110 ring-2 ring-[#FFC629] shadow-lg shadow-[#FFC629]/50 z-30"
+                            : "bg-[#14141c]/95 text-zinc-200 border border-[#FFC629]/30 hover:bg-[#1e1e2a] hover:border-[#FFC629]"
                         }`}
                       >
                         <MapPin
-                          className={`w-3 h-3 ${isSelected ? "text-rose-600" : "text-rose-400"}`}
+                          className={`w-3 h-3 ${isSelected ? "text-black" : "text-[#FFC629]"}`}
                         />
                         <span className="truncate max-w-[85px]">{event.venue}</span>
                         {event.isPaid && event.entryFee > 0 ? (
-                          <span className="text-[8px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-400 font-bold">
+                          <span className={`text-[8px] px-1.5 py-0.2 rounded font-bold ${
+                            isSelected ? "bg-black/20 text-black" : "bg-[#FFC629]/20 text-[#FFC629]"
+                          }`}>
                             ₹{event.entryFee}
                           </span>
                         ) : (
-                          <span className="text-[8px] px-1 rounded bg-emerald-500/20 text-emerald-400 font-semibold">
+                          <span className={`text-[8px] px-1 rounded font-semibold ${
+                            isSelected ? "bg-black/20 text-black" : "bg-emerald-500/20 text-emerald-400"
+                          }`}>
                             Free
                           </span>
                         )}
@@ -574,7 +595,7 @@ export default function MapPage() {
               </div>
 
               {/* Bottom Instructions or Active Selection Hint */}
-              <div className="relative z-10 text-[10px] text-zinc-400 text-center bg-black/60 backdrop-blur-sm py-1 rounded-lg border border-white/5">
+              <div className="relative z-10 text-[10px] text-zinc-400 text-center bg-black/60 backdrop-blur-sm py-1.5 rounded-xl border border-white/5">
                 {selectedPinEvent
                   ? "Tap event card below for details & RSVP"
                   : "Tap any pin on the map to inspect venue & attend"}
@@ -583,7 +604,7 @@ export default function MapPage() {
 
             {/* Selected Pin Bottom Card */}
             {selectedPinEvent && (
-              <Card className="overflow-hidden border-rose-500/50 bg-zinc-950 shadow-2xl animate-in slide-in-from-bottom duration-200 space-y-3">
+              <Card className="overflow-hidden border-[#FFC629]/40 bg-[#121217] shadow-2xl animate-in slide-in-from-bottom duration-200 space-y-3 rounded-2xl">
                 <div className="relative h-36 w-full bg-zinc-900">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -605,10 +626,10 @@ export default function MapPage() {
                           {selectedPinEvent.isLinkedinMandatory ? "🔗 LinkedIn Req." : "🔗 LinkedIn"}
                         </span>
                       )}
-                      <span className={`px-2 py-0.5 rounded-full text-white font-black text-[10px] shadow ${
+                      <span className={`px-2 py-0.5 rounded-full text-black font-extrabold text-[10px] shadow ${
                         selectedPinEvent.isPaid && selectedPinEvent.entryFee > 0
-                          ? "bg-amber-600/90"
-                          : "bg-emerald-600/90"
+                          ? "bg-gradient-to-r from-[#FFC629] to-[#F59E0B]"
+                          : "bg-emerald-400"
                       }`}>
                         {selectedPinEvent.isPaid && selectedPinEvent.entryFee > 0
                           ? `₹${selectedPinEvent.entryFee}`
@@ -633,7 +654,7 @@ export default function MapPage() {
                 <div className="p-3 pt-0 space-y-2 text-xs">
                   <div className="flex items-center justify-between text-zinc-300">
                     <div className="flex items-center gap-1.5 font-medium">
-                      <Calendar className="w-3.5 h-3.5 text-rose-500" />
+                      <Calendar className="w-3.5 h-3.5 text-[#FFC629]" />
                       <span>
                         {new Date(selectedPinEvent.startDateTime).toLocaleDateString([], {
                           weekday: "short",
@@ -647,7 +668,7 @@ export default function MapPage() {
                         })}
                       </span>
                     </div>
-                    <span className="font-bold text-amber-400">
+                    <span className="font-extrabold text-[#FFC629]">
                       {selectedPinEvent.isPaid && selectedPinEvent.entryFee > 0
                         ? `₹${selectedPinEvent.entryFee} Entry`
                         : "🟢 Free Entry"}
@@ -655,7 +676,7 @@ export default function MapPage() {
                   </div>
 
                   <div className="flex items-start gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-rose-500 shrink-0 mt-0.5" />
+                    <MapPin className="w-3.5 h-3.5 text-[#FFC629] shrink-0 mt-0.5" />
                     <div>
                       <span className="font-bold text-white block">{selectedPinEvent.venue}</span>
                       <span className="text-[11px] text-zinc-400">{selectedPinEvent.address}</span>
@@ -674,8 +695,8 @@ export default function MapPage() {
                   )}
 
                   {selectedPinEvent.isResidential && (
-                    <div className="flex items-center gap-1.5 text-[10px] text-amber-400 bg-amber-500/10 px-2 py-1 rounded-lg border border-amber-500/20">
-                      <Home className="w-3.5 h-3.5 shrink-0" />
+                    <div className="flex items-center gap-1.5 text-[10px] text-[#FFC629] bg-[#FFC629]/10 px-2 py-1 rounded-lg border border-[#FFC629]/20">
+                      <Home className="w-3.5 h-3.5 shrink-0 text-[#FFC629]" />
                       <span>
                         Residential privacy enabled: exact flat/house revealed after RSVP approval.
                       </span>
@@ -709,9 +730,9 @@ export default function MapPage() {
                           setManageModalEvent(selectedPinEvent);
                           loadManageAttendees(selectedPinEvent.id);
                         }}
-                        className="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 transition shadow-lg shadow-purple-600/30 flex items-center justify-center gap-1.5"
+                        className="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-[#1c1c28] hover:bg-[#252536] border border-white/10 transition shadow-lg flex items-center justify-center gap-1.5"
                       >
-                        <Users className="w-4 h-4" /> Manage Guest Requests 📋
+                        <Users className="w-4 h-4 text-[#FFC629]" /> Manage Guest Requests 📋
                       </button>
                     ) : selectedPinEvent.myAttendanceStatus === "APPROVED" ? (
                       <div className="w-full py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 font-bold text-xs flex items-center justify-center gap-1.5">
@@ -734,7 +755,7 @@ export default function MapPage() {
                           setRequestNote("");
                           setRequestError(null);
                         }}
-                        className="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 transition shadow-lg shadow-rose-600/30"
+                        className="w-full py-2.5 rounded-xl font-extrabold text-xs text-black bg-gradient-to-r from-[#FFC629] to-[#F59E0B] hover:brightness-110 active:scale-95 transition shadow-lg shadow-[#FFC629]/25"
                       >
                         Request to Join 🎟️
                       </button>
@@ -754,7 +775,7 @@ export default function MapPage() {
             return (
               <Card
                 key={event.id}
-                className="overflow-hidden border-zinc-800 bg-zinc-950 hover:border-zinc-700 transition space-y-3"
+                className="overflow-hidden border-white/10 bg-[#121217] hover:border-[#FFC629]/40 transition space-y-3 rounded-2xl shadow-xl"
               >
                 {/* Event Image Banner */}
                 <div className="relative h-44 w-full bg-zinc-900">
@@ -777,10 +798,10 @@ export default function MapPage() {
                           {event.isLinkedinMandatory ? "🔗 LinkedIn Req." : "🔗 LinkedIn"}
                         </span>
                       )}
-                      <span className={`px-2.5 py-1 rounded-full text-white font-black shadow ${
+                      <span className={`px-2.5 py-1 rounded-full text-black font-extrabold shadow ${
                         event.isPaid && event.entryFee > 0
-                          ? "bg-amber-600/90"
-                          : "bg-emerald-600/90"
+                          ? "bg-gradient-to-r from-[#FFC629] to-[#F59E0B]"
+                          : "bg-emerald-400"
                       }`}>
                         {event.isPaid && event.entryFee > 0 ? `₹${event.entryFee}` : "Free Entry"}
                       </span>
@@ -800,7 +821,7 @@ export default function MapPage() {
                   <div className="space-y-1.5 text-xs text-zinc-300">
                     {/* Time */}
                     <div className="flex items-center gap-2 text-zinc-300 font-medium">
-                      <Calendar className="w-4 h-4 text-rose-500 shrink-0" />
+                      <Calendar className="w-4 h-4 text-[#FFC629] shrink-0" />
                       <span>
                         {new Date(event.startDateTime).toLocaleDateString([], {
                           weekday: "short",
@@ -817,7 +838,7 @@ export default function MapPage() {
 
                     {/* Venue & Location */}
                     <div className="flex items-start gap-2">
-                      <MapPin className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                      <MapPin className="w-4 h-4 text-[#FFC629] shrink-0 mt-0.5" />
                       <div>
                         <span className="font-bold text-white block">{event.venue}</span>
                         <span className="text-[11px] text-zinc-400">{event.address}</span>
@@ -838,8 +859,8 @@ export default function MapPage() {
 
                     {/* Residential Warning Notice */}
                     {event.isResidential && (
-                      <div className="flex items-center gap-1.5 text-[10px] text-amber-400 bg-amber-500/10 px-2 py-1 rounded-lg border border-amber-500/20">
-                        <Home className="w-3.5 h-3.5 shrink-0" />
+                      <div className="flex items-center gap-1.5 text-[10px] text-[#FFC629] bg-[#FFC629]/10 px-2 py-1 rounded-lg border border-[#FFC629]/20">
+                        <Home className="w-3.5 h-3.5 shrink-0 text-[#FFC629]" />
                         <span>Residential privacy enabled: exact flat/house revealed after RSVP approval.</span>
                       </div>
                     )}
@@ -895,9 +916,9 @@ export default function MapPage() {
                           setManageModalEvent(event);
                           loadManageAttendees(event.id);
                         }}
-                        className="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 transition shadow-lg shadow-purple-600/30 flex items-center justify-center gap-1.5"
+                        className="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-[#1c1c28] hover:bg-[#252536] border border-white/10 transition shadow-lg flex items-center justify-center gap-1.5"
                       >
-                        <Users className="w-4 h-4" /> Manage Guest Requests 📋
+                        <Users className="w-4 h-4 text-[#FFC629]" /> Manage Guest Requests 📋
                       </button>
                     ) : isConfirmed ? (
                       <div className="w-full py-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 font-bold text-xs flex items-center justify-center gap-1.5">
@@ -920,7 +941,7 @@ export default function MapPage() {
                           setRequestNote("");
                           setRequestError(null);
                         }}
-                        className="w-full py-3 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 transition shadow-lg shadow-rose-600/30"
+                        className="w-full py-3 rounded-xl font-extrabold text-xs text-black bg-gradient-to-r from-[#FFC629] to-[#F59E0B] hover:brightness-110 active:scale-95 transition shadow-lg shadow-[#FFC629]/25"
                       >
                         Request to Join 🎟️
                       </button>
@@ -936,10 +957,10 @@ export default function MapPage() {
       {/* Join Request Modal */}
       {requestModalEvent && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-in fade-in">
-          <div className="w-full max-w-sm rounded-3xl bg-zinc-950 border border-rose-500/40 p-6 space-y-4 shadow-2xl relative my-8">
+          <div className="w-full max-w-sm rounded-3xl bg-[#0f0f15] border border-[#FFC629]/30 p-6 space-y-4 shadow-2xl relative my-8">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold text-white">Request to Join</h2>
+                <h2 className="text-lg font-extrabold text-white">Request to Join</h2>
                 <p className="text-xs text-zinc-400 line-clamp-1">{requestModalEvent.title}</p>
               </div>
               <button
@@ -954,14 +975,14 @@ export default function MapPage() {
               </button>
             </div>
 
-            <div className="p-3 rounded-2xl bg-zinc-900/80 border border-zinc-800 text-xs space-y-1">
+            <div className="p-3 rounded-2xl bg-[#161620] border border-white/10 text-xs space-y-1">
               <div className="flex justify-between items-center text-zinc-300">
                 <span>Host:</span>
                 <span className="font-semibold text-white">{requestModalEvent.organizer.name}</span>
               </div>
               <div className="flex justify-between items-center text-zinc-300">
                 <span>Entry:</span>
-                <span className="font-bold text-amber-400">
+                <span className="font-extrabold text-[#FFC629]">
                   {requestModalEvent.isPaid && requestModalEvent.entryFee > 0
                     ? `₹${requestModalEvent.entryFee}`
                     : "Free"}
@@ -970,7 +991,7 @@ export default function MapPage() {
             </div>
 
             {requestError && (
-              <div className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs">
+              <div className="p-3 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 text-xs">
                 {requestError}
               </div>
             )}
@@ -981,7 +1002,7 @@ export default function MapPage() {
                   <label className="text-zinc-300 block mb-1 font-medium">
                     LinkedIn Profile Link{" "}
                     {requestModalEvent.isLinkedinMandatory ? (
-                      <span className="text-rose-400 font-bold">* (Mandatory)</span>
+                      <span className="text-[#FFC629] font-bold">* (Mandatory)</span>
                     ) : (
                       <span className="text-zinc-500">(Optional)</span>
                     )}
@@ -992,7 +1013,7 @@ export default function MapPage() {
                     value={requestLinkedinUrl}
                     onChange={(e) => setRequestLinkedinUrl(e.target.value)}
                     placeholder="https://www.linkedin.com/in/yourname"
-                    className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 text-xs"
+                    className="w-full px-3 py-2.5 rounded-xl bg-[#161620] border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 text-xs"
                   />
                   {requestModalEvent.isLinkedinMandatory && (
                     <p className="text-[10px] text-zinc-400 mt-1">
@@ -1011,14 +1032,14 @@ export default function MapPage() {
                   value={requestNote}
                   onChange={(e) => setRequestNote(e.target.value)}
                   placeholder="Say hi or introduce yourself to the host..."
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500 text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFC629] text-xs"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isSubmittingRequest}
-                className="w-full py-3 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 transition shadow-lg shadow-rose-600/30 disabled:opacity-50"
+                className="w-full py-3 rounded-xl font-extrabold text-xs text-black bg-gradient-to-r from-[#FFC629] to-[#F59E0B] hover:brightness-110 active:scale-95 transition shadow-lg shadow-[#FFC629]/25 disabled:opacity-50"
               >
                 {isSubmittingRequest ? "Sending Request..." : "Submit Request to Host 🚀"}
               </button>
@@ -1030,12 +1051,12 @@ export default function MapPage() {
       {/* Manage Requests Modal for Event Host */}
       {manageModalEvent && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-in fade-in">
-          <div className="w-full max-w-md rounded-3xl bg-zinc-950 border border-purple-500/40 p-6 space-y-4 shadow-2xl relative my-8 max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between pb-2 border-b border-zinc-800">
+          <div className="w-full max-w-md rounded-3xl bg-[#0f0f15] border border-[#FFC629]/30 p-6 space-y-4 shadow-2xl relative my-8 max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between pb-2 border-b border-white/10">
               <div>
-                <h2 className="text-base font-bold text-white flex items-center gap-2">
-                  <span>Guest List & Requests</span>
-                  <span className="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px]">
+                <h2 className="text-base font-extrabold text-white flex items-center gap-2">
+                  <span>Guest List &amp; Requests</span>
+                  <span className="px-2 py-0.5 rounded-full bg-[#FFC629]/15 text-[#FFC629] border border-[#FFC629]/30 text-[10px] font-bold">
                     Host Dashboard
                   </span>
                 </h2>
@@ -1054,15 +1075,15 @@ export default function MapPage() {
               {/* Pending Requests Section */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5" /> Pending Requests ({managePendingAttendees.length})
+                  <h3 className="text-xs font-extrabold text-[#FFC629] uppercase tracking-wider flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-[#FFC629]" /> Pending Requests ({managePendingAttendees.length})
                   </h3>
                 </div>
 
                 {manageLoading ? (
                   <div className="py-6 text-center text-xs text-zinc-500">Loading requests...</div>
                 ) : managePendingAttendees.length === 0 ? (
-                  <div className="py-4 px-3 rounded-2xl bg-zinc-900/50 border border-zinc-800 text-center text-xs text-zinc-500">
+                  <div className="py-4 px-3 rounded-2xl bg-[#161620] border border-white/10 text-center text-xs text-zinc-500">
                     No pending requests at this time.
                   </div>
                 ) : (
@@ -1070,7 +1091,7 @@ export default function MapPage() {
                     {managePendingAttendees.map((applicant) => (
                       <div
                         key={applicant.id}
-                        className="p-3 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-2.5"
+                        className="p-3 rounded-2xl bg-[#161620] border border-white/10 space-y-2.5"
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex items-center gap-2.5">
@@ -1104,25 +1125,25 @@ export default function MapPage() {
                         )}
 
                         {applicant.note && (
-                          <div className="p-2 rounded-xl bg-zinc-950/80 border border-zinc-800/80 text-[11px] text-zinc-300 italic">
+                          <div className="p-2 rounded-xl bg-black/40 border border-white/5 text-[11px] text-zinc-300 italic">
                             &quot;{applicant.note}&quot;
                           </div>
                         )}
 
-                        <div className="flex items-center gap-2 pt-1 border-t border-zinc-800">
+                        <div className="flex items-center gap-2 pt-1 border-t border-white/10">
                           <button
                             type="button"
                             disabled={reviewingAttendeeId === applicant.id}
                             onClick={() => handleReviewAttendee(manageModalEvent.id, applicant.id, "APPROVE")}
-                            className="flex-1 py-1.5 rounded-xl font-bold text-xs text-white bg-emerald-600 hover:bg-emerald-500 transition flex items-center justify-center gap-1 disabled:opacity-50"
+                            className="flex-1 py-1.5 rounded-xl font-extrabold text-xs text-black bg-[#FFC629] hover:bg-[#F59E0B] transition flex items-center justify-center gap-1 disabled:opacity-50"
                           >
-                            <Check className="w-3.5 h-3.5" /> Accept & Confirm
+                            <Check className="w-3.5 h-3.5 stroke-[2.5]" /> Accept &amp; Confirm
                           </button>
                           <button
                             type="button"
                             disabled={reviewingAttendeeId === applicant.id}
                             onClick={() => handleReviewAttendee(manageModalEvent.id, applicant.id, "REJECT")}
-                            className="py-1.5 px-3 rounded-xl font-medium text-xs text-zinc-400 bg-zinc-800 hover:text-rose-400 hover:bg-rose-500/10 transition disabled:opacity-50"
+                            className="py-1.5 px-3 rounded-xl font-medium text-xs text-zinc-400 bg-white/5 hover:text-red-400 hover:bg-red-500/10 transition disabled:opacity-50"
                           >
                             Decline
                           </button>
@@ -1135,12 +1156,12 @@ export default function MapPage() {
 
               {/* Confirmed Attendees Section */}
               <div>
-                <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5 mb-2">
+                <h3 className="text-xs font-extrabold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5 mb-2">
                   <Check className="w-3.5 h-3.5" /> Confirmed Attendees ({manageApprovedAttendees.length} / {manageModalEvent.capacity})
                 </h3>
 
                 {manageApprovedAttendees.length === 0 ? (
-                  <div className="py-3 px-3 rounded-2xl bg-zinc-900/50 border border-zinc-800 text-center text-xs text-zinc-500">
+                  <div className="py-3 px-3 rounded-2xl bg-[#161620] border border-white/10 text-center text-xs text-zinc-500">
                     No confirmed attendees yet.
                   </div>
                 ) : (
@@ -1148,7 +1169,7 @@ export default function MapPage() {
                     {manageApprovedAttendees.map((att) => (
                       <div
                         key={att.id}
-                        className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800/80 text-xs"
+                        className="flex items-center justify-between p-2.5 rounded-xl bg-[#161620] border border-white/10 text-xs"
                       >
                         <div className="flex items-center gap-2">
                           <div className="w-7 h-7 rounded-full overflow-hidden bg-zinc-800 shrink-0">
@@ -1189,9 +1210,9 @@ export default function MapPage() {
       {/* Create Event Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-in fade-in">
-          <div className="w-full max-w-sm rounded-3xl bg-zinc-950 border border-rose-500/40 p-6 space-y-4 shadow-2xl relative my-8">
+          <div className="w-full max-w-sm rounded-3xl bg-[#0f0f15] border border-[#FFC629]/30 p-6 space-y-4 shadow-2xl relative my-8">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-white">Host a Singles Event</h2>
+              <h2 className="text-lg font-extrabold text-white">Host a Singles Event</h2>
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
@@ -1210,7 +1231,7 @@ export default function MapPage() {
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="e.g. Friday Rooftop Cocktails & Mingling"
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-rose-500"
+                  className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629]"
                 />
               </div>
 
@@ -1219,7 +1240,7 @@ export default function MapPage() {
                 <select
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-rose-500"
+                  className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629]"
                 >
                   <option value="House Party">House Party</option>
                   <option value="Standup">Standup</option>
@@ -1241,7 +1262,7 @@ export default function MapPage() {
                     className={`py-2 px-3 rounded-xl font-bold text-xs transition border ${
                       !newIsPaid
                         ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/50"
-                        : "bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-700"
+                        : "bg-[#161620] text-zinc-400 border-white/10 hover:border-white/20"
                     }`}
                   >
                     🟢 Free Event
@@ -1251,8 +1272,8 @@ export default function MapPage() {
                     onClick={() => setNewIsPaid(true)}
                     className={`py-2 px-3 rounded-xl font-bold text-xs transition border ${
                       newIsPaid
-                        ? "bg-amber-500/20 text-amber-400 border-amber-500/50"
-                        : "bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-700"
+                        ? "bg-[#FFC629]/20 text-[#FFC629] border-[#FFC629]/50"
+                        : "bg-[#161620] text-zinc-400 border-white/10 hover:border-white/20"
                     }`}
                   >
                     💰 Paid Event
@@ -1260,8 +1281,8 @@ export default function MapPage() {
                 </div>
 
                 {newIsPaid && (
-                  <div className="p-3 rounded-xl bg-zinc-900/60 border border-amber-500/30 space-y-1.5 animate-in fade-in">
-                    <label className="text-amber-400 block text-xs font-semibold">Entry Fee (₹) *</label>
+                  <div className="p-3 rounded-xl bg-[#161620] border border-[#FFC629]/30 space-y-1.5 animate-in fade-in">
+                    <label className="text-[#FFC629] block text-xs font-semibold">Entry Fee (₹) *</label>
                     <div className="relative">
                       <span className="absolute left-3 top-2 text-zinc-400 font-bold">₹</span>
                       <input
@@ -1271,7 +1292,7 @@ export default function MapPage() {
                         value={newEntryFee}
                         onChange={(e) => setNewEntryFee(e.target.value)}
                         placeholder="e.g. 299"
-                        className="w-full pl-7 pr-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-amber-500 font-semibold"
+                        className="w-full pl-7 pr-3 py-2 rounded-xl bg-[#121217] border border-white/10 text-white focus:outline-none focus:border-[#FFC629] font-semibold"
                       />
                     </div>
                     <p className="text-[10px] text-zinc-400">
@@ -1282,7 +1303,7 @@ export default function MapPage() {
               </div>
 
               {/* LinkedIn Section */}
-              <div className="p-3.5 rounded-2xl bg-zinc-900/60 border border-blue-500/30 space-y-3">
+              <div className="p-3.5 rounded-2xl bg-[#161620] border border-blue-500/30 space-y-3">
                 <div>
                   <label className="text-zinc-300 block mb-1 font-semibold flex items-center justify-between text-xs">
                     <span className="flex items-center gap-1.5 text-blue-400">
@@ -1296,14 +1317,14 @@ export default function MapPage() {
                     value={newOrganizerLinkedin}
                     onChange={(e) => setNewOrganizerLinkedin(e.target.value)}
                     placeholder="https://www.linkedin.com/in/yourname"
-                    className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 text-xs"
+                    className="w-full px-3 py-2.5 rounded-xl bg-[#121217] border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 text-xs"
                   />
                   <p className="text-[10px] text-zinc-400 mt-1">
                     Apna LinkedIn link yaha dalein taki event dekhne wale guests aapki verified profile dekh sakein.
                   </p>
                 </div>
 
-                <div className="pt-2.5 border-t border-zinc-800/80 space-y-2">
+                <div className="pt-2.5 border-t border-white/10 space-y-2">
                   <div className="flex items-start gap-2.5">
                     <input
                       type="checkbox"
@@ -1313,7 +1334,7 @@ export default function MapPage() {
                         setNewRequireLinkedin(e.target.checked);
                         if (!e.target.checked) setNewIsLinkedinMandatory(false);
                       }}
-                      className="mt-0.5 rounded bg-zinc-900 border-zinc-700 text-blue-500 focus:ring-blue-500"
+                      className="mt-0.5 rounded bg-[#121217] border-zinc-700 text-blue-500 focus:ring-blue-500"
                     />
                     <div>
                       <label htmlFor="requireLinkedin" className="text-white font-medium block">
@@ -1326,17 +1347,17 @@ export default function MapPage() {
                   </div>
 
                   {newRequireLinkedin && (
-                    <div className="pl-6 pt-1 border-t border-zinc-800/60 animate-in fade-in">
+                    <div className="pl-6 pt-1 border-t border-white/5 animate-in fade-in">
                       <div className="flex items-start gap-2">
                         <input
                           type="checkbox"
                           id="isLinkedinMandatory"
                           checked={newIsLinkedinMandatory}
                           onChange={(e) => setNewIsLinkedinMandatory(e.target.checked)}
-                          className="mt-0.5 rounded bg-zinc-900 border-zinc-700 text-rose-500 focus:ring-rose-500"
+                          className="mt-0.5 rounded bg-[#121217] border-zinc-700 text-[#FFC629] focus:ring-[#FFC629]"
                         />
                         <div>
-                          <label htmlFor="isLinkedinMandatory" className="text-rose-400 font-semibold block text-xs">
+                          <label htmlFor="isLinkedinMandatory" className="text-[#FFC629] font-semibold block text-xs">
                             Mark as Mandatory (Required)
                           </label>
                           <p className="text-[10px] text-zinc-400">
@@ -1357,7 +1378,7 @@ export default function MapPage() {
                   value={newVenue}
                   onChange={(e) => setNewVenue(e.target.value)}
                   placeholder="e.g. The Rooftop Lounge"
-                  className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-rose-500"
+                  className="w-full px-3 py-2.5 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629]"
                 />
               </div>
 
@@ -1369,7 +1390,7 @@ export default function MapPage() {
                   value={newAddress}
                   onChange={(e) => setNewAddress(e.target.value)}
                   placeholder="e.g. 102 Arera Hills, Bhopal"
-                  className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-rose-500"
+                  className="w-full px-3 py-2.5 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629]"
                 />
               </div>
 
@@ -1379,7 +1400,7 @@ export default function MapPage() {
                   id="residential"
                   checked={newIsResidential}
                   onChange={(e) => setNewIsResidential(e.target.checked)}
-                  className="rounded bg-zinc-900 border-zinc-700 text-rose-500 focus:ring-rose-500"
+                  className="rounded bg-[#161620] border-zinc-700 text-[#FFC629] focus:ring-[#FFC629]"
                 />
                 <label htmlFor="residential" className="text-zinc-300">
                   This is a residential address (Enable address masking)
@@ -1390,7 +1411,7 @@ export default function MapPage() {
               <div className="space-y-3">
                 <div>
                   <label className="text-zinc-300 block mb-1.5 font-medium flex items-center gap-1.5 text-xs">
-                    <Calendar className="w-4 h-4 text-rose-500 shrink-0" />
+                    <Calendar className="w-4 h-4 text-[#FFC629] shrink-0" />
                     <span>Start Date &amp; Time *</span>
                   </label>
                   <input
@@ -1399,13 +1420,13 @@ export default function MapPage() {
                     value={newStart}
                     onChange={(e) => setNewStart(e.target.value)}
                     style={{ colorScheme: "dark" }}
-                    className="w-full h-12 px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-rose-500 text-sm font-medium"
+                    className="w-full h-12 px-3.5 py-2.5 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629] text-sm font-medium"
                   />
                 </div>
 
                 <div>
                   <label className="text-zinc-300 block mb-1.5 font-medium flex items-center gap-1.5 text-xs">
-                    <Clock className="w-4 h-4 text-rose-500 shrink-0" />
+                    <Clock className="w-4 h-4 text-[#FFC629] shrink-0" />
                     <span>End Date &amp; Time *</span>
                   </label>
                   <input
@@ -1414,7 +1435,7 @@ export default function MapPage() {
                     value={newEnd}
                     onChange={(e) => setNewEnd(e.target.value)}
                     style={{ colorScheme: "dark" }}
-                    className="w-full h-12 px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-rose-500 text-sm font-medium"
+                    className="w-full h-12 px-3.5 py-2.5 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629] text-sm font-medium"
                   />
                 </div>
               </div>
@@ -1427,12 +1448,12 @@ export default function MapPage() {
                   max="500"
                   value={newCapacity}
                   onChange={(e) => setNewCapacity(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-rose-500"
+                  className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629]"
                 />
               </div>
 
               {/* Host Approval Notice */}
-              <div className="p-2.5 rounded-xl bg-zinc-900/70 border border-zinc-800 flex items-center gap-2 text-[11px] text-zinc-300">
+              <div className="p-2.5 rounded-xl bg-[#161620] border border-white/10 flex items-center gap-2 text-[11px] text-zinc-300">
                 <span className="text-base">🛡️</span>
                 <span>
                   Host Approval Only: User request bhej sakega. Aap decide karenge kisko approve karna hai aur kisko decline.
@@ -1447,14 +1468,14 @@ export default function MapPage() {
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
                   placeholder="What's the vibe? Any dress code or icebreakers?"
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-rose-500"
+                  className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629]"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 transition shadow-lg shadow-rose-600/30 disabled:opacity-50"
+                className="w-full py-3.5 rounded-xl font-extrabold text-xs text-black bg-gradient-to-r from-[#FFC629] to-[#F59E0B] hover:brightness-110 active:scale-95 transition shadow-lg shadow-[#FFC629]/25 disabled:opacity-50"
               >
                 {isSubmitting ? "Publishing Event..." : "Publish Event 🚀"}
               </button>
@@ -1464,6 +1485,7 @@ export default function MapPage() {
       )}
 
       <BottomNav />
+      </div>
     </div>
   );
 }
