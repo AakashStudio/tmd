@@ -102,7 +102,7 @@ export default function PlansPage() {
   const planPackages = [
     {
       code: "TIER_49",
-      badge: null,
+      badge: "Starter",
       title: "15 Days",
       subtitle: `₹${tier49Price} total`,
       price: tier49Price,
@@ -270,44 +270,100 @@ export default function PlansPage() {
     }
   };
 
-  const goldFeatures = [
+  const PLAN_DETAILS: Record<
+    string,
     {
-      title: "Unlimited Likes",
-      desc: null,
+      headline: string;
+      pillTitle: string;
+      features: { title: string; desc: string | null }[];
+    }
+  > = {
+    TIER_49: {
+      headline: "Unlimited Likes & see who liked you with 15 Days Starter.",
+      pillTitle: "Included with 15 Days Starter",
+      features: [
+        {
+          title: "Unlimited Likes",
+          desc: "Swipe right on as many profiles as you want with no daily limits.",
+        },
+        {
+          title: "See Who Likes You (First 10)",
+          desc: "Reveal your first 10 admirers and match with them instantly.",
+        },
+        {
+          title: "Local Singles Discovery",
+          desc: "Connect with genuine, verified profiles in your city.",
+        },
+        {
+          title: "15 Days Active Access",
+          desc: "Full 15-day membership with zero recurring charges or hidden fees.",
+        },
+      ],
     },
-    {
-      title: "See Who Likes You",
-      desc: null,
+    TIER_149: {
+      headline: "See Who Likes You and match with them instantly with TMD Gold™.",
+      pillTitle: "Included with TMD Gold",
+      features: [
+        {
+          title: "Unlimited Likes",
+          desc: "Swipe right on as many profiles as you want with no daily limits.",
+        },
+        {
+          title: "See Who Likes You (Unlimited)",
+          desc: "Reveal everyone who liked you and match with them instantly.",
+        },
+        {
+          title: "Unlimited Rewinds",
+          desc: "Take back your last swipe if you passed by accident.",
+        },
+        {
+          title: "Passport™ City Selection",
+          desc: "Match and chat with verified singles in any city across India.",
+        },
+        {
+          title: "Hide Ads",
+          desc: "Enjoy a completely ad-free premium dating experience.",
+        },
+        {
+          title: "15 Days Full Gold Access",
+          desc: "Full 15-day premium membership with all Gold perks unlocked.",
+        },
+      ],
     },
-    {
-      title: "Unlimited Rewinds",
-      desc: null,
+    PRO_499: {
+      headline: "Host & Join Exclusive Singles Events with TMD VIP PRO.",
+      pillTitle: "Included with TMD VIP PRO",
+      features: [
+        {
+          title: "Everything in TMD Gold",
+          desc: "Unlimited likes, see who likes you, unlimited rewinds, passport mode & zero ads.",
+        },
+        {
+          title: "Singles Events Map Access",
+          desc: "Explore and RSVP to live singles meetups and date events nearby.",
+        },
+        {
+          title: "Host Your Own Events",
+          desc: "Create and publish real-world singles events with attendee approval.",
+        },
+        {
+          title: "VIP PRO & Host Verification Badge",
+          desc: "Stand out on discovery with the prestigious Gold VIP verification badge.",
+        },
+        {
+          title: "Priority Name & DOB Corrections",
+          desc: "Fast-track administrative review for name changes and DOB updates.",
+        },
+        {
+          title: "10 Days VIP Access",
+          desc: "Exclusive VIP privileges and event organizer tools for 10 days.",
+        },
+      ],
     },
-    {
-      title: "1 Free Boost per month",
-      desc: "Free monthly Boost only available for 1 month or longer subscriptions.",
-    },
-    {
-      title: "2 Free Super Likes per week",
-      desc: null,
-    },
-    {
-      title: "Unlimited Passport™ Mode*",
-      desc: "Match and chat with people anywhere in the world. *Restrictions apply. Learn more",
-    },
-    {
-      title: "Control Your Profile",
-      desc: "Only show what you want them to know.",
-    },
-    {
-      title: "Control Who Sees You",
-      desc: "Manage who you're seen by.",
-    },
-    {
-      title: "Hide Ads",
-      desc: null,
-    },
-  ];
+  };
+
+  const activePlanDetails =
+    PLAN_DETAILS[selectedPlanCode] || PLAN_DETAILS["TIER_149"];
 
   return (
     <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start sm:py-6 sm:px-4 w-full overflow-x-hidden">
@@ -347,10 +403,10 @@ export default function PlansPage() {
           </div>
         )}
 
-        {/* 2. MAIN HEADLINE (Exact Screenshot Copy) */}
+        {/* 2. MAIN HEADLINE (Dynamic based on selected plan) */}
         <div className="space-y-1">
           <h1 className="text-[26px] font-black leading-tight text-white tracking-tight">
-            See Who Likes You and match with them instantly with TMD Gold™.
+            {activePlanDetails.headline}
           </h1>
         </div>
 
@@ -424,20 +480,20 @@ export default function PlansPage() {
           </div>
         </div>
 
-        {/* 4. INCLUDED WITH TINDER GOLD CARD (Matches Screenshot 1 & 2) */}
+        {/* 4. INCLUDED FEATURES CARD (Dynamic based on selected plan) */}
         <div className="relative pt-3">
           {/* Card Container */}
           <div className="relative rounded-3xl bg-[#14141c] border border-zinc-800/90 p-5 pt-7 space-y-4 shadow-xl">
             {/* Pill Header attached to top of card */}
-            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#1e1e28] border border-zinc-700 text-zinc-200 text-xs font-extrabold shadow whitespace-nowrap">
-              Included with TMD Gold
+            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#1e1e28] border border-zinc-700 text-amber-300 text-xs font-extrabold shadow whitespace-nowrap">
+              {activePlanDetails.pillTitle}
             </div>
 
-            {/* Feature Checklist matching screenshots */}
+            {/* Feature Checklist matching decided plan */}
             <div className="space-y-4">
-              {goldFeatures.map((feat, idx) => (
+              {activePlanDetails.features.map((feat, idx) => (
                 <div key={idx} className="flex items-start gap-3">
-                  <div className="text-white shrink-0 mt-0.5">
+                  <div className="text-[#FFC629] shrink-0 mt-0.5">
                     <Check className="w-5 h-5 stroke-[2.5]" />
                   </div>
                   <div className="space-y-0.5">
@@ -461,7 +517,7 @@ export default function PlansPage() {
       <div className="fixed bottom-16 inset-x-0 z-40 bg-gradient-to-t from-black via-[#0d0d12]/95 to-[#0d0d12]/90 backdrop-blur-md max-w-md mx-auto px-5 pt-2 pb-2.5 border-t border-zinc-900/80 space-y-2">
         {/* Fine Print Legal Text */}
         <p className="text-[10px] text-zinc-400 leading-tight">
-          Recurring billing. Cancel anytime. By tapping Continue, you agree to our{" "}
+          One-time payment for {selectedPlanCode === "PRO_499" ? "10" : "15"} days. No hidden charges or auto-renewals. By tapping Continue, you agree to our{" "}
           <span className="underline font-semibold text-zinc-300 cursor-pointer">Terms</span>.
         </p>
 

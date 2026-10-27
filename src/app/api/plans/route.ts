@@ -30,30 +30,29 @@ export async function GET(req: NextRequest) {
           break;
         case "TIER_49":
           featuresList = [
-            "Unlimited swipes",
-            "First 10 'Who Liked You' profiles",
-            "Ads enabled",
-            "Current city only",
+            "Unlimited Likes",
+            "See First 10 People Who Liked You",
+            "Local Singles Discovery",
             "15 days validity",
           ];
           break;
         case "TIER_149":
           featuresList = [
-            "Unlimited swipes",
-            "Unlimited 'Who Liked You'",
-            "Rewind last pass",
-            "City selection & distance filter",
-            "Zero ads",
+            "Unlimited Likes",
+            "See Who Likes You (Unlimited)",
+            "Unlimited Rewinds",
+            "Passport™ City Selection",
+            "Hide Ads",
             "15 days validity",
           ];
           break;
         case "PRO_499":
           featuresList = [
-            "Everything in ₹149 plan",
-            "Events Map access",
-            "Join & host singles events",
-            "Organizer verification badge",
-            "Name change & DOB correction request",
+            "Everything in TMD Gold",
+            "Singles Events Map Access",
+            "Host & Join Singles Events",
+            "VIP PRO & Host Verification Badge",
+            "Priority Name & DOB Correction",
             "10 days VIP validity",
           ];
           break;
