@@ -1,6 +1,6 @@
 # Stage 1: Dependencies
-FROM node:20-alpine AS deps
-RUN apk add --no-cache libc6-compat openssl || (sleep 2 && apk add --no-cache libc6-compat openssl)
+FROM node:20-alpine3.20 AS deps
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 ENV NODE_ENV=development
@@ -10,9 +10,9 @@ COPY prisma ./prisma/
 RUN npm ci --include=dev
 
 # Stage 2: Builder
-FROM node:20-alpine AS builder
+FROM node:20-alpine3.20 AS builder
 WORKDIR /app
-RUN apk add --no-cache libc6-compat openssl || (sleep 2 && apk add --no-cache libc6-compat openssl)
+RUN apk add --no-cache libc6-compat openssl
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
@@ -24,12 +24,12 @@ RUN npx prisma generate
 RUN npm run build
 
 # Stage 3: Runner
-FROM node:20-alpine AS runner
+FROM node:20-alpine3.20 AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN apk add --no-cache openssl || (sleep 2 && apk add --no-cache openssl)
+RUN apk add --no-cache openssl
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
