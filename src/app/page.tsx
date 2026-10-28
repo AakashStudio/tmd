@@ -81,14 +81,12 @@ export default function HomePage() {
   if (!hasProfile || !profile) {
     return (
       <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start py-4 sm:py-8 px-3 sm:px-4 w-full box-border overflow-x-hidden">
-        <div className="w-full max-w-md">
-          <OnboardingWizard
-            onCompleted={() => {
-              refreshUser();
-              refreshProfile();
-            }}
-          />
-        </div>
+        <OnboardingWizard
+          onCompleted={() => {
+            refreshUser();
+            refreshProfile();
+          }}
+        />
       </div>
     );
   }
