@@ -11,7 +11,7 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
   const [authMode, setAuthMode] = useState<"PHONE" | "EMAIL" | null>(null);
 
   return (
-    <div className="relative min-h-screen bg-[#111116] text-white flex flex-col justify-between overflow-hidden max-w-md mx-auto select-none">
+    <div className="relative min-h-screen sm:min-h-[820px] sm:max-h-[92vh] sm:my-6 bg-[#111116] text-white flex flex-col justify-between overflow-hidden max-w-md w-full mx-auto select-none sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl box-border">
       {/* Top Background Artwork Header */}
       <div className="relative w-full h-[54vh] min-h-[350px] flex flex-col items-center justify-between pt-7 pb-4 overflow-hidden">
         {/* Cinematic TMD Date Hero Artwork (No status bar, no phone icons) */}

@@ -14,12 +14,22 @@ interface RateLimitEntry {
 
 const otpRequestStore = new Map<string, RateLimitEntry>();
 
+function pruneStaleEntries(now: number): void {
+  if (otpRequestStore.size < 1000) return;
+  otpRequestStore.forEach((entry, key) => {
+    if (now - entry.firstRequestAt > 300000) {
+      otpRequestStore.delete(key);
+    }
+  });
+}
+
 export function checkOtpRateLimit(identifier: string): {
   allowed: boolean;
   retryAfterSeconds?: number;
   reason?: string;
 } {
   const now = Date.now();
+  pruneStaleEntries(now);
   const entry = otpRequestStore.get(identifier);
 
   if (!entry) {

@@ -28,6 +28,9 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
   const [gender, setGender] = useState("Male");
   const [interestedIn, setInterestedIn] = useState("Female");
   const [city, setCity] = useState("Delhi");
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const [isDetectingLocation, setIsDetectingLocation] = useState<boolean>(false);
   const [bio, setBio] = useState("");
   const [profession, setProfession] = useState("");
   const [education, setEducation] = useState("");
@@ -165,6 +168,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
         gender,
         interestedIn,
         city: city.trim(),
+        latitude: latitude || undefined,
+        longitude: longitude || undefined,
         bio: bio.trim() || undefined,
         profession: profession.trim() || undefined,
         education: education.trim() || undefined,
@@ -200,25 +205,85 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
       localStorage.setItem("tmd_location_permission", choice);
     } catch (e) {}
 
+    setShowLocationPopup(false);
+
     if (choice !== "DENIED" && typeof navigator !== "undefined" && navigator.geolocation) {
+      setIsDetectingLocation(true);
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          console.log("Location detected:", pos.coords.latitude, pos.coords.longitude);
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          setLatitude(lat);
+          setLongitude(lng);
+          try {
+            const res = await fetch(
+              `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+            );
+            if (res.ok) {
+              const data = await res.json();
+              const detectedCity = data.city || data.locality || data.principalSubdivision;
+              if (detectedCity) {
+                setCity(detectedCity);
+              }
+            }
+          } catch (geoErr) {
+            console.warn("Reverse geocode failed:", geoErr);
+          } finally {
+            setIsDetectingLocation(false);
+          }
         },
-        () => {},
-        { timeout: 5000 }
+        (err) => {
+          console.warn("Geolocation error:", err.message);
+          setIsDetectingLocation(false);
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
       );
     }
 
-    setShowLocationPopup(false);
     setStep(1);
+  };
+
+  const triggerGpsDetect = () => {
+    if (typeof navigator !== "undefined" && navigator.geolocation) {
+      setIsDetectingLocation(true);
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          setLatitude(lat);
+          setLongitude(lng);
+          try {
+            const res = await fetch(
+              `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+            );
+            if (res.ok) {
+              const data = await res.json();
+              const detectedCity = data.city || data.locality || data.principalSubdivision;
+              if (detectedCity) {
+                setCity(detectedCity);
+              }
+            }
+          } catch (geoErr) {
+            console.warn("Reverse geocode failed:", geoErr);
+          } finally {
+            setIsDetectingLocation(false);
+          }
+        },
+        (err) => {
+          setIsDetectingLocation(false);
+          alert("Could not detect location. Please check browser permissions or type city manually.");
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
   };
 
   /* ================= STEP 0: MANDATORY LOCATION PERMISSION ================= */
   if (step === 0) {
     return (
-      <div className="fixed inset-0 z-50 bg-[#0a0a0c] text-white flex flex-col justify-between max-w-md mx-auto w-full h-[100dvh] px-6 py-10 overflow-y-auto animate-in fade-in duration-200">
-        {/* Top Header Section */}
+      <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-0 sm:p-4 overflow-x-hidden overflow-y-auto">
+        <div className="w-full max-w-md bg-[#0a0a0c] text-white flex flex-col justify-between h-[100dvh] sm:h-auto sm:min-h-[720px] sm:max-h-[92vh] sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl px-6 py-10 overflow-x-hidden overflow-y-auto relative box-border animate-in fade-in duration-200">
+          {/* Top Header Section */}
         <div className="text-center pt-6 space-y-3">
           <h1 className="text-2xl sm:text-[30px] font-black tracking-tight text-white leading-tight">
             So, are you from<br />around here?
@@ -288,50 +353,51 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
           )}
         </div>
 
-        {/* Location Permission System Popup Modal */}
-        {showLocationPopup && (
-          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-150">
-            <div className="w-full max-w-[290px] rounded-3xl bg-[#1c1c24] border border-white/10 p-6 text-center shadow-2xl animate-in zoom-in-95 duration-150">
-              <div className="w-12 h-12 mx-auto mb-3.5 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-[#FFC629]">
-                <MapPin className="w-6 h-6" />
-              </div>
+          {/* Location Permission System Popup Modal */}
+          {showLocationPopup && (
+            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-150">
+              <div className="w-full max-w-[290px] rounded-3xl bg-[#1c1c24] border border-white/10 p-6 text-center shadow-2xl animate-in zoom-in-95 duration-150">
+                <div className="w-12 h-12 mx-auto mb-3.5 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-[#FFC629]">
+                  <MapPin className="w-6 h-6" />
+                </div>
 
-              <h3 className="text-sm font-bold text-white mb-2 leading-snug">
-                Allow TMD to access this device&apos;s location?
-              </h3>
+                <h3 className="text-sm font-bold text-white mb-2 leading-snug">
+                  Allow TMD to access this device&apos;s location?
+                </h3>
 
-              <p className="text-[11px] text-zinc-400 mb-5 leading-relaxed">
-                TMD uses location to show nearby singles, local events, and distance accuracy.
-              </p>
+                <p className="text-[11px] text-zinc-400 mb-5 leading-relaxed">
+                  TMD uses location to show nearby singles, local events, and distance accuracy.
+                </p>
 
-              <div className="space-y-2">
-                <button
-                  type="button"
-                  onClick={() => handlePermissionChoice("WHILE_USING")}
-                  className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] text-black font-extrabold text-xs shadow-md shadow-amber-500/20 active:scale-95 transition cursor-pointer"
-                >
-                  While using the app
-                </button>
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => handlePermissionChoice("WHILE_USING")}
+                    className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] text-black font-extrabold text-xs shadow-md shadow-amber-500/20 active:scale-95 transition cursor-pointer"
+                  >
+                    While using the app
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() => handlePermissionChoice("THIS_TIME")}
-                  className="w-full py-2.5 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs active:scale-95 transition cursor-pointer"
-                >
-                  Only this time
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => handlePermissionChoice("THIS_TIME")}
+                    className="w-full py-2.5 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs active:scale-95 transition cursor-pointer"
+                  >
+                    Only this time
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() => handlePermissionChoice("DENIED")}
-                  className="w-full py-2 px-3 rounded-xl text-zinc-400 hover:text-white font-medium text-xs transition cursor-pointer"
-                >
-                  Don&apos;t allow
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => handlePermissionChoice("DENIED")}
+                    className="w-full py-2 px-3 rounded-xl text-zinc-400 hover:text-white font-medium text-xs transition cursor-pointer"
+                  >
+                    Don&apos;t allow
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     );
   }
@@ -449,12 +515,31 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
       {/* STEP 2: Location, Vocation, Bio & Intention */}
       {step === 2 && (
         <div className="space-y-4">
-          <Input
-            label="Current City (Required)"
-            placeholder="e.g. Delhi, Mumbai, Bengaluru"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-          />
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-semibold text-zinc-300">Current City (Required)</label>
+              <button
+                type="button"
+                onClick={triggerGpsDetect}
+                disabled={isDetectingLocation}
+                className="text-[11px] font-bold text-[#FFC629] flex items-center gap-1 hover:underline disabled:opacity-50"
+              >
+                <MapPin className="w-3 h-3 text-[#FFC629]" />
+                <span>{isDetectingLocation ? "Detecting GPS..." : "Auto-detect GPS"}</span>
+              </button>
+            </div>
+            <Input
+              placeholder="e.g. Delhi, Mumbai, Bengaluru"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+            />
+            {latitude && longitude && (
+              <p className="text-[10px] text-emerald-400 mt-1.5 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                GPS Coordinates grabbed: {latitude.toFixed(3)}°, {longitude.toFixed(3)}°
+              </p>
+            )}
+          </div>
 
           <div className="grid grid-cols-2 gap-3">
             <Input

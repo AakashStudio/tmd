@@ -50,7 +50,7 @@ export async function GET() {
 
 export async function PUT(req: NextRequest) {
   try {
-    const user = await getCurrentUser();
+    const user = await getCurrentUser(req);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -124,6 +124,8 @@ export async function PUT(req: NextRequest) {
         ...(data.education !== undefined ? { education: data.education } : {}),
         ...(data.height !== undefined ? { height: data.height } : {}),
         ...(isCityChanging ? { city: data.city!.trim() } : {}),
+        ...(data.latitude !== undefined ? { latitude: data.latitude } : {}),
+        ...(data.longitude !== undefined ? { longitude: data.longitude } : {}),
         ...(incrementLocationCount ? { locationChangeCount: { increment: 1 } } : {}),
         ...(data.gender ? { gender: data.gender } : {}),
         ...(data.interestedIn ? { interestedIn: data.interestedIn } : {}),
@@ -138,34 +140,54 @@ export async function PUT(req: NextRequest) {
       },
     });
 
-    // 5. Update Interests if provided
+    const currentProfileId = user.profile.id;
+
+    // 5. Update Interests if provided (Deduplicated batch insert)
     if (Array.isArray(body.interestIds)) {
       await prisma.profileInterest.deleteMany({
-        where: { profileId: user.profile.id },
+        where: { profileId: currentProfileId },
       });
 
-      for (const interestId of body.interestIds) {
-        await prisma.profileInterest.create({
-          data: {
-            profileId: user.profile.id,
+      const uniqueInterestIds: string[] = Array.from(
+        new Set(
+          (body.interestIds as unknown[]).filter(
+            (id: unknown): id is string => typeof id === "string" && Boolean(id.trim())
+          )
+        )
+      );
+
+      if (uniqueInterestIds.length > 0) {
+        await prisma.profileInterest.createMany({
+          data: uniqueInterestIds.map((interestId: string) => ({
+            profileId: currentProfileId,
             interestId,
-          },
+          })),
+          skipDuplicates: true,
         });
       }
     }
 
-    // 6. Update Languages if provided
+    // 6. Update Languages if provided (Deduplicated batch insert)
     if (Array.isArray(body.languageIds)) {
       await prisma.profileLanguage.deleteMany({
-        where: { profileId: user.profile.id },
+        where: { profileId: currentProfileId },
       });
 
-      for (const languageId of body.languageIds) {
-        await prisma.profileLanguage.create({
-          data: {
-            profileId: user.profile.id,
+      const uniqueLanguageIds: string[] = Array.from(
+        new Set(
+          (body.languageIds as unknown[]).filter(
+            (id: unknown): id is string => typeof id === "string" && Boolean(id.trim())
+          )
+        )
+      );
+
+      if (uniqueLanguageIds.length > 0) {
+        await prisma.profileLanguage.createMany({
+          data: uniqueLanguageIds.map((languageId: string) => ({
+            profileId: currentProfileId,
             languageId,
-          },
+          })),
+          skipDuplicates: true,
         });
       }
     }

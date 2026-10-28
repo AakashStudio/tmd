@@ -1,4 +1,4 @@
-﻿-- CreateEnum
+-- CreateEnum
 CREATE TYPE "UserRole" AS ENUM ('USER', 'MODERATOR', 'ADMIN');
 
 -- CreateEnum
@@ -105,6 +105,12 @@ CREATE TABLE "profiles" (
     "height" INTEGER,
     "relationshipIntention" "RelationshipIntention" NOT NULL DEFAULT 'NOT_SURE_YET',
     "isNameLocked" BOOLEAN NOT NULL DEFAULT true,
+    "locationChangeCount" INTEGER NOT NULL DEFAULT 0,
+    "promptQuestion" TEXT,
+    "promptAnswer" TEXT,
+    "anthemTitle" TEXT,
+    "anthemArtist" TEXT,
+    "anthemCoverUrl" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -189,6 +195,10 @@ CREATE TABLE "likes" (
     "id" TEXT NOT NULL,
     "fromUserId" TEXT NOT NULL,
     "toUserId" TEXT NOT NULL,
+    "comment" TEXT,
+    "replyType" TEXT,
+    "replyContext" TEXT,
+    "status" TEXT NOT NULL DEFAULT 'PENDING',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "likes_pkey" PRIMARY KEY ("id")
@@ -343,7 +353,12 @@ CREATE TABLE "events" (
     "capacity" INTEGER NOT NULL,
     "seatsLeft" INTEGER NOT NULL,
     "feeInPaise" INTEGER NOT NULL DEFAULT 0,
-    "attendanceMode" "AttendanceMode" NOT NULL DEFAULT 'OPEN_JOIN',
+    "isPaid" BOOLEAN NOT NULL DEFAULT false,
+    "entryFee" INTEGER NOT NULL DEFAULT 0,
+    "requireLinkedin" BOOLEAN NOT NULL DEFAULT false,
+    "isLinkedinMandatory" BOOLEAN NOT NULL DEFAULT false,
+    "organizerLinkedin" TEXT,
+    "attendanceMode" "AttendanceMode" NOT NULL DEFAULT 'REQUEST_APPROVAL',
     "status" "EventStatus" NOT NULL DEFAULT 'ACTIVE',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -356,6 +371,8 @@ CREATE TABLE "event_attendees" (
     "id" TEXT NOT NULL,
     "eventId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
+    "linkedinUrl" TEXT,
+    "note" TEXT,
     "status" "AttendeeStatus" NOT NULL DEFAULT 'REQUESTED',
     "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

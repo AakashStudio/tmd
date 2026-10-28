@@ -75,39 +75,57 @@ export async function GET(req: NextRequest) {
       return !blockedIds.has(partnerId);
     });
 
-    const formattedMatches = filteredMatches.map((m) => {
-      const isUser1 = m.user1Id === user.id;
-      const partner = isUser1 ? m.user2 : m.user1;
-      const partnerProfile = partner.profile;
-      const latestMsg = m.conversation?.messages[0] || null;
+    // Ensure every active match has an active conversation
+    const formattedMatches = await Promise.all(
+      filteredMatches.map(async (m) => {
+        let conversation = m.conversation;
+        if (!conversation) {
+          conversation = (await prisma.conversation.upsert({
+            where: { matchId: m.id },
+            update: {},
+            create: { matchId: m.id },
+            include: {
+              messages: {
+                orderBy: { createdAt: "desc" },
+                take: 1,
+              },
+            },
+          })) as any;
+        }
 
-      return {
-        matchId: m.id,
-        conversationId: m.conversation?.id || null,
-        matchedAt: m.createdAt,
-        partner: {
-          userId: partner.id,
-          name: partnerProfile?.name || "Match",
-          age: partnerProfile?.age || 21,
-          city: partnerProfile?.city || "",
-          photoUrl: partnerProfile?.photos[0]?.url || null,
-          isVerified: partner.isVerified,
-        },
-        lastMessage: latestMsg
-          ? {
-              id: latestMsg.id,
-              content:
-                latestMsg.type === "VIEW_ONCE_PHOTO"
-                  ? "📷 View Once Photo"
-                  : latestMsg.content,
-              senderId: latestMsg.senderId,
-              createdAt: latestMsg.createdAt,
-              isFromMe: latestMsg.senderId === user.id,
-              status: latestMsg.status,
-            }
-          : null,
-      };
-    });
+        const isUser1 = m.user1Id === user.id;
+        const partner = isUser1 ? m.user2 : m.user1;
+        const partnerProfile = partner.profile;
+        const latestMsg = conversation?.messages?.[0] || null;
+
+        return {
+          matchId: m.id,
+          conversationId: conversation?.id || m.id,
+          matchedAt: m.createdAt,
+          partner: {
+            userId: partner.id,
+            name: partnerProfile?.name || "Match",
+            age: partnerProfile?.age || 21,
+            city: partnerProfile?.city || "",
+            photoUrl: partnerProfile?.photos[0]?.url || null,
+            isVerified: partner.isVerified,
+          },
+          lastMessage: latestMsg
+            ? {
+                id: latestMsg.id,
+                content:
+                  latestMsg.type === "VIEW_ONCE_PHOTO"
+                    ? "📷 View Once Photo"
+                    : latestMsg.content,
+                senderId: latestMsg.senderId,
+                createdAt: latestMsg.createdAt,
+                isFromMe: latestMsg.senderId === user.id,
+                status: latestMsg.status,
+              }
+            : null,
+        };
+      })
+    );
 
     return NextResponse.json({
       matches: formattedMatches,

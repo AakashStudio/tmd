@@ -51,8 +51,9 @@ export default function VerificationPage() {
   const isPro = entitlements?.canRequestDobCorrection ?? false;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0c] text-white max-w-md mx-auto px-5 py-4 pb-20">
-      <div className="flex items-center gap-3 mb-5 border-b border-[#1e1e26] pb-3">
+    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start sm:py-6 sm:px-4 w-full overflow-x-hidden">
+      <div className="min-h-screen sm:min-h-[780px] bg-[#0a0a0c] text-white max-w-md w-full px-5 py-4 pb-20 sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl relative overflow-x-hidden box-border">
+        <div className="flex items-center gap-3 mb-5 border-b border-[#1e1e26] pb-3">
         <button onClick={() => router.back()} className="p-1 hover:text-amber-400 transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </button>
@@ -226,6 +227,7 @@ export default function VerificationPage() {
             </>
           )}
         </Card>
+      </div>
       </div>
     </div>
   );

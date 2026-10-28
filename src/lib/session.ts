@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { NextRequest } from "next/server";
 import { prisma } from "./db";
 import { verifySessionToken, createSessionToken, SessionPayload } from "./auth-crypto";
 import { config } from "./config";
@@ -79,20 +80,30 @@ export async function clearSessionCookie(): Promise<void> {
 }
 
 /**
- * Retrieves the current session token from cookies.
+ * Retrieves the current session token from cookies or request headers.
  */
-export async function getSessionToken(): Promise<string | null> {
-  const cookieStore = cookies();
-  const sessionCookie = cookieStore.get(config.auth.cookieName);
-  return sessionCookie?.value ?? null;
+export async function getSessionToken(req?: NextRequest): Promise<string | null> {
+  if (req) {
+    const cookieVal = req.cookies.get(config.auth.cookieName)?.value;
+    if (cookieVal) return cookieVal;
+    const authHeader = req.headers.get("authorization");
+    if (authHeader?.startsWith("Bearer ")) return authHeader.substring(7);
+  }
+  try {
+    const cookieStore = cookies();
+    const sessionCookie = cookieStore.get(config.auth.cookieName);
+    return sessionCookie?.value ?? null;
+  } catch {
+    return null;
+  }
 }
 
 /**
- * Retrieves and validates the current authenticated user from the session cookie.
+ * Retrieves and validates the current authenticated user from the session cookie or request.
  * Also touches `lastActiveAt` if more than 15 minutes have passed (auto-reactivating inactive users).
  */
-export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
-  const token = await getSessionToken();
+export async function getCurrentUser(req?: NextRequest): Promise<AuthenticatedUser | null> {
+  const token = await getSessionToken(req);
   if (!token) return null;
 
   const payload = await verifySessionToken(token);

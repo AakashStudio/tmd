@@ -14,7 +14,7 @@ interface RouteParams {
 
 export async function POST(req: NextRequest, { params }: RouteParams) {
   try {
-    const user = await getCurrentUser();
+    const user = await getCurrentUser(req);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
         };
       }
 
-      // Single-use invariant: Check if already opened
+      // Single-use invariant: Check if already opened in snapshot
       if (media.openedAt !== null) {
         return {
           error: "This view-once photo has already been opened and expired.",
@@ -78,14 +78,29 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
         };
       }
 
-      // Atomically mark opened
-      await tx.messageMedia.update({
-        where: { id: mediaId },
+      // Atomic database claim: Strictly claim media ONLY IF openedAt is still null and non-expired
+      const claim = await tx.messageMedia.updateMany({
+        where: {
+          id: mediaId,
+          openedAt: null,
+          OR: [
+            { expiresAt: null },
+            { expiresAt: { gt: new Date() } },
+          ],
+        },
         data: {
           openedAt: new Date(),
           openedByUserId: user.id,
         },
       });
+
+      if (claim.count === 0) {
+        return {
+          error: "This view-once photo has already been opened and expired.",
+          code: "VIEW_ONCE_ALREADY_OPENED",
+          status: 410,
+        };
+      }
 
       return { success: true, mediaId: media.id };
     });

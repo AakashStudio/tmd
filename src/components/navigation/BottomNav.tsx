@@ -7,6 +7,22 @@ import { Flame, MapPin, MessageCircle, Crown, User } from "lucide-react";
 
 export const BottomNav: React.FC = () => {
   const pathname = usePathname();
+  const [unreadCount, setUnreadCount] = React.useState(0);
+
+  React.useEffect(() => {
+    async function checkUnread() {
+      try {
+        const res = await fetch("/api/notifications");
+        if (res.ok) {
+          const data = await res.json();
+          setUnreadCount(data.unreadCount || 0);
+        }
+      } catch (e) {}
+    }
+    checkUnread();
+    const interval = setInterval(checkUnread, 15000);
+    return () => clearInterval(interval);
+  }, [pathname]);
 
   const navItems = [
     { label: "Home", href: "/", icon: Flame },
@@ -34,12 +50,17 @@ export const BottomNav: React.FC = () => {
                 isActive ? "text-[#F59E0B]" : "text-[#7a7a88] hover:text-white"
               }`}
             >
-              <Icon
-                className={`w-5 h-5 mb-1 transition-transform ${
-                  isActive ? "scale-110" : ""
-                }`}
-                strokeWidth={isActive ? 2.5 : 1.8}
-              />
+              <div className="relative">
+                <Icon
+                  className={`w-5 h-5 mb-1 transition-transform ${
+                    isActive ? "scale-110" : ""
+                  }`}
+                  strokeWidth={isActive ? 2.5 : 1.8}
+                />
+                {item.label === "Chat" && unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[#FFC629] ring-2 ring-[#0a0a0c] shadow-sm animate-pulse" />
+                )}
+              </div>
               <span className={`text-[11px] font-medium tracking-tight ${isActive ? "font-bold text-white" : ""}`}>
                 {item.label}
               </span>

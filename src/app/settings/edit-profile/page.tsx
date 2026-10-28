@@ -7,7 +7,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
-import { ArrowLeft, Lock, AlertCircle, CheckCircle } from "lucide-react";
+import { ArrowLeft, Lock, AlertCircle, CheckCircle, MapPin } from "lucide-react";
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -15,6 +15,9 @@ export default function EditProfilePage() {
 
   const [name, setName] = useState("");
   const [city, setCity] = useState("");
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const [isDetectingGps, setIsDetectingGps] = useState<boolean>(false);
   const [bio, setBio] = useState("");
   const [profession, setProfession] = useState("");
   const [education, setEducation] = useState("");
@@ -29,6 +32,8 @@ export default function EditProfilePage() {
     if (profile) {
       setName(profile.name || "");
       setCity(profile.city || "");
+      setLatitude(profile.latitude ?? null);
+      setLongitude(profile.longitude ?? null);
       setBio(profile.bio || "");
       setProfession(profile.profession || "");
       setEducation(profile.education || "");
@@ -36,6 +41,45 @@ export default function EditProfilePage() {
       setRelationshipIntention(profile.relationshipIntention || "LONG_TERM");
     }
   }, [profile]);
+
+  const handleDetectGps = () => {
+    if (!entitlements?.canSelectCity) {
+      alert("Free location changes exhausted. Upgrade to TMD Gold or VIP PRO for unlimited changes.");
+      return;
+    }
+    if (typeof navigator !== "undefined" && navigator.geolocation) {
+      setIsDetectingGps(true);
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          setLatitude(lat);
+          setLongitude(lng);
+          try {
+            const res = await fetch(
+              `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+            );
+            if (res.ok) {
+              const data = await res.json();
+              const detectedCity = data.city || data.locality || data.principalSubdivision;
+              if (detectedCity) {
+                setCity(detectedCity);
+              }
+            }
+          } catch (e) {
+            console.warn(e);
+          } finally {
+            setIsDetectingGps(false);
+          }
+        },
+        (err) => {
+          setIsDetectingGps(false);
+          alert("Could not detect location. Please grant browser location permission.");
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +96,9 @@ export default function EditProfilePage() {
         height: height ? parseInt(height, 10) : null,
         relationshipIntention,
       };
+
+      if (latitude !== null) updates.latitude = latitude;
+      if (longitude !== null) updates.longitude = longitude;
 
       // Only include name if user is Pro and changed it
       if (entitlements?.canChangeName && name !== profile?.name) {
@@ -78,8 +125,9 @@ export default function EditProfilePage() {
   const canEditName = entitlements?.canChangeName ?? false;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0c] text-white max-w-md mx-auto px-5 py-4 pb-20">
-      {/* Top Bar */}
+    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start sm:py-6 sm:px-4 w-full overflow-x-hidden">
+      <div className="min-h-screen sm:min-h-[780px] bg-[#0a0a0c] text-white max-w-md w-full px-5 py-4 pb-20 sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl relative overflow-x-hidden box-border">
+        {/* Top Bar */}
       <div className="flex items-center gap-3 mb-5 border-b border-[#1e1e26] pb-3">
         <button onClick={() => router.back()} className="p-1 hover:text-amber-400">
           <ArrowLeft className="w-5 h-5" />
@@ -153,13 +201,24 @@ export default function EditProfilePage() {
             <label className="text-xs font-semibold text-[#9e9ea8] uppercase tracking-wider">
               Current City
             </label>
-            {entitlements?.locationChangesRemaining !== undefined && (
-              <span className="text-[10px] text-zinc-400 font-medium">
-                {entitlements.locationChangesRemaining === Infinity
-                  ? "Unlimited Changes (PRO/Plus)"
-                  : `${entitlements.locationChangesRemaining}/3 free changes left`}
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleDetectGps}
+                disabled={!entitlements?.canSelectCity || isDetectingGps}
+                className="text-[11px] font-bold text-[#FFC629] flex items-center gap-1 hover:underline disabled:opacity-40"
+              >
+                <MapPin className="w-3 h-3 text-[#FFC629]" />
+                <span>{isDetectingGps ? "Detecting..." : "Detect GPS"}</span>
+              </button>
+              {entitlements?.locationChangesRemaining !== undefined && (
+                <span className="text-[10px] text-zinc-400 font-medium">
+                  {entitlements.locationChangesRemaining === Infinity
+                    ? "Unlimited (PRO)"
+                    : `${entitlements.locationChangesRemaining}/3 left`}
+                </span>
+              )}
+            </div>
           </div>
           <Input
             value={city}
@@ -174,6 +233,12 @@ export default function EditProfilePage() {
             }
             required
           />
+          {latitude && longitude && (
+            <p className="text-[10px] text-emerald-400 mt-1 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              Location pinned: {latitude.toFixed(3)}°, {longitude.toFixed(3)}°
+            </p>
+          )}
         </div>
 
         {/* Profession & Height */}
@@ -235,6 +300,7 @@ export default function EditProfilePage() {
           Save Changes
         </Button>
       </form>
+      </div>
     </div>
   );
 }

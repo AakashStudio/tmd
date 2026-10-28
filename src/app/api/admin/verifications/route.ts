@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   try {
-    const admin = await getAdminUser();
+    const admin = await getAdminUser(req);
     if (!admin) {
       return NextResponse.json({ error: "Unauthorized admin access" }, { status: 401 });
     }

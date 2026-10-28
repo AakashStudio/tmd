@@ -35,6 +35,13 @@ interface PlanItem {
   isActive: boolean;
 }
 
+const PLAN_RANKS: Record<string, number> = {
+  FREE: 0,
+  TIER_49: 1,
+  TIER_149: 2,
+  PRO_499: 3,
+};
+
 function loadRazorpayScript(): Promise<boolean> {
   return new Promise((resolve) => {
     if (typeof window === "undefined") return resolve(false);
@@ -73,10 +80,14 @@ export default function PlansPage() {
         if (res.ok) {
           const data = await res.json();
           setPlans(data.plans || []);
-          setSubscription(data.subscription || null);
-          // Default selection: if user has an active plan, or popular TIER_149
-          if (data.activePlanCode && data.activePlanCode !== "FREE") {
-            setSelectedPlanCode(data.activePlanCode);
+          const userSub = data.subscription || null;
+          setSubscription(userSub);
+          const activeCode = userSub?.planCode || data.activePlanCode || "FREE";
+          const activeRank = PLAN_RANKS[activeCode] || 0;
+          if (activeRank === 1) {
+            setSelectedPlanCode("TIER_149");
+          } else if (activeRank >= 2) {
+            setSelectedPlanCode("PRO_499");
           } else {
             setSelectedPlanCode("TIER_149");
           }
@@ -131,6 +142,10 @@ export default function PlansPage() {
 
   const currentSelectedPkg =
     planPackages.find((p) => p.code === selectedPlanCode) || planPackages[0];
+
+  const currentActiveCode = subscription?.planCode || "FREE";
+  const currentRank = PLAN_RANKS[currentActiveCode] || 0;
+  const selectedRank = PLAN_RANKS[selectedPlanCode] || 0;
 
   const verifyAndActivate = async (
     orderId: string,
@@ -418,8 +433,12 @@ export default function PlansPage() {
 
           {/* Plan Cards Row */}
           <div className="grid grid-cols-3 gap-2.5">
-            {planPackages.map((pkg, idx) => {
+            {planPackages.map((pkg) => {
+              const pkgRank = PLAN_RANKS[pkg.code] || 0;
               const isSelected = selectedPlanCode === pkg.code;
+              const isCurrentPlan = currentRank > 0 && pkgRank === currentRank;
+              const isAlreadyIncluded = currentRank > 0 && pkgRank < currentRank;
+              const isUpgrade = pkgRank > currentRank;
 
               return (
                 <div
@@ -428,24 +447,43 @@ export default function PlansPage() {
                   className={`relative p-3.5 rounded-2xl cursor-pointer transition-all flex flex-col justify-between min-h-[145px] ${
                     isSelected
                       ? "border-2 border-[#d4af37] bg-[#1a1815] shadow-xl shadow-amber-950/30"
+                      : isCurrentPlan
+                      ? "border border-emerald-500/50 bg-[#121c15]"
+                      : isAlreadyIncluded
+                      ? "border border-zinc-800/60 bg-[#111116] opacity-75"
                       : "border border-zinc-800 bg-[#14141a] hover:border-zinc-700"
                   }`}
                 >
                   {/* Top Badge & Checkmark */}
                   <div className="flex items-start justify-between min-h-[18px]">
-                    {pkg.badge ? (
+                    {isCurrentPlan ? (
+                      <span className="text-[10px] font-extrabold text-emerald-400 flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                        Current
+                      </span>
+                    ) : isAlreadyIncluded ? (
+                      <span className="text-[10px] font-bold text-zinc-500">
+                        Included
+                      </span>
+                    ) : isUpgrade ? (
+                      <span className="text-[11px] font-extrabold text-[#d4af37]">
+                        {pkg.badge || "Upgrade"}
+                      </span>
+                    ) : (
                       <span className="text-[11px] font-extrabold text-[#d4af37]">
                         {pkg.badge}
                       </span>
-                    ) : (
-                      <span />
                     )}
 
-                    {isSelected && (
+                    {isCurrentPlan ? (
+                      <div className="text-emerald-400">
+                        <Check className="w-4 h-4 stroke-[3]" />
+                      </div>
+                    ) : isSelected ? (
                       <div className="text-[#d4af37]">
                         <Check className="w-4 h-4 stroke-[3]" />
                       </div>
-                    )}
+                    ) : null}
                   </div>
 
                   {/* Title */}
@@ -458,7 +496,7 @@ export default function PlansPage() {
                   {/* Subtitle / Price rate */}
                   <div>
                     <span className="text-xs font-bold text-zinc-300">
-                      {pkg.subtitle}
+                      {isCurrentPlan ? "Active" : isAlreadyIncluded ? "Unlocked" : pkg.subtitle}
                     </span>
                   </div>
                 </div>
@@ -513,28 +551,65 @@ export default function PlansPage() {
         </div>
       </div>
 
-      {/* 5. FIXED PURCHASE BAR (Above BottomNav) */}
-      <div className="fixed bottom-16 inset-x-0 z-40 bg-gradient-to-t from-black via-[#0d0d12]/95 to-[#0d0d12]/90 backdrop-blur-md max-w-md mx-auto px-5 pt-2 pb-2.5 border-t border-zinc-900/80 space-y-2">
-        {/* Fine Print Legal Text */}
-        <p className="text-[10px] text-zinc-400 leading-tight">
-          One-time payment for {selectedPlanCode === "PRO_499" ? "10" : "15"} days. No hidden charges or auto-renewals. By tapping Continue, you agree to our{" "}
-          <span className="underline font-semibold text-zinc-300 cursor-pointer">Terms</span>.
-        </p>
+      {/* 5. BOTTOM BAR / ACTIVE VIP STATUS CARD */}
+      {currentRank >= 3 ? (
+        <div className="fixed bottom-16 inset-x-0 z-40 bg-[#0d0d12]/95 backdrop-blur-md max-w-md mx-auto px-5 py-3 border-t border-amber-500/30">
+          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-[#1a1714] via-[#261f14] to-[#1a1714] border border-amber-500/40 flex items-center justify-between shadow-xl shadow-amber-950/20">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#D4AF37] to-[#FFC629] flex items-center justify-center text-black font-black shadow-md">
+                <Crown className="w-5 h-5 fill-current" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-black text-sm text-[#FFC629]">VIP PRO Member</span>
+                  <span className="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">Active</span>
+                </div>
+                <p className="text-[11px] text-zinc-400">All exclusive privileges & events unlocked</p>
+              </div>
+            </div>
+            {subscription?.daysRemaining !== undefined && (
+              <span className="text-[11px] font-bold text-amber-300 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">
+                {subscription.daysRemaining}d left
+              </span>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="fixed bottom-16 inset-x-0 z-40 bg-gradient-to-t from-black via-[#0d0d12]/95 to-[#0d0d12]/90 backdrop-blur-md max-w-md mx-auto px-5 pt-2 pb-2.5 border-t border-zinc-900/80 space-y-2">
+          {/* Fine Print Legal Text */}
+          <p className="text-[10px] text-zinc-400 leading-tight">
+            One-time payment for {selectedPlanCode === "PRO_499" ? "10" : "15"} days. No hidden charges or auto-renewals. By tapping Continue, you agree to our{" "}
+            <span className="underline font-semibold text-zinc-300 cursor-pointer">Terms</span>.
+          </p>
 
-        {/* Continue Button */}
-        <button
-          type="button"
-          onClick={handleExecutePayment}
-          disabled={isProcessing}
-          className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] hover:brightness-105 text-black font-black text-sm tracking-tight transition active:scale-[0.98] shadow-xl shadow-amber-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
-        >
-          {isProcessing ? (
-            <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+          {/* Continue / Upgrade / Active Button */}
+          {selectedRank <= currentRank ? (
+            <div className="w-full py-3.5 rounded-full bg-zinc-800 text-zinc-300 font-bold text-sm text-center border border-zinc-700 flex items-center justify-center gap-2">
+              <Check className="w-4 h-4 text-emerald-400 stroke-[3]" />
+              <span>
+                {selectedRank === currentRank ? "Current Plan Active" : "Already Included in Current Plan"}
+                {subscription?.daysRemaining ? ` (${subscription.daysRemaining}d left)` : ""}
+              </span>
+            </div>
           ) : (
-            <span>Continue - ₹{currentSelectedPkg.totalPrice}.00 total</span>
+            <button
+              type="button"
+              onClick={handleExecutePayment}
+              disabled={isProcessing}
+              className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] hover:brightness-105 text-black font-black text-sm tracking-tight transition active:scale-[0.98] shadow-xl shadow-amber-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {isProcessing ? (
+                <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <span>
+                  {currentRank > 0 ? "Upgrade to " : "Continue - "}
+                  {currentSelectedPkg.title} · ₹{currentSelectedPkg.totalPrice}.00
+                </span>
+              )}
+            </button>
           )}
-        </button>
-      </div>
+        </div>
+      )}
 
       {/* 6. ALWAYS VISIBLE BOTTOM NAVIGATION */}
       <BottomNav />

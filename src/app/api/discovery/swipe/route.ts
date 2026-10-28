@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { swipeActionSchema, formatZodError } from "@/lib/validation";
 import { getCurrentSwipeWindow } from "@/lib/swipe-window";
 import { getCanonicalMatchPair } from "@/lib/match-helper";
+import { createNotification } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
 
@@ -219,6 +220,26 @@ export async function POST(req: NextRequest) {
           },
         }).catch(() => null);
       }
+
+      // Trigger Match notifications for both users
+      const myName = user.profile?.name || "Someone";
+      const targetName = targetUser.profile?.name || "Someone";
+      await Promise.all([
+        createNotification({
+          userId: targetUserId,
+          type: "MATCH",
+          title: "It's a Match! 🎉",
+          body: `You and ${myName} liked each other! Start chatting now.`,
+          linkUrl: `/chat/${conversation.id}`,
+        }),
+        createNotification({
+          userId: user.id,
+          type: "MATCH",
+          title: "It's a Match! 🎉",
+          body: `You and ${targetName} liked each other! Start chatting now.`,
+          linkUrl: `/chat/${conversation.id}`,
+        }),
+      ]).catch(() => null);
 
       return NextResponse.json({
         success: true,

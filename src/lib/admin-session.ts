@@ -1,11 +1,12 @@
 import { cookies } from "next/headers";
+import { NextRequest } from "next/server";
 import { prisma } from "./db";
 import { SignJWT, jwtVerify } from "jose";
 import { config } from "./config";
 import { AdminRole } from "@prisma/client";
 
 const SECRET_KEY = new TextEncoder().encode(config.auth.sessionSecret);
-const ADMIN_COOKIE_NAME = "tmd_admin_session";
+export const ADMIN_COOKIE_NAME = "tmd_admin_session";
 
 export interface AuthenticatedAdmin {
   id: string;
@@ -14,8 +15,8 @@ export interface AuthenticatedAdmin {
   role: AdminRole;
 }
 
-export async function setAdminSessionCookie(admin: AuthenticatedAdmin): Promise<string> {
-  const token = await new SignJWT({
+export async function createAdminSessionToken(admin: AuthenticatedAdmin): Promise<string> {
+  return await new SignJWT({
     adminId: admin.id,
     email: admin.email,
     role: admin.role,
@@ -25,31 +26,63 @@ export async function setAdminSessionCookie(admin: AuthenticatedAdmin): Promise<
     .setIssuedAt()
     .setExpirationTime("24h")
     .sign(SECRET_KEY);
+}
 
-  const cookieStore = cookies();
-  cookieStore.set(ADMIN_COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: config.app.isProduction,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24, // 24 hours
-  });
+export async function setAdminSessionCookie(admin: AuthenticatedAdmin): Promise<string> {
+  const token = await createAdminSessionToken(admin);
+
+  try {
+    const cookieStore = cookies();
+    cookieStore.set(ADMIN_COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: config.app.isProduction,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24, // 24 hours
+    });
+  } catch {
+    // Outside Next.js request context (e.g. tests)
+  }
 
   return token;
 }
 
 export async function clearAdminSessionCookie(): Promise<void> {
-  const cookieStore = cookies();
-  cookieStore.delete(ADMIN_COOKIE_NAME);
+  try {
+    const cookieStore = cookies();
+    cookieStore.delete(ADMIN_COOKIE_NAME);
+  } catch {
+    // Outside Next.js request context
+  }
 }
 
-export async function getAdminUser(): Promise<AuthenticatedAdmin | null> {
-  const cookieStore = cookies();
-  const sessionCookie = cookieStore.get(ADMIN_COOKIE_NAME);
-  if (!sessionCookie?.value) return null;
+export async function getAdminUser(req?: NextRequest): Promise<AuthenticatedAdmin | null> {
+  let token: string | null = null;
+
+  if (req) {
+    token = req.cookies.get(ADMIN_COOKIE_NAME)?.value ?? null;
+    if (!token) {
+      const authHeader = req.headers.get("authorization");
+      if (authHeader?.startsWith("Bearer ")) {
+        token = authHeader.substring(7);
+      }
+    }
+  }
+
+  if (!token) {
+    try {
+      const cookieStore = cookies();
+      const sessionCookie = cookieStore.get(ADMIN_COOKIE_NAME);
+      token = sessionCookie?.value ?? null;
+    } catch {
+      token = null;
+    }
+  }
+
+  if (!token) return null;
 
   try {
-    const { payload } = await jwtVerify(sessionCookie.value, SECRET_KEY, {
+    const { payload } = await jwtVerify(token, SECRET_KEY, {
       algorithms: ["HS256"],
     });
 

@@ -66,19 +66,21 @@ export default function HomePage() {
   // 1. Not Authenticated State -> Meetup Design Auth Hero
   if (!user) {
     return (
-      <MeetupAuthHero
-        onSuccess={() => {
-          refreshUser();
-          refreshProfile();
-        }}
-      />
+      <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-center sm:py-6 sm:px-4 w-full overflow-x-hidden">
+        <MeetupAuthHero
+          onSuccess={() => {
+            refreshUser();
+            refreshProfile();
+          }}
+        />
+      </div>
     );
   }
 
   // 2. Authenticated but Incomplete Profile -> Onboarding Flow
   if (!hasProfile || !profile) {
     return (
-      <main className="min-h-[100dvh] bg-[#0a0a0c] text-white px-4 sm:px-6 py-6 sm:py-10 max-w-md mx-auto flex flex-col justify-center box-border">
+      <main className="min-h-[100dvh] bg-[#08080b] text-white px-4 sm:px-6 py-6 sm:py-10 max-w-md w-full mx-auto flex flex-col justify-center box-border overflow-x-hidden">
         <OnboardingWizard
           onCompleted={() => {
             refreshUser();
@@ -93,8 +95,9 @@ export default function HomePage() {
   const currentUserPhoto = profile.photos?.find((p) => p.isPrimary)?.url || profile.photos?.[0]?.url;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0c] text-white pb-24 max-w-md mx-auto flex flex-col justify-between">
-      {/* Top Bar */}
+    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start sm:py-6 sm:px-4 w-full overflow-x-hidden">
+      <div className="min-h-screen sm:min-h-[844px] sm:max-h-[92vh] bg-[#0a0a0c] text-white pb-24 max-w-md w-full mx-auto flex flex-col justify-between sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl overflow-x-hidden relative box-border">
+        {/* Top Bar */}
       <header className="px-5 py-3 border-b border-[#1e1e26] flex items-center justify-between sticky top-0 bg-[#0a0a0c]/90 backdrop-blur-md z-30">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#D4AF37] via-[#F59E0B] to-[#FFC629] flex items-center justify-center font-black text-sm text-black shadow-md shadow-amber-500/30">
@@ -235,6 +238,7 @@ export default function HomePage() {
       )}
 
       <BottomNav />
+      </div>
     </div>
   );
 }

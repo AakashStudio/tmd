@@ -14,7 +14,7 @@ interface RouteParams {
 
 export async function PATCH(req: NextRequest, { params }: RouteParams) {
   try {
-    const admin = await getAdminUser();
+    const admin = await getAdminUser(req);
     if (!admin) {
       return NextResponse.json({ error: "Unauthorized admin access" }, { status: 401 });
     }

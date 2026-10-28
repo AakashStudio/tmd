@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { reportSchema, formatZodError } from "@/lib/validation";
+import { getCanonicalMatchPair } from "@/lib/match-helper";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await getCurrentUser();
+    const user = await getCurrentUser(req);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -51,6 +52,23 @@ export async function POST(req: NextRequest) {
           blockedUserId: reportedUserId,
         },
       });
+
+      // Immediate exclusion: Unmatch existing active matches
+      try {
+        const { user1Id, user2Id } = getCanonicalMatchPair(user.id, reportedUserId);
+        await prisma.match.updateMany({
+          where: {
+            user1Id,
+            user2Id,
+          },
+          data: {
+            status: "UNMATCHED",
+            unmatchedById: user.id,
+          },
+        });
+      } catch {
+        // No match exists between them, that's fine
+      }
     }
 
     return NextResponse.json({

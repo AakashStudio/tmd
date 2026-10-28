@@ -149,8 +149,9 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0c] text-white pb-24 max-w-md mx-auto flex flex-col">
-      {/* Top Header */}
+    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start sm:py-6 sm:px-4 w-full overflow-x-hidden">
+      <div className="min-h-screen sm:min-h-[844px] sm:max-h-[92vh] bg-[#0a0a0c] text-white pb-24 max-w-md w-full mx-auto flex flex-col sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl overflow-x-hidden relative box-border">
+        {/* Top Header */}
       <header className="px-5 py-4 border-b border-[#1e1e26] flex items-center justify-between sticky top-0 bg-[#0a0a0c]/90 backdrop-blur-md z-30">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#D4AF37] via-[#F59E0B] to-[#FFC629] flex items-center justify-center text-black font-black text-sm shadow-[0_0_15px_rgba(245,158,11,0.3)]">
@@ -370,9 +371,10 @@ export default function ChatPage() {
                 {matches.map((m) => (
                   <div
                     key={m.matchId}
-                    onClick={() =>
-                      m.conversationId && router.push(`/chat/${m.conversationId}`)
-                    }
+                    onClick={() => {
+                      const id = m.conversationId || m.matchId;
+                      if (id) router.push(`/chat/${id}`);
+                    }}
                     className="group relative rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800 hover:border-amber-400/60 transition cursor-pointer flex flex-col aspect-[4/5] shadow-md"
                   >
                     {/* Photo */}
@@ -439,9 +441,10 @@ export default function ChatPage() {
                 {filteredConversations.map((c) => (
                   <div
                     key={c.matchId}
-                    onClick={() =>
-                      c.conversationId && router.push(`/chat/${c.conversationId}`)
-                    }
+                    onClick={() => {
+                      const id = c.conversationId || c.matchId;
+                      if (id) router.push(`/chat/${id}`);
+                    }}
                     className="flex items-center gap-3.5 p-2.5 rounded-2xl hover:bg-zinc-900/60 cursor-pointer transition active:scale-[0.99]"
                   >
                     {/* Avatar */}
@@ -500,6 +503,7 @@ export default function ChatPage() {
       </div>
 
       <BottomNav />
+      </div>
     </div>
   );
 }

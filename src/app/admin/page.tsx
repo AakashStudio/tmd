@@ -144,8 +144,8 @@ export default function AdminPage() {
   // 1. Unauthenticated Admin Login Screen
   if (!admin) {
     return (
-      <div className="min-h-screen bg-[#070709] text-white flex items-center justify-center p-4">
-        <div className="w-full max-w-sm rounded-3xl bg-zinc-950 border border-zinc-800 p-6 space-y-5 shadow-2xl">
+      <div className="min-h-screen bg-[#070709] text-white flex items-center justify-center p-4 overflow-x-hidden box-border">
+        <div className="w-full max-w-sm rounded-3xl bg-zinc-950 border border-zinc-800 p-6 space-y-5 shadow-2xl box-border">
           <div className="text-center space-y-1">
             <div className="w-12 h-12 mx-auto rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-rose-500 mb-2">
               <ShieldAlert className="w-6 h-6" />
@@ -200,7 +200,7 @@ export default function AdminPage() {
 
   // 2. Authenticated Admin Moderation Console
   return (
-    <div className="min-h-screen bg-[#070709] text-white p-4 max-w-4xl mx-auto space-y-6">
+    <div className="min-h-screen bg-[#070709] text-white p-4 max-w-4xl mx-auto space-y-6 overflow-x-hidden box-border">
       {/* Top Header */}
       <header className="flex items-center justify-between pb-4 border-b border-zinc-900">
         <div className="flex items-center gap-3">

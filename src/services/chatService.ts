@@ -48,13 +48,38 @@ export interface GetMessagesResult {
 /**
  * Validates chat conversation membership and block status.
  */
-export async function validateChatParticipant(conversationId: string, userId: string) {
-  const conversation = await prisma.conversation.findUnique({
-    where: { id: conversationId },
+export async function validateChatParticipant(conversationIdOrMatchId: string, userId: string) {
+  let conversation = await prisma.conversation.findUnique({
+    where: { id: conversationIdOrMatchId },
     include: {
       match: true,
     },
   });
+
+  // Fallback: If not found by conversation id, try finding by matchId
+  if (!conversation) {
+    conversation = await prisma.conversation.findUnique({
+      where: { matchId: conversationIdOrMatchId },
+      include: {
+        match: true,
+      },
+    });
+  }
+
+  // Fallback: If match exists but conversation hasn't been created yet, auto-upsert
+  if (!conversation) {
+    const match = await prisma.match.findUnique({
+      where: { id: conversationIdOrMatchId },
+    });
+    if (match) {
+      conversation = await prisma.conversation.upsert({
+        where: { matchId: match.id },
+        update: {},
+        create: { matchId: match.id },
+        include: { match: true },
+      });
+    }
+  }
 
   if (!conversation) {
     return { error: "Conversation not found", status: 404 };
@@ -116,12 +141,13 @@ export async function getConversationMessages(
     throw new Error(validation.error);
   }
 
-  const { partnerId } = validation;
+  const { partnerId, conversation } = validation;
+  const realConversationId = conversation.id;
 
   // Auto-mark incoming unread messages as READ
   await prisma.message.updateMany({
     where: {
-      conversationId,
+      conversationId: realConversationId,
       senderId: partnerId,
       status: { not: "READ" },
     },
@@ -142,7 +168,7 @@ export async function getConversationMessages(
   if (direction === "after" && cursor) {
     // Polling for incoming new messages
     messages = await prisma.message.findMany({
-      where: { conversationId },
+      where: { conversationId: realConversationId },
       take: takeAmount,
       skip: 1,
       cursor: { id: cursor },
@@ -153,7 +179,7 @@ export async function getConversationMessages(
     // Normal or historical loading
     const queryTake = takeAmount + 1;
     messages = await prisma.message.findMany({
-      where: { conversationId },
+      where: { conversationId: realConversationId },
       include: { media: true },
       take: queryTake,
       ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),

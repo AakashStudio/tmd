@@ -78,8 +78,9 @@ export default function ConversationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0c] text-white max-w-md mx-auto flex flex-col justify-between">
-      {/* Top Header */}
+    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start sm:py-6 sm:px-4 w-full overflow-x-hidden">
+      <div className="min-h-screen sm:min-h-[844px] sm:max-h-[92vh] bg-[#0a0a0c] text-white max-w-md w-full mx-auto flex flex-col justify-between sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl overflow-x-hidden relative box-border">
+        {/* Top Header */}
       <header className="px-3 py-3 border-b border-[#1e1e26] flex items-center justify-between sticky top-0 bg-[#0a0a0c]/95 backdrop-blur-md z-30">
         <div className="flex items-center gap-2.5">
           <button
@@ -173,10 +174,10 @@ export default function ConversationPage() {
               >
                 {/* Bubble Container */}
                 <div
-                  className={`max-w-[78%] rounded-lg p-3 shadow-md text-sm ${
+                  className={`max-w-[78%] rounded-2xl p-3 text-sm shadow-md ${
                     m.isFromMe
-                      ? "bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-br-sm shadow-rose-600/20"
-                      : "bg-zinc-900 border border-zinc-800 text-zinc-100 rounded-bl-sm"
+                      ? "bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] text-black font-medium rounded-br-xs shadow-amber-500/20"
+                      : "bg-[#16161d] border border-white/[0.08] text-zinc-100 rounded-bl-xs"
                   }`}
                 >
                   {isText && (
@@ -202,14 +203,14 @@ export default function ConversationPage() {
                         <button
                           type="button"
                           onClick={() => handleOpenMedia(m.media!.id)}
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 transition text-xs font-semibold"
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 transition text-xs font-semibold"
                         >
                           <Camera className="w-4 h-4 text-amber-400" />
                           <span>View Once Photo (Tap to view)</span>
                         </button>
                       ) : (
                         /* Sender View */
-                        <div className="flex items-center gap-2 text-xs py-1 opacity-90">
+                        <div className="flex items-center gap-2 text-xs py-1 opacity-90 text-black">
                           <Camera className="w-4 h-4" />
                           <span>View Once Photo sent</span>
                         </div>
@@ -220,7 +221,7 @@ export default function ConversationPage() {
                   {/* Message Metadata: Time and Status */}
                   <div
                     className={`flex items-center justify-end gap-1 text-[9px] mt-1 ${
-                      m.isFromMe ? "text-rose-200/80 font-medium" : "text-zinc-500"
+                      m.isFromMe ? "text-black/75 font-semibold" : "text-zinc-500"
                     }`}
                   >
                     <span>
@@ -232,11 +233,11 @@ export default function ConversationPage() {
                     {m.isFromMe && (
                       <span>
                         {m.status === "READ" ? (
-                          <CheckCheck className="w-3 h-3 text-cyan-300 font-bold" />
+                          <CheckCheck className="w-3 h-3 text-emerald-950 font-bold" />
                         ) : m.status === "DELIVERED" ? (
-                          <CheckCheck className="w-3 h-3 text-white/80" />
+                          <CheckCheck className="w-3 h-3 text-black/60" />
                         ) : (
-                          <Check className="w-3 h-3 text-white/60" />
+                          <Check className="w-3 h-3 text-black/50" />
                         )}
                       </span>
                     )}
@@ -279,16 +280,16 @@ export default function ConversationPage() {
             onChange={(e) => setInputText(e.target.value)}
             placeholder="Type a message..."
             disabled={isSending}
-            className="flex-1 px-4 py-2 rounded-full bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500/60"
+            className="flex-1 px-4 py-2 rounded-full bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFC629]"
           />
 
           {/* Send Button */}
           <button
             type="submit"
             disabled={!inputText.trim() || isSending}
-            className="p-2.5 rounded-full bg-gradient-to-tr from-rose-600 to-pink-600 text-white hover:opacity-95 transition active:scale-95 disabled:opacity-40 shadow-lg shadow-rose-600/30"
+            className="p-2.5 rounded-full bg-gradient-to-tr from-[#F59E0B] via-[#FFC629] to-[#F59E0B] text-black hover:brightness-105 transition active:scale-95 disabled:opacity-40 shadow-lg shadow-amber-500/20"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-4 h-4 fill-current" />
           </button>
         </form>
       </footer>
@@ -301,6 +302,7 @@ export default function ConversationPage() {
           onClose={() => setActiveStreamUrl(null)}
         />
       )}
+      </div>
     </div>
   );
 }

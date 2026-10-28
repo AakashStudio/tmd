@@ -160,8 +160,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#0d0d12] text-white flex flex-col justify-between max-w-md mx-auto w-full h-[100dvh] overflow-y-auto px-6 py-7 animate-in fade-in duration-200">
-      {/* Top Header Navigation */}
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-0 sm:p-4 overflow-x-hidden overflow-y-auto">
+      <div className="w-full max-w-md bg-[#0d0d12] text-white flex flex-col justify-between h-[100dvh] sm:h-auto sm:min-h-[720px] sm:max-h-[92vh] sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl px-5 sm:px-6 py-6 overflow-x-hidden overflow-y-auto relative box-border animate-in fade-in duration-200">
+        {/* Top Header Navigation */}
       <div className="flex items-center justify-between">
         <button
           type="button"
@@ -277,7 +278,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
             {/* 6 Individual Digit Boxes */}
             <div className="pt-2">
-              <div className="flex justify-between items-center gap-2 max-w-sm mx-auto">
+              <div className="flex justify-between items-center gap-1.5 sm:gap-2 max-w-sm mx-auto w-full">
                 {[0, 1, 2, 3, 4, 5].map((index) => (
                   <input
                     key={index}
@@ -292,7 +293,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     onKeyDown={(e) => handleOtpKeyDown(e, index)}
                     onPaste={handleOtpPaste}
                     disabled={isLoading}
-                    className={`w-12 h-14 text-center text-2xl font-black rounded-xl border transition-all ${
+                    className={`w-11 sm:w-12 h-12 sm:h-14 text-center text-xl sm:text-2xl font-black rounded-xl border transition-all ${
                       otp[index]
                         ? "border-[#FFC629] bg-amber-400/10 text-white shadow-[0_0_15px_rgba(255,198,41,0.35)]"
                         : "border-zinc-800 bg-zinc-900/90 text-white focus:border-[#FFC629] focus:bg-zinc-900"
@@ -382,5 +383,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         )}
       </div>
     </div>
-  );
+  </div>
+);
 };

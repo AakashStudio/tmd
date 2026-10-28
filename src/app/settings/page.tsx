@@ -310,8 +310,9 @@ export default function ProfileHubPage() {
   const strokeOffset = ringCircumference - (ringCircumference * completionPercentage) / 100;
 
   return (
-    <div className="min-h-screen bg-[#0c0c10] text-white pb-28 max-w-md mx-auto select-none">
-      {/* Hidden Gallery Input */}
+    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start sm:py-6 sm:px-4 w-full overflow-x-hidden">
+      <div className="min-h-screen sm:min-h-[780px] bg-[#0c0c10] text-white pb-28 max-w-md w-full sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl relative overflow-x-hidden box-border select-none">
+        {/* Hidden Gallery Input */}
       <input
         type="file"
         ref={fileInputRef}
@@ -1016,6 +1017,7 @@ export default function ProfileHubPage() {
       />
 
       <BottomNav />
+      </div>
     </div>
   );
 }
