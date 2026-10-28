@@ -691,7 +691,7 @@ export default function ProfileHubPage() {
       {/* 1. ABOUT ME POPUP */}
       {activeQuickEdit === "ABOUT_ME" && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-sm sm:max-w-md bg-[#121217] border border-zinc-800 rounded-3xl p-5 text-white space-y-4 shadow-2xl">
+          <div className="w-full max-w-sm bg-[#121217] border border-zinc-800 rounded-3xl p-5 text-white space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
               <div>
                 <h3 className="font-bold text-base text-white">About Me</h3>
@@ -734,7 +734,7 @@ export default function ProfileHubPage() {
       {/* 2. MY MOOD POPUP */}
       {activeQuickEdit === "MOOD" && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-sm sm:max-w-md bg-[#121217] border border-zinc-800 rounded-3xl p-5 text-white space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl">
+          <div className="w-full max-w-sm bg-[#121217] border border-zinc-800 rounded-3xl p-5 text-white space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
               <div>
                 <h3 className="font-bold text-base text-white">What&apos;s your Mood?</h3>
@@ -804,7 +804,7 @@ export default function ProfileHubPage() {
       {/* 3. INTERESTS POPUP (FULL SCREEN TAGS CLOUD + CONFIRM) */}
       {activeQuickEdit === "INTERESTS" && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-sm sm:max-w-md bg-[#121217] border border-zinc-800 rounded-3xl p-5 pb-5 text-white flex flex-col max-h-[80vh] h-[520px] shadow-2xl overflow-hidden">
+          <div className="w-full max-w-sm bg-[#121217] border border-zinc-800 rounded-3xl p-5 pb-5 text-white flex flex-col max-h-[80vh] h-[520px] shadow-2xl overflow-hidden">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3 shrink-0">
               <div>
@@ -865,7 +865,7 @@ export default function ProfileHubPage() {
       {/* 4. MUSIC POPUP (FULL SCREEN TAGS CLOUD + CONFIRM) */}
       {activeQuickEdit === "MUSIC" && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-sm sm:max-w-md bg-[#121217] border border-zinc-800 rounded-3xl p-5 pb-5 text-white flex flex-col max-h-[80vh] h-[520px] shadow-2xl overflow-hidden">
+          <div className="w-full max-w-sm bg-[#121217] border border-zinc-800 rounded-3xl p-5 pb-5 text-white flex flex-col max-h-[80vh] h-[520px] shadow-2xl overflow-hidden">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3 shrink-0">
               <div>
@@ -938,7 +938,7 @@ export default function ProfileHubPage() {
         activeQuickEdit === "JOB" ||
         activeQuickEdit === "EDUCATION") && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-sm sm:max-w-md bg-[#121217] border border-zinc-800 rounded-3xl p-5 text-white space-y-4 shadow-2xl">
+          <div className="w-full max-w-sm bg-[#121217] border border-zinc-800 rounded-3xl p-5 text-white space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
               <h3 className="font-bold text-sm text-white">
                 {activeQuickEdit === "HEIGHT" && "Edit Height (cm)"}
@@ -977,7 +977,7 @@ export default function ProfileHubPage() {
       {/* ================= FULL ACCOUNT SETTINGS DRAWER ================= */}
       {isSettingsDrawerOpen && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-sm sm:max-w-md bg-[#121217] border border-zinc-800 rounded-3xl p-5 text-white space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl">
+          <div className="w-full max-w-sm bg-[#121217] border border-zinc-800 rounded-3xl p-5 text-white space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
               <h3 className="font-bold text-base text-white">Account Settings</h3>
               <button

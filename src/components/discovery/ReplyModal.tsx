@@ -82,7 +82,7 @@ export function ReplyModal({
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
       <div
-        className="w-full max-w-sm sm:max-w-md bg-[#121217] border border-zinc-800 rounded-3xl p-5 text-white shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto"
+        className="w-full max-w-sm bg-[#121217] border border-zinc-800 rounded-3xl p-5 text-white shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

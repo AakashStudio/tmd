@@ -256,7 +256,7 @@ export function LocationPickerModal({
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-      <div className="w-full max-w-sm sm:max-w-md bg-[#121217] border border-zinc-800 rounded-3xl p-5 text-white flex flex-col max-h-[85vh] shadow-2xl overflow-hidden">
+      <div className="w-full max-w-sm bg-[#121217] border border-zinc-800 rounded-3xl p-5 text-white flex flex-col max-h-[85vh] shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-zinc-800 pb-3 shrink-0">
           <div className="flex items-center gap-2">
