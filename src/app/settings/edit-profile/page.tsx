@@ -367,13 +367,42 @@ export default function EditProfilePage() {
               <GraduationCap className="w-3.5 h-3.5 text-[#FFC629]" />
               <span>Education</span>
             </label>
-            <input
-              type="text"
-              value={education}
-              onChange={(e) => setEducation(e.target.value)}
-              placeholder="e.g. Master's in Design"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-700/80 text-white text-sm font-semibold focus:outline-none focus:border-[#FFC629]"
-            />
+            <div className="relative">
+              <select
+                value={education}
+                onChange={(e) => setEducation(e.target.value)}
+                className="w-full px-3.5 py-3 rounded-xl bg-zinc-900 border border-zinc-700/80 text-white text-sm font-semibold focus:outline-none focus:border-[#FFC629] appearance-none cursor-pointer pr-10"
+              >
+                <option value="" disabled className="bg-zinc-900 text-zinc-500">
+                  Select education level
+                </option>
+                <option value="Bachelors / Graduate" className="bg-zinc-900 text-white">
+                  Bachelors / Graduate
+                </option>
+                <option value="Masters / Post Graduate" className="bg-zinc-900 text-white">
+                  Masters / Post Graduate
+                </option>
+                <option value="12+ / High School" className="bg-zinc-900 text-white">
+                  12+ / High School
+                </option>
+                <option value="Diploma" className="bg-zinc-900 text-white">
+                  Diploma
+                </option>
+                <option value="Doctorate / Ph.D." className="bg-zinc-900 text-white">
+                  Doctorate / Ph.D.
+                </option>
+                <option value="Professional (CA, MBBS, LLB, etc.)" className="bg-zinc-900 text-white">
+                  Professional (CA, MBBS, LLB, etc.)
+                </option>
+                <option value="Trade / Vocational" className="bg-zinc-900 text-white">
+                  Trade / Vocational
+                </option>
+                <option value="Other" className="bg-zinc-900 text-white">
+                  Other
+                </option>
+              </select>
+              <ChevronDown className="w-4 h-4 text-zinc-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
           </div>
 
           {/* 6. Relationship Intention */}

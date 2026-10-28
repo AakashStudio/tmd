@@ -962,13 +962,49 @@ export default function ProfileHubPage() {
               </button>
             </div>
 
-            <input
-              type={activeQuickEdit === "HEIGHT" ? "number" : "text"}
-              value={quickInputVal}
-              onChange={(e) => setQuickInputVal(e.target.value)}
-              placeholder="Enter value..."
-              className="w-full p-3 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#FFC629]"
-            />
+            {activeQuickEdit === "EDUCATION" ? (
+              <select
+                value={quickInputVal}
+                onChange={(e) => setQuickInputVal(e.target.value)}
+                className="w-full p-3 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#FFC629] appearance-none cursor-pointer"
+              >
+                <option value="" disabled className="bg-zinc-900 text-zinc-500">
+                  Select education level
+                </option>
+                <option value="Bachelors / Graduate" className="bg-zinc-900 text-white">
+                  Bachelors / Graduate
+                </option>
+                <option value="Masters / Post Graduate" className="bg-zinc-900 text-white">
+                  Masters / Post Graduate
+                </option>
+                <option value="12+ / High School" className="bg-zinc-900 text-white">
+                  12+ / High School
+                </option>
+                <option value="Diploma" className="bg-zinc-900 text-white">
+                  Diploma
+                </option>
+                <option value="Doctorate / Ph.D." className="bg-zinc-900 text-white">
+                  Doctorate / Ph.D.
+                </option>
+                <option value="Professional (CA, MBBS, LLB, etc.)" className="bg-zinc-900 text-white">
+                  Professional (CA, MBBS, LLB, etc.)
+                </option>
+                <option value="Trade / Vocational" className="bg-zinc-900 text-white">
+                  Trade / Vocational
+                </option>
+                <option value="Other" className="bg-zinc-900 text-white">
+                  Other
+                </option>
+              </select>
+            ) : (
+              <input
+                type={activeQuickEdit === "HEIGHT" ? "number" : "text"}
+                value={quickInputVal}
+                onChange={(e) => setQuickInputVal(e.target.value)}
+                placeholder="Enter value..."
+                className="w-full p-3 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#FFC629]"
+              />
+            )}
 
             <button
               type="button"

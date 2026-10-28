@@ -28,8 +28,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
   const [is18PlusConfirmed, setIs18PlusConfirmed] = useState(false);
   const [gender, setGender] = useState("Male");
   const [interestedIn, setInterestedIn] = useState("Female");
-  const [city, setCity] = useState("Delhi");
-  const [stateName, setStateName] = useState("Delhi");
+  const [city, setCity] = useState("");
+  const [stateName, setStateName] = useState("");
   const [countryName, setCountryName] = useState("India");
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [latitude, setLatitude] = useState<number | null>(null);
@@ -37,7 +37,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
   const [isDetectingLocation, setIsDetectingLocation] = useState<boolean>(false);
   const [bio, setBio] = useState("");
   const [profession, setProfession] = useState("");
-  const [education, setEducation] = useState("");
+  const [education, setEducation] = useState("Bachelors / Graduate");
   const [height, setHeight] = useState<string>("175");
   const [relationshipIntention, setRelationshipIntention] = useState("LONG_TERM");
 
@@ -213,37 +213,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
 
     setShowLocationPopup(false);
 
-    if (choice !== "DENIED" && typeof navigator !== "undefined" && navigator.geolocation) {
-      setIsDetectingLocation(true);
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
-          setLatitude(lat);
-          setLongitude(lng);
-          try {
-            const res = await fetch(
-              `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
-            );
-            if (res.ok) {
-              const data = await res.json();
-              const detectedCity = data.city || data.locality || data.principalSubdivision;
-              if (detectedCity) {
-                setCity(detectedCity);
-              }
-            }
-          } catch (geoErr) {
-            console.warn("Reverse geocode failed:", geoErr);
-          } finally {
-            setIsDetectingLocation(false);
-          }
-        },
-        (err) => {
-          console.warn("Geolocation error:", err.message);
-          setIsDetectingLocation(false);
-        },
-        { enableHighAccuracy: true, timeout: 10000 }
-      );
+    if (choice !== "DENIED") {
+      triggerGpsDetect();
     }
 
     setStep(1);
@@ -258,26 +229,44 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
           const lng = pos.coords.longitude;
           setLatitude(lat);
           setLongitude(lng);
+
           try {
+            // Primary: BigDataCloud Reverse Geocoder
             const res = await fetch(
               `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
             );
             if (res.ok) {
               const data = await res.json();
               const detectedCity = data.city || data.locality || data.principalSubdivision;
-              if (detectedCity) {
-                setCity(detectedCity);
-              }
+              if (detectedCity) setCity(detectedCity);
+              if (data.principalSubdivision) setStateName(data.principalSubdivision);
+              if (data.countryName) setCountryName(data.countryName);
             }
           } catch (geoErr) {
-            console.warn("Reverse geocode failed:", geoErr);
+            console.warn("Primary reverse geocode failed, attempting OSM fallback:", geoErr);
+            // Fallback: OpenStreetMap Nominatim
+            try {
+              const osmRes = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+              );
+              if (osmRes.ok) {
+                const osmData = await osmRes.json();
+                const addr = osmData.address || {};
+                const c = addr.city || addr.town || addr.village || addr.county || addr.state_district;
+                if (c) setCity(c);
+                if (addr.state) setStateName(addr.state);
+                if (addr.country) setCountryName(addr.country);
+              }
+            } catch (fallbackErr) {
+              console.warn("OSM fallback failed:", fallbackErr);
+            }
           } finally {
             setIsDetectingLocation(false);
           }
         },
         (err) => {
+          console.warn("Geolocation error:", err.message);
           setIsDetectingLocation(false);
-          alert("Could not detect location. Please check browser permissions or type city manually.");
         },
         { enableHighAccuracy: true, timeout: 10000 }
       );
@@ -540,12 +529,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
         <div className="space-y-4">
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Current Location (Worldwide)</label>
+              <label className="text-xs font-semibold text-zinc-300">
+                Current Location (Country, State, City)
+              </label>
               <button
                 type="button"
                 onClick={triggerGpsDetect}
                 disabled={isDetectingLocation}
-                className="text-[11px] font-bold text-[#FFC629] flex items-center gap-1 hover:underline disabled:opacity-50"
+                className="text-[11px] font-bold text-[#FFC629] flex items-center gap-1 hover:underline disabled:opacity-50 cursor-pointer"
               >
                 <MapPin className="w-3 h-3 text-[#FFC629]" />
                 <span>{isDetectingLocation ? "Detecting GPS..." : "Auto-detect GPS"}</span>
@@ -555,10 +546,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
             <button
               type="button"
               onClick={() => setIsLocationModalOpen(true)}
-              className="w-full p-3.5 rounded-xl bg-zinc-900 border border-zinc-700/80 hover:border-[#FFC629] text-left text-sm transition flex items-center justify-between group"
+              className="w-full p-3.5 rounded-xl bg-zinc-900 border border-zinc-700/80 hover:border-[#FFC629] text-left text-sm transition flex items-center justify-between group cursor-pointer"
             >
               <div className="flex items-center gap-2.5 truncate">
-                <span className="text-base">📍</span>
+                <span className="text-base shrink-0">📍</span>
                 <span className="text-white font-bold truncate">
                   {city
                     ? `${city}${stateName ? `, ${stateName}` : ""}${countryName ? `, ${countryName}` : ""}`
@@ -585,12 +576,17 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
                 setIsLocationModalOpen(false);
               }}
             />
-            {latitude && longitude && (
-              <p className="text-[10px] text-emerald-400 mt-1.5 flex items-center gap-1">
+            {latitude && longitude ? (
+              <p className="text-[10px] text-emerald-400 mt-1.5 flex items-center gap-1 font-semibold">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                GPS Coordinates grabbed: {latitude.toFixed(3)}°, {longitude.toFixed(3)}°
+                ✓ Auto-detected via GPS: {city ? `${city}, ${stateName}` : `${latitude.toFixed(3)}°, ${longitude.toFixed(3)}°`}
               </p>
-            )}
+            ) : isDetectingLocation ? (
+              <p className="text-[10px] text-amber-400 mt-1.5 flex items-center gap-1 font-medium animate-pulse">
+                <Loader2 className="w-3 h-3 animate-spin" />
+                Detecting current city, state & country...
+              </p>
+            ) : null}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -609,12 +605,44 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
             />
           </div>
 
-          <Input
-            label="Education"
-            placeholder="e.g. University Graduate"
-            value={education}
-            onChange={(e) => setEducation(e.target.value)}
-          />
+          <div className="w-full box-border">
+            <label className="text-xs font-semibold text-[#9e9ea8] uppercase tracking-wider block mb-1">
+              Education
+            </label>
+            <div className="relative">
+              <select
+                value={education}
+                onChange={(e) => setEducation(e.target.value)}
+                className="w-full block max-w-full box-border px-3.5 py-2.5 rounded-lg bg-[#14141a] border border-[#24242e] text-white text-sm focus:border-[#FFC629] focus:outline-none appearance-none cursor-pointer pr-10"
+              >
+                <option value="Bachelors / Graduate" className="bg-zinc-900 text-white">
+                  Bachelors / Graduate
+                </option>
+                <option value="Masters / Post Graduate" className="bg-zinc-900 text-white">
+                  Masters / Post Graduate
+                </option>
+                <option value="12+ / High School" className="bg-zinc-900 text-white">
+                  12+ / High School
+                </option>
+                <option value="Diploma" className="bg-zinc-900 text-white">
+                  Diploma
+                </option>
+                <option value="Doctorate / Ph.D." className="bg-zinc-900 text-white">
+                  Doctorate / Ph.D.
+                </option>
+                <option value="Professional (CA, MBBS, LLB, etc.)" className="bg-zinc-900 text-white">
+                  Professional (CA, MBBS, LLB, etc.)
+                </option>
+                <option value="Trade / Vocational" className="bg-zinc-900 text-white">
+                  Trade / Vocational
+                </option>
+                <option value="Other" className="bg-zinc-900 text-white">
+                  Other
+                </option>
+              </select>
+              <ChevronDown className="w-4 h-4 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
+          </div>
 
           <div className="w-full box-border">
             <label className="text-xs font-semibold text-[#9e9ea8] uppercase tracking-wider block mb-1">
