@@ -659,8 +659,8 @@ export default function ProfileHubPage() {
 
       {/* 1. ABOUT ME POPUP */}
       {activeQuickEdit === "ABOUT_ME" && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md bg-[#121217] border border-zinc-800 rounded-t-3xl sm:rounded-3xl p-5 text-white space-y-4">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-sm sm:max-w-md bg-[#121217] border border-zinc-800 rounded-3xl p-5 text-white space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
               <div>
                 <h3 className="font-bold text-base text-white">About Me</h3>
@@ -702,8 +702,8 @@ export default function ProfileHubPage() {
 
       {/* 2. MY MOOD POPUP */}
       {activeQuickEdit === "MOOD" && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md bg-[#121217] border border-zinc-800 rounded-t-3xl sm:rounded-3xl p-5 text-white space-y-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-sm sm:max-w-md bg-[#121217] border border-zinc-800 rounded-3xl p-5 text-white space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
               <div>
                 <h3 className="font-bold text-base text-white">What&apos;s your Mood?</h3>
@@ -772,8 +772,8 @@ export default function ProfileHubPage() {
 
       {/* 3. INTERESTS POPUP (FULL SCREEN TAGS CLOUD + CONFIRM) */}
       {activeQuickEdit === "INTERESTS" && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md bg-[#121217] border border-zinc-800 rounded-t-3xl sm:rounded-3xl p-5 text-white flex flex-col max-h-[85vh] h-[600px]">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-sm sm:max-w-md bg-[#121217] border border-zinc-800 rounded-3xl p-5 pb-5 text-white flex flex-col max-h-[80vh] h-[520px] shadow-2xl overflow-hidden">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3 shrink-0">
               <div>
@@ -792,7 +792,7 @@ export default function ProfileHubPage() {
             </div>
 
             {/* Scrollable Tags Area */}
-            <div className="flex-1 overflow-y-auto py-4 space-y-3 pr-1 scrollbar-thin">
+            <div className="flex-1 overflow-y-auto py-3 space-y-3 pr-1 scrollbar-thin">
               <div className="flex flex-wrap gap-2">
                 {availableInterests.map((item) => {
                   const isSelected = selectedInterestIds.includes(item.id);
@@ -817,7 +817,7 @@ export default function ProfileHubPage() {
             </div>
 
             {/* Sticky Bottom Confirm Button */}
-            <div className="pt-3 border-t border-zinc-800 shrink-0">
+            <div className="pt-3 pb-1 border-t border-zinc-800 shrink-0">
               <button
                 type="button"
                 onClick={handleSaveQuickEdit}
@@ -833,8 +833,8 @@ export default function ProfileHubPage() {
 
       {/* 4. MUSIC POPUP (FULL SCREEN TAGS CLOUD + CONFIRM) */}
       {activeQuickEdit === "MUSIC" && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md bg-[#121217] border border-zinc-800 rounded-t-3xl sm:rounded-3xl p-5 text-white flex flex-col max-h-[85vh] h-[600px]">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-sm sm:max-w-md bg-[#121217] border border-zinc-800 rounded-3xl p-5 pb-5 text-white flex flex-col max-h-[80vh] h-[520px] shadow-2xl overflow-hidden">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3 shrink-0">
               <div>
@@ -853,7 +853,7 @@ export default function ProfileHubPage() {
             </div>
 
             {/* Scrollable Tags Area */}
-            <div className="flex-1 overflow-y-auto py-4 space-y-3 pr-1 scrollbar-thin">
+            <div className="flex-1 overflow-y-auto py-3 space-y-3 pr-1 scrollbar-thin">
               <div className="flex flex-wrap gap-2">
                 {POPULAR_MUSIC_TAGS.map((tag) => {
                   const isSelected = selectedMusicList.includes(tag);
@@ -877,7 +877,7 @@ export default function ProfileHubPage() {
             </div>
 
             {/* Sticky Bottom Confirm Button */}
-            <div className="pt-3 border-t border-zinc-800 shrink-0">
+            <div className="pt-3 pb-1 border-t border-zinc-800 shrink-0">
               <button
                 type="button"
                 onClick={handleSaveQuickEdit}
@@ -896,8 +896,8 @@ export default function ProfileHubPage() {
         activeQuickEdit === "HEIGHT" ||
         activeQuickEdit === "JOB" ||
         activeQuickEdit === "EDUCATION") && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md bg-[#121217] border border-zinc-800 rounded-t-3xl sm:rounded-3xl p-5 text-white space-y-4">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-sm sm:max-w-md bg-[#121217] border border-zinc-800 rounded-3xl p-5 text-white space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
               <h3 className="font-bold text-sm text-white">
                 {activeQuickEdit === "LIVING_IN" && "Edit City / Location"}
@@ -936,8 +936,8 @@ export default function ProfileHubPage() {
 
       {/* ================= FULL ACCOUNT SETTINGS DRAWER ================= */}
       {isSettingsDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md bg-[#121217] border border-zinc-800 rounded-t-3xl sm:rounded-3xl p-5 text-white space-y-4 max-h-[85vh] overflow-y-auto">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-sm sm:max-w-md bg-[#121217] border border-zinc-800 rounded-3xl p-5 text-white space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
               <h3 className="font-bold text-base text-white">Account Settings</h3>
               <button
