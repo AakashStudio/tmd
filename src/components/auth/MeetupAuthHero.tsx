@@ -91,19 +91,6 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
             <span>Continue with Google</span>
           </button>
 
-          {/* Apple Button */}
-          <button
-            type="button"
-            onClick={() => setAuthMode("PHONE")}
-            className="w-full flex items-center justify-center gap-3 py-3.5 px-4 rounded-full bg-white hover:bg-zinc-100 text-black text-[13px] font-bold tracking-wide transition-all shadow-md active:scale-[0.98]"
-          >
-            {/* Apple Logo SVG */}
-            <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 170 170">
-              <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.69-3.04-7.6-7.8-11.74-14.28-5.44-8.48-9.75-18.06-12.93-28.73-3.18-10.68-4.77-20.93-4.77-30.77 0-13.49 3.54-24.8 10.63-33.94 7.09-9.13 16.03-13.84 26.83-14.13 4.58 0 9.87 1.25 15.86 3.76 5.99 2.51 9.77 3.82 11.34 3.93 1.8.13 5.76-1.19 11.89-3.95 6.13-2.76 11.45-3.99 15.97-3.69 11.75.78 20.95 4.96 27.6 12.54-10.45 6.33-15.55 14.94-15.3 25.83.25 8.52 3.59 15.69 10.02 21.52 6.43 5.83 14.18 9.17 23.25 10.02-2.34 7.15-5.35 14.39-9.03 21.72zM119.22 31.84c0-7.14 2.65-13.9 7.95-20.27 5.3-6.38 11.75-10.4 19.34-12.07.25 1.13.38 2.14.38 3.02 0 6.91-2.8 13.79-8.41 20.65-5.61 6.85-12.18 10.9-19.72 12.13-.12-1.12-.18-2.12-.18-3.46z" />
-            </svg>
-            <span>Continue with Apple</span>
-          </button>
-
           {/* Phone Number Button */}
           <button
             type="button"
