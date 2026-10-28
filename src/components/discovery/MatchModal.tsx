@@ -49,6 +49,10 @@ export function MatchModal({
               src={currentUserPhotoUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300"}
               alt="You"
               className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.src =
+                  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300";
+              }}
             />
           </div>
 
@@ -63,6 +67,10 @@ export function MatchModal({
               src={match.matchedUser.photoUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300"}
               alt={match.matchedUser.name}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.src =
+                  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300";
+              }}
             />
           </div>
         </div>

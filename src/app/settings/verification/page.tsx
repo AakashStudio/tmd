@@ -51,14 +51,30 @@ export default function VerificationPage() {
   const isPro = entitlements?.canRequestDobCorrection ?? false;
 
   return (
-    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start sm:py-6 sm:px-4 w-full overflow-x-hidden">
-      <div className="min-h-screen sm:min-h-[780px] bg-[#0a0a0c] text-white max-w-md w-full px-5 py-4 pb-20 sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl relative overflow-x-hidden box-border">
-        <div className="flex items-center gap-3 mb-5 border-b border-[#1e1e26] pb-3">
-        <button onClick={() => router.back()} className="p-1 hover:text-amber-400 transition-colors">
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <h1 className="text-base font-bold text-white tracking-tight">Trust & Verification</h1>
-      </div>
+    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start py-4 sm:py-8 px-3 sm:px-4 w-full box-border overflow-x-hidden">
+      <div className="w-full max-w-md bg-[#0c0c10] text-white rounded-3xl border border-white/[0.08] shadow-2xl p-5 sm:p-6 pb-24 relative box-border overflow-hidden">
+        {/* Top Header */}
+        <div className="flex items-center justify-between pb-4 mb-5 border-b border-zinc-800/80">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 hover:border-amber-400/50 flex items-center justify-center text-amber-400 transition active:scale-95 shadow-sm"
+            >
+              <ArrowLeft className="w-4 h-4 text-amber-400" />
+            </button>
+            <div>
+              <h1 className="text-base font-extrabold text-white tracking-tight flex items-center gap-2">
+                <span>Trust & Verification</span>
+                <ShieldCheck className="w-3.5 h-3.5 text-[#FFC629]" />
+              </h1>
+              <p className="text-[11px] text-zinc-400">Face scan & DOB verification</p>
+            </div>
+          </div>
+          <span className="px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-[#FFC629] text-[10px] font-black uppercase tracking-wider">
+            Safety
+          </span>
+        </div>
 
       <div className="space-y-4">
         {/* SECTION 1: Face Verification */}

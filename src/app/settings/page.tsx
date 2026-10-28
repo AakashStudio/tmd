@@ -337,8 +337,8 @@ export default function ProfileHubPage() {
   const strokeOffset = ringCircumference - (ringCircumference * completionPercentage) / 100;
 
   return (
-    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start sm:py-6 sm:px-4 w-full overflow-x-hidden">
-      <div className="min-h-screen sm:min-h-[780px] bg-[#0c0c10] text-white pb-28 max-w-md w-full sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl relative overflow-x-hidden box-border select-none">
+    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start py-4 sm:py-8 px-3 sm:px-4 w-full box-border overflow-x-hidden">
+      <div className="w-full max-w-md bg-[#0c0c10] text-white rounded-3xl border border-white/[0.08] shadow-2xl pb-28 relative overflow-x-hidden box-border select-none">
         {/* Hidden Gallery Input */}
       <input
         type="file"
@@ -417,6 +417,10 @@ export default function ProfileHubPage() {
                 src={primaryPhoto.url}
                 alt={profile.name}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src =
+                    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500";
+                }}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-zinc-500">
@@ -573,6 +577,10 @@ export default function ProfileHubPage() {
                       src={photo.url}
                       alt={`Photo ${idx + 1}`}
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src =
+                          "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500";
+                      }}
                     />
                     {photo.isPrimary && (
                       <span className="absolute bottom-1 left-1 px-1 rounded bg-[#FFC629] text-[9px] font-black text-black">

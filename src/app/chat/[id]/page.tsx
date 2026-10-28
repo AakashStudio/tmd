@@ -88,27 +88,31 @@ export default function ConversationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start sm:py-6 sm:px-4 w-full overflow-x-hidden">
-      <div className="min-h-screen sm:min-h-[844px] sm:max-h-[92vh] bg-[#0a0a0c] text-white max-w-md w-full mx-auto flex flex-col justify-between sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl overflow-x-hidden relative box-border">
+    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start py-4 sm:py-8 px-3 sm:px-4 w-full box-border overflow-x-hidden">
+      <div className="w-full max-w-md h-[92vh] max-h-[844px] min-h-[600px] bg-[#0c0c10] text-white rounded-3xl border border-white/[0.08] shadow-2xl relative box-border overflow-hidden flex flex-col justify-between">
         {/* Top Header */}
-      <header className="px-3 py-3 border-b border-[#1e1e26] flex items-center justify-between sticky top-0 bg-[#0a0a0c]/95 backdrop-blur-md z-30">
+      <header className="px-3.5 py-3 border-b border-zinc-800/80 flex items-center justify-between sticky top-0 bg-[#0c0c10]/95 backdrop-blur-md z-30">
         <div className="flex items-center gap-2.5">
           <button
             onClick={handleBack}
-            className="p-1.5 rounded-full hover:bg-zinc-800 text-zinc-400 hover:text-white transition"
+            className="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 hover:border-amber-400/50 flex items-center justify-center text-amber-400 transition active:scale-95 shadow-sm"
             title="Back"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4 text-amber-400" />
           </button>
 
           {partner && (
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-full overflow-hidden border border-zinc-700 bg-zinc-800">
+              <div className="w-9 h-9 rounded-full overflow-hidden border border-zinc-700 bg-zinc-800 shrink-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={partner.photoUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200"}
                   alt={partner.name}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src =
+                      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200";
+                  }}
                 />
               </div>
               <div>

@@ -157,6 +157,10 @@ export function ProfileDetailSheet({
             src={currentPhoto.url}
             alt={candidate.name}
             className="w-full h-full object-cover select-none"
+            onError={(e) => {
+              e.currentTarget.src =
+                "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800";
+            }}
           />
 
           {/* Photo Navigation tap zones */}

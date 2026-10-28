@@ -66,7 +66,7 @@ export default function HomePage() {
   // 1. Not Authenticated State -> Meetup Design Auth Hero
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-center sm:py-6 sm:px-4 w-full overflow-x-hidden">
+      <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-center py-4 sm:py-8 px-3 sm:px-4 w-full box-border overflow-x-hidden">
         <MeetupAuthHero
           onSuccess={() => {
             refreshUser();
@@ -80,7 +80,7 @@ export default function HomePage() {
   // 2. Authenticated but Incomplete Profile -> Onboarding Flow
   if (!hasProfile || !profile) {
     return (
-      <main className="min-h-[100dvh] bg-[#08080b] text-white px-4 sm:px-6 py-6 sm:py-10 max-w-md w-full mx-auto flex flex-col justify-center box-border overflow-x-hidden">
+      <main className="min-h-screen bg-[#08080b] text-white py-4 sm:py-8 px-3 sm:px-4 max-w-md w-full mx-auto flex flex-col justify-center box-border overflow-x-hidden">
         <OnboardingWizard
           onCompleted={() => {
             refreshUser();
@@ -95,8 +95,8 @@ export default function HomePage() {
   const currentUserPhoto = profile.photos?.find((p) => p.isPrimary)?.url || profile.photos?.[0]?.url;
 
   return (
-    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start sm:py-6 sm:px-4 w-full overflow-x-hidden">
-      <div className="min-h-screen sm:min-h-[844px] sm:max-h-[92vh] bg-[#0a0a0c] text-white pb-24 max-w-md w-full mx-auto flex flex-col justify-between sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl overflow-x-hidden relative box-border">
+    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start py-4 sm:py-8 px-3 sm:px-4 w-full box-border overflow-x-hidden">
+      <div className="w-full max-w-md bg-[#0c0c10] text-white rounded-3xl border border-white/[0.08] shadow-2xl relative box-border overflow-hidden flex flex-col justify-between pb-24">
         {/* Top Bar */}
       <header className="px-5 py-3 border-b border-[#1e1e26] flex items-center justify-between sticky top-0 bg-[#0a0a0c]/90 backdrop-blur-md z-30">
         <div className="flex items-center gap-2">
@@ -115,7 +115,15 @@ export default function HomePage() {
             <div className="w-8 h-8 rounded-full border border-zinc-700 overflow-hidden bg-zinc-800">
               {currentUserPhoto ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={currentUserPhoto} alt="Profile" className="w-full h-full object-cover" />
+                <img
+                  src={currentUserPhoto}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src =
+                      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200";
+                  }}
+                />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-xs">👤</div>
               )}

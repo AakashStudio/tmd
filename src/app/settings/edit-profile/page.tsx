@@ -161,15 +161,15 @@ export default function EditProfilePage() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start py-4 sm:py-8 px-4 w-full overflow-x-hidden box-border">
-      <div className="w-full max-w-md bg-[#0c0c10] text-white rounded-3xl border border-white/[0.08] shadow-2xl p-5 sm:p-6 pb-12 relative box-border overflow-hidden">
+    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start py-4 sm:py-8 px-3 sm:px-4 w-full box-border overflow-x-hidden">
+      <div className="w-full max-w-md bg-[#0c0c10] text-white rounded-3xl border border-white/[0.08] shadow-2xl p-5 sm:p-6 pb-24 relative box-border overflow-hidden">
         {/* Top Header with Back Button */}
         <div className="flex items-center justify-between pb-4 mb-5 border-b border-zinc-800/80">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => router.back()}
-              className="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 hover:border-amber-400/50 flex items-center justify-center text-zinc-300 hover:text-white transition active:scale-95 shadow-sm"
+              className="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 hover:border-amber-400/50 flex items-center justify-center text-amber-400 transition active:scale-95 shadow-sm"
             >
               <ArrowLeft className="w-4 h-4 text-amber-400" />
             </button>

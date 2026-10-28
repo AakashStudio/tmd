@@ -304,8 +304,8 @@ export default function MapPage() {
   // 1. Non-PRO Gate Screen
   if (!isPro) {
     return (
-      <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start sm:py-6 sm:px-4 w-full overflow-x-hidden">
-        <div className="min-h-screen sm:min-h-[720px] bg-[#0a0a0c] text-white pb-24 sm:pb-8 max-w-md w-full px-5 py-6 flex flex-col justify-center sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl relative overflow-x-hidden box-border">
+      <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start py-4 sm:py-8 px-3 sm:px-4 w-full box-border overflow-x-hidden">
+        <div className="w-full max-w-md bg-[#0c0c10] text-white rounded-3xl border border-white/[0.08] shadow-2xl p-5 sm:p-6 pb-24 relative box-border overflow-hidden flex flex-col justify-center">
           <div className="space-y-4 text-center">
             <div className="relative w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-[#FFC629] via-[#F59E0B] to-amber-600 p-0.5 shadow-xl shadow-[#FFC629]/20">
               <div className="w-full h-full rounded-2xl bg-[#0e0e14] flex items-center justify-center">
@@ -378,8 +378,8 @@ export default function MapPage() {
 
   // 2. Full PRO Events Hub
   return (
-    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start sm:py-6 sm:px-4 w-full overflow-x-hidden">
-      <div className="min-h-screen sm:min-h-[780px] bg-[#0a0a0c] text-white pb-24 max-w-md w-full flex flex-col justify-between sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl relative overflow-x-hidden box-border">
+    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start py-4 sm:py-8 px-3 sm:px-4 w-full box-border overflow-x-hidden">
+      <div className="w-full max-w-md bg-[#0c0c10] text-white rounded-3xl border border-white/[0.08] shadow-2xl relative box-border overflow-hidden flex flex-col pb-24">
       {/* Top Header */}
       <header className="px-5 py-3 border-b border-white/[0.08] flex items-center justify-between sticky top-0 bg-[#0a0a0c]/95 backdrop-blur-md z-30">
         <div className="flex items-center gap-2.5">
@@ -614,6 +614,10 @@ export default function MapPage() {
                     }
                     alt={selectedPinEvent.title}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src =
+                        "https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800";
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
                   <div className="absolute top-2 inset-x-2 flex items-center justify-between text-xs">
@@ -784,6 +788,10 @@ export default function MapPage() {
                     src={event.coverPhotoUrl || "https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800"}
                     alt={event.title}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src =
+                        "https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800";
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
 
@@ -880,6 +888,10 @@ export default function MapPage() {
                           src={event.organizer.photoUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100"}
                           alt={event.organizer.name}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src =
+                              "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100";
+                          }}
                         />
                       </div>
                       <div className="flex items-center gap-1.5 flex-wrap">
@@ -1051,7 +1063,7 @@ export default function MapPage() {
       {/* Manage Requests Modal for Event Host */}
       {manageModalEvent && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-in fade-in">
-          <div className="w-full max-w-md rounded-3xl bg-[#0f0f15] border border-[#FFC629]/30 p-6 space-y-4 shadow-2xl relative my-8 max-h-[90vh] flex flex-col">
+          <div className="w-full max-w-sm rounded-3xl bg-[#0f0f15] border border-[#FFC629]/30 p-5 sm:p-6 space-y-4 shadow-2xl relative my-8 max-h-[90vh] flex flex-col">
             <div className="flex items-center justify-between pb-2 border-b border-white/10">
               <div>
                 <h2 className="text-base font-extrabold text-white flex items-center gap-2">
@@ -1100,6 +1112,10 @@ export default function MapPage() {
                                 src={applicant.photoUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100"}
                                 alt={applicant.name}
                                 className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.src =
+                                    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100";
+                                }}
                               />
                             </div>
                             <div>

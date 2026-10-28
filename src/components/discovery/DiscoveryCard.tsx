@@ -36,6 +36,10 @@ export function DiscoveryCard({ candidate, onOpenProfile }: DiscoveryCardProps) 
         src={photos[photoIndex]?.url}
         alt={candidate.name}
         className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-all duration-300"
+        onError={(e) => {
+          e.currentTarget.src =
+            "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800";
+        }}
       />
 
       {/* Touch/Click zones for photo navigation */}

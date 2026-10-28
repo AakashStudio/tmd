@@ -170,8 +170,8 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start sm:py-6 sm:px-4 w-full overflow-x-hidden">
-      <div className="min-h-screen sm:min-h-[844px] sm:max-h-[92vh] bg-[#0a0a0c] text-white pb-24 max-w-md w-full mx-auto flex flex-col sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl overflow-x-hidden relative box-border">
+    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start py-4 sm:py-8 px-3 sm:px-4 w-full box-border overflow-x-hidden">
+      <div className="w-full max-w-md bg-[#0c0c10] text-white rounded-3xl border border-white/[0.08] shadow-2xl relative box-border overflow-hidden flex flex-col pb-24">
         {/* Top Header */}
       <header className="px-5 py-4 border-b border-[#1e1e26] flex items-center justify-between sticky top-0 bg-[#0a0a0c]/90 backdrop-blur-md z-30">
         <div className="flex items-center gap-2">
@@ -269,6 +269,10 @@ export default function ChatPage() {
                           src={req.sender.photoUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200"}
                           alt={req.sender.name}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src =
+                              "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200";
+                          }}
                         />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -404,6 +408,10 @@ export default function ChatPage() {
                       src={m.partner.photoUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400"}
                       alt={m.partner.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      onError={(e) => {
+                        e.currentTarget.src =
+                          "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400";
+                      }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
 
@@ -475,6 +483,10 @@ export default function ChatPage() {
                         src={c.partner.photoUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200"}
                         alt={c.partner.name}
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src =
+                            "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200";
+                        }}
                       />
                     </div>
 

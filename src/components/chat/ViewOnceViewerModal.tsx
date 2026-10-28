@@ -35,7 +35,7 @@ export function ViewOnceViewerModal({
   return (
     <div className="fixed inset-0 z-50 bg-black flex flex-col justify-between p-4 animate-in fade-in duration-200 select-none">
       {/* Top Bar with Timer */}
-      <div className="w-full max-w-md mx-auto space-y-2">
+      <div className="w-full max-w-sm mx-auto space-y-2">
         <div className="flex items-center justify-between text-white text-xs px-1">
           <span className="flex items-center gap-1.5 font-bold text-amber-400">
             ⏳ View Once Photo • {timeLeft}s remaining
@@ -70,7 +70,7 @@ export function ViewOnceViewerModal({
       </div>
 
       {/* Bottom Warning Bar */}
-      <div className="w-full max-w-md mx-auto text-center py-2">
+      <div className="w-full max-w-sm mx-auto text-center py-2">
         <p className="text-[11px] text-zinc-400 tracking-wide">
           🔒 Secure View Once: This photo disappears permanently after viewing.
         </p>

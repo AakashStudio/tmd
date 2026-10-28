@@ -8,6 +8,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "@/components/auth/AuthModal";
 import {
+  ArrowLeft,
   X,
   Check,
   Flame,
@@ -381,18 +382,33 @@ export default function PlansPage() {
     PLAN_DETAILS[selectedPlanCode] || PLAN_DETAILS["TIER_149"];
 
   return (
-    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start sm:py-6 sm:px-4 w-full overflow-x-hidden">
-      <div className="min-h-screen sm:min-h-[844px] sm:max-h-[92vh] bg-[#0d0d12] text-white pb-52 max-w-md w-full mx-auto relative select-none sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl overflow-x-hidden box-border">
+    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start py-4 sm:py-8 px-3 sm:px-4 w-full box-border overflow-x-hidden">
+      <div className="w-full max-w-md bg-[#0c0c10] text-white rounded-3xl border border-white/[0.08] shadow-2xl pb-52 relative box-border overflow-x-hidden select-none">
         {/* 1. TOP HEADER */}
-      <div className="sticky top-0 inset-x-0 z-40 bg-[#0d0d12]/90 backdrop-blur-md px-5 py-4 flex items-center justify-center border-b border-white/[0.06]">
-        {/* Center Logo Branding: TMD GOLD */}
-        <div className="flex items-center gap-2">
-          <span className="font-black text-xl tracking-wider text-white">TMD</span>
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-[#D4AF37] to-[#FFC629] text-black uppercase shadow-sm">
-            GOLD
+        <div className="sticky top-0 inset-x-0 z-40 bg-[#0c0c10]/95 backdrop-blur-md px-5 py-3.5 flex items-center justify-between border-b border-zinc-800/80">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 hover:border-amber-400/50 flex items-center justify-center text-amber-400 transition active:scale-95 shadow-sm"
+              title="Back"
+            >
+              <ArrowLeft className="w-4 h-4 text-amber-400" />
+            </button>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-extrabold text-base tracking-tight text-white">Membership Plans</span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-[#D4AF37] to-[#FFC629] text-black uppercase shadow-sm">
+                  GOLD
+                </span>
+              </div>
+              <p className="text-[11px] text-zinc-400">Unlock all TMD VIP dating features</p>
+            </div>
+          </div>
+          <span className="px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-[#FFC629] text-[10px] font-black uppercase tracking-wider">
+            Premium
           </span>
         </div>
-      </div>
 
       <div className="px-5 pt-3 space-y-6">
         {/* Success Alert */}
