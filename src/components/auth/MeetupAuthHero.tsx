@@ -11,10 +11,10 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
   const [authMode, setAuthMode] = useState<"PHONE" | "EMAIL" | null>(null);
 
   return (
-    <div className="relative min-h-screen sm:min-h-[820px] sm:max-h-[92vh] sm:my-6 bg-[#111116] text-white flex flex-col justify-between overflow-hidden max-w-md w-full mx-auto select-none sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl box-border">
+    <div className="w-full max-w-md bg-[#0c0c10] text-white rounded-3xl border border-white/[0.08] shadow-2xl relative box-border overflow-hidden flex flex-col justify-between select-none">
       {/* Top Background Artwork Header */}
-      <div className="relative w-full h-[54vh] min-h-[350px] flex flex-col items-center justify-between pt-7 pb-4 overflow-hidden">
-        {/* Cinematic TMD Date Hero Artwork (No status bar, no phone icons) */}
+      <div className="relative w-full h-[380px] sm:h-[400px] flex flex-col items-center justify-between pt-6 pb-4 overflow-hidden">
+        {/* Cinematic TMD Date Hero Artwork */}
         <div
           className="absolute inset-0 bg-cover bg-center pointer-events-none"
           style={{
@@ -26,7 +26,7 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
 
         {/* Smooth dark gradients for seamless blend into dark UI */}
         <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/70 via-black/30 to-transparent pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#111116] via-[#111116]/85 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-[#0c0c10] via-[#0c0c10]/90 to-transparent pointer-events-none" />
 
         {/* Top App Branding: Official TMD Logo */}
         <div className="relative z-10 flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-black/45 backdrop-blur-md border border-white/10 shadow-2xl">
@@ -50,7 +50,7 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
       </div>
 
       {/* Bottom Content & Action Section */}
-      <div className="relative z-10 px-5 pb-8 pt-0 flex flex-col justify-end space-y-4">
+      <div className="relative z-10 px-5 pb-8 pt-2 flex flex-col justify-end space-y-4">
         {/* Hero Slogan */}
         <div className="text-center mb-1 space-y-1">
           <h1 className="text-[25px] font-black text-white tracking-tight leading-tight">
@@ -61,13 +61,13 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
           </p>
         </div>
 
-        {/* Social & Primary Action Buttons */}
-        <div className="space-y-2.5 w-full max-w-sm mx-auto">
+        {/* Social & Primary Action Buttons (Uniform width across entire app) */}
+        <div className="space-y-2.5 w-full">
           {/* Google Button */}
           <button
             type="button"
             onClick={() => setAuthMode("PHONE")}
-            className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-full bg-[#2a2a32] hover:bg-[#34343e] text-white text-[13px] font-bold tracking-wide transition-all shadow-md active:scale-[0.98]"
+            className="w-full flex items-center justify-center gap-3 py-3.5 px-4 rounded-full bg-[#2a2a32] hover:bg-[#34343e] text-white text-[13px] font-bold tracking-wide transition-all shadow-md active:scale-[0.98]"
           >
             {/* Google G icon */}
             <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
@@ -95,7 +95,7 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
           <button
             type="button"
             onClick={() => setAuthMode("PHONE")}
-            className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-full bg-white hover:bg-zinc-100 text-black text-[13px] font-bold tracking-wide transition-all shadow-md active:scale-[0.98]"
+            className="w-full flex items-center justify-center gap-3 py-3.5 px-4 rounded-full bg-white hover:bg-zinc-100 text-black text-[13px] font-bold tracking-wide transition-all shadow-md active:scale-[0.98]"
           >
             {/* Apple Logo SVG */}
             <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 170 170">
@@ -104,7 +104,7 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
             <span>Continue with Apple</span>
           </button>
 
-          {/* Phone Number Button (replaces Facebook) */}
+          {/* Phone Number Button */}
           <button
             type="button"
             onClick={() => setAuthMode("PHONE")}
@@ -120,7 +120,15 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
           {/* Terms Disclaimer */}
           <div className="text-center pt-2">
             <p className="text-[11px] text-zinc-500 leading-relaxed">
-              By continuing, you agree to TMD&apos;s <span className="underline cursor-pointer hover:text-zinc-400">Terms</span> and <span className="underline cursor-pointer hover:text-zinc-400">Privacy Policy</span>.
+              By continuing, you agree to TMD&apos;s{" "}
+              <span className="underline cursor-pointer hover:text-zinc-400">
+                Terms
+              </span>{" "}
+              and{" "}
+              <span className="underline cursor-pointer hover:text-zinc-400">
+                Privacy Policy
+              </span>
+              .
             </p>
           </div>
         </div>

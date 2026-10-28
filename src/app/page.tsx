@@ -66,7 +66,7 @@ export default function HomePage() {
   // 1. Not Authenticated State -> Meetup Design Auth Hero
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-center py-4 sm:py-8 px-3 sm:px-4 w-full box-border overflow-x-hidden">
+      <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start py-4 sm:py-8 px-3 sm:px-4 w-full box-border overflow-x-hidden">
         <MeetupAuthHero
           onSuccess={() => {
             refreshUser();
@@ -80,14 +80,16 @@ export default function HomePage() {
   // 2. Authenticated but Incomplete Profile -> Onboarding Flow
   if (!hasProfile || !profile) {
     return (
-      <main className="min-h-screen bg-[#08080b] text-white py-4 sm:py-8 px-3 sm:px-4 max-w-md w-full mx-auto flex flex-col justify-center box-border overflow-x-hidden">
-        <OnboardingWizard
-          onCompleted={() => {
-            refreshUser();
-            refreshProfile();
-          }}
-        />
-      </main>
+      <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start py-4 sm:py-8 px-3 sm:px-4 w-full box-border overflow-x-hidden">
+        <div className="w-full max-w-md">
+          <OnboardingWizard
+            onCompleted={() => {
+              refreshUser();
+              refreshProfile();
+            }}
+          />
+        </div>
+      </div>
     );
   }
 

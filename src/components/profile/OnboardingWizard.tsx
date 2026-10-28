@@ -287,8 +287,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
   /* ================= STEP 0: MANDATORY LOCATION PERMISSION ================= */
   if (step === 0) {
     return (
-      <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-0 sm:p-4 overflow-x-hidden overflow-y-auto">
-        <div className="w-full max-w-md bg-[#0a0a0c] text-white flex flex-col justify-between h-[100dvh] sm:h-auto sm:min-h-[720px] sm:max-h-[92vh] sm:rounded-3xl sm:border sm:border-white/[0.08] sm:shadow-2xl px-6 py-10 overflow-x-hidden overflow-y-auto relative box-border animate-in fade-in duration-200">
+      <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center py-4 sm:py-8 px-3 sm:px-4 overflow-x-hidden overflow-y-auto">
+        <div className="w-full max-w-md bg-[#0c0c10] text-white flex flex-col justify-between rounded-3xl border border-white/[0.08] shadow-2xl px-6 py-8 overflow-x-hidden overflow-y-auto relative box-border animate-in fade-in duration-200">
           {/* Top Header Section */}
         <div className="text-center pt-6 space-y-3">
           <h1 className="text-2xl sm:text-[30px] font-black tracking-tight text-white leading-tight">
@@ -409,7 +409,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
   }
 
   return (
-    <div className="w-full max-w-md mx-auto p-5 sm:p-6 rounded-2xl bg-[#14141a] border border-[#24242e] shadow-2xl text-left overflow-hidden box-border">
+    <div className="w-full max-w-md mx-auto p-5 sm:p-6 rounded-3xl bg-[#0c0c10] border border-white/[0.08] shadow-2xl text-left overflow-hidden box-border">
       <div className="flex items-center justify-between mb-4 border-b border-[#1e1e26] pb-3">
         <h2 className="text-base font-bold text-white tracking-tight">Create Your Profile</h2>
         <span className="text-xs font-semibold text-[#FFC629] bg-amber-400/10 px-2.5 py-0.5 rounded-full border border-amber-400/30">
