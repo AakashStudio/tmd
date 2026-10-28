@@ -3,11 +3,54 @@
 @tailwind utilities;
 
 /* ============================================================================
+   ORACLE SANS TYPOGRAPHY DEFINITION
+   ============================================================================ */
+@font-face {
+  font-family: 'Oracle Sans';
+  src: url('/fonts/OracleSans_W_Lt.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Oracle Sans';
+  src: url('/fonts/OracleSans_W_Rg.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Oracle Sans';
+  src: url('/fonts/OracleSans_W_SBd.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Oracle Sans';
+  src: url('/fonts/OracleSans_W_Bd.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Oracle Sans';
+  src: url('/fonts/OracleSans_W_XBd.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================================================================
    TMD - AURA GOLD DESIGN SYSTEM
    Global Theme CSS Variables
    ============================================================================ */
 :root {
-  --font-primary: "Oracle Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-primary: 'Oracle Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --bg-primary: #08080b;
   --bg-surface: #121217;
   --bg-surface-elevated: #1a1a24;
