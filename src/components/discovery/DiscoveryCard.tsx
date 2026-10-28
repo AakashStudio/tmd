@@ -121,27 +121,25 @@ export function DiscoveryCard({ candidate, onOpenProfile }: DiscoveryCardProps) 
           )}
         </div>
 
-        {/* Badges / Voice Note Row */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Relationship Intention Pill */}
-          {candidate.relationshipIntention && (
-            <div className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/80 text-white border border-rose-400/40 backdrop-blur-md">
-              🎯 {candidate.relationshipIntention.replace(/_/g, " ")}
-            </div>
-          )}
+        {/* Voice Note Bar - Directly Playable on Card */}
+        {candidate.voicePromptUrl && (
+          <div onClick={(e) => e.stopPropagation()} className="pt-0.5">
+            <VoiceNotePlayer
+              url={candidate.voicePromptUrl}
+              durationSeconds={candidate.voicePromptDuration}
+              candidateName={candidate.name}
+              compact={true}
+              className="w-full"
+            />
+          </div>
+        )}
 
-          {/* Voice Note Audio Pill */}
-          {candidate.voicePromptUrl && (
-            <div onClick={(e) => e.stopPropagation()}>
-              <VoiceNotePlayer
-                url={candidate.voicePromptUrl}
-                durationSeconds={candidate.voicePromptDuration}
-                candidateName={candidate.name}
-                compact={true}
-              />
-            </div>
-          )}
-        </div>
+        {/* Relationship Intention Pill */}
+        {candidate.relationshipIntention && (
+          <div className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/80 text-white border border-rose-400/40 backdrop-blur-md">
+            🎯 {candidate.relationshipIntention.replace(/_/g, " ")}
+          </div>
+        )}
 
         {/* Bio */}
         {candidate.bio && (

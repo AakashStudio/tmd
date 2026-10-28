@@ -197,12 +197,20 @@ export async function getDiscoveryFeed(
     { title: "Apna Bana Le", artist: "Arijit Singh, Sachin-Jigar · Spotify", coverUrl: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=200" },
   ];
 
+  const defaultVoiceNotes = [
+    { url: "/uploads/audio/lisa_voice.wav", duration: 10 },
+    { url: "/uploads/audio/aanya_voice.wav", duration: 9 },
+    { url: "/uploads/audio/aarav_voice.wav", duration: 9 },
+    { url: "/uploads/audio/priya_voice.wav", duration: 8 },
+  ];
+
   const feed: CandidateCard[] = itemsToReturn
     .filter((c) => c.profile !== null)
     .map((c, index) => {
       const p = c.profile!;
       const promptFallback = defaultPrompts[index % defaultPrompts.length];
       const anthemFallback = defaultAnthems[index % defaultAnthems.length];
+      const voiceFallback = defaultVoiceNotes[index % defaultVoiceNotes.length];
 
       return {
         userId: c.id,
@@ -223,8 +231,8 @@ export async function getDiscoveryFeed(
         anthemTitle: p.anthemTitle || anthemFallback.title,
         anthemArtist: p.anthemArtist || anthemFallback.artist,
         anthemCoverUrl: p.anthemCoverUrl || anthemFallback.coverUrl,
-        voicePromptUrl: p.voicePromptUrl || null,
-        voicePromptDuration: p.voicePromptDuration || null,
+        voicePromptUrl: p.voicePromptUrl || voiceFallback.url,
+        voicePromptDuration: p.voicePromptDuration || voiceFallback.duration,
       };
     });
 

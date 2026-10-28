@@ -80,28 +80,61 @@ export const VoiceNotePlayer: React.FC<VoiceNotePlayerProps> = ({
     return (
       <div
         onClick={togglePlay}
-        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md border border-amber-400/40 text-amber-400 text-xs font-bold shadow-lg transition active:scale-95 cursor-pointer select-none ${className}`}
+        className={`group relative flex items-center justify-between gap-2.5 px-3.5 py-2 rounded-2xl bg-black/75 hover:bg-black/90 backdrop-blur-md border border-amber-400/40 hover:border-amber-400 text-white shadow-xl transition-all active:scale-[0.98] cursor-pointer select-none overflow-hidden ${className}`}
       >
         <audio ref={audioRef} src={url} preload="metadata" />
-        <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-[#D4AF37] to-[#FFC629] text-black flex items-center justify-center shrink-0 shadow-sm">
-          {isPlaying ? <Pause className="w-2.5 h-2.5 fill-black" /> : <Play className="w-2.5 h-2.5 fill-black ml-0.5" />}
-        </div>
-        <span className="text-[11px] font-black tracking-tight text-white">
-          {isPlaying ? "Playing Voice Note" : "Listen to Voice"}
-        </span>
-        {totalDuration > 0 && (
-          <span className="text-[10px] text-amber-300 font-mono">
-            {formatSeconds(isPlaying ? currentTime : totalDuration)}
-          </span>
-        )}
-        {/* Animated mini sound bars */}
+
+        {/* Subtle background progress fill when playing */}
         {isPlaying && (
-          <div className="flex items-center gap-0.5 ml-1">
-            <span className="w-0.5 h-3 bg-amber-400 rounded-full animate-pulse" />
-            <span className="w-0.5 h-4 bg-amber-400 rounded-full animate-bounce" />
-            <span className="w-0.5 h-2.5 bg-amber-400 rounded-full animate-pulse" />
-          </div>
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-amber-500/15 to-transparent pointer-events-none transition-all duration-150"
+            style={{ width: `${progressPercent}%` }}
+          />
         )}
+
+        <div className="flex items-center gap-2.5 z-10 min-w-0">
+          <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#D4AF37] via-[#F59E0B] to-[#FFC629] text-black flex items-center justify-center shrink-0 shadow-md shadow-amber-500/30 group-hover:scale-105 transition">
+            {isPlaying ? (
+              <Pause className="w-3.5 h-3.5 fill-black" />
+            ) : (
+              <Play className="w-3.5 h-3.5 fill-black ml-0.5" />
+            )}
+          </div>
+
+          <div className="flex flex-col text-left min-w-0">
+            <span className="text-xs font-black tracking-tight text-white truncate flex items-center gap-1.5">
+              <span>{isPlaying ? "Playing Voice Note" : candidateName ? `${candidateName}'s Voice Note` : "Listen to Voice"}</span>
+              <Mic className="w-3 h-3 text-amber-400 shrink-0" />
+            </span>
+            <span className="text-[10px] text-zinc-400 truncate">
+              {isPlaying ? "Tap to pause" : "Tap to listen real voice"}
+            </span>
+          </div>
+        </div>
+
+        {/* Right side: Equalizer wave + Time */}
+        <div className="flex items-center gap-2 z-10 shrink-0">
+          {isPlaying ? (
+            <div className="flex items-center gap-0.5 h-4 px-1">
+              <span className="w-1 h-3 bg-amber-400 rounded-full animate-pulse" />
+              <span className="w-1 h-4 bg-amber-300 rounded-full animate-bounce" />
+              <span className="w-1 h-2 bg-amber-400 rounded-full animate-pulse" />
+              <span className="w-1 h-3.5 bg-amber-300 rounded-full animate-bounce" />
+            </div>
+          ) : (
+            <div className="flex items-center gap-0.5 opacity-60">
+              <span className="w-0.5 h-2 bg-zinc-500 rounded-full" />
+              <span className="w-0.5 h-3.5 bg-zinc-400 rounded-full" />
+              <span className="w-0.5 h-2 bg-zinc-500 rounded-full" />
+            </div>
+          )}
+
+          <span className="text-[11px] font-mono font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-md border border-amber-400/20">
+            {totalDuration > 0
+              ? `${formatSeconds(isPlaying ? currentTime : 0)} / ${formatSeconds(totalDuration)}`
+              : "Voice"}
+          </span>
+        </div>
       </div>
     );
   }

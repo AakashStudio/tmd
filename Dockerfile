@@ -38,7 +38,7 @@ COPY --from=builder /app/public ./public
 
 # Set the correct permission for prerender cache and persistent mounts
 RUN mkdir .next
-RUN mkdir -p /app/public/uploads/photos /app/storage/private_media/view_once
+RUN mkdir -p /app/public/uploads/photos /app/public/uploads/audio /app/storage/private_media/view_once
 RUN chown -R nextjs:nodejs .next /app/public/uploads /app/storage
 
 # Automatically leverage output traces to reduce image size
