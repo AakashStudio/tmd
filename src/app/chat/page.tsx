@@ -51,13 +51,37 @@ interface PreMatchRequest {
 
 export default function ChatPage() {
   const router = useRouter();
+
   const [matches, setMatches] = useState<MatchItem[]>([]);
   const [requests, setRequests] = useState<PreMatchRequest[]>([]);
   const [isPaid, setIsPaid] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<"REQUESTS" | "MATCHES" | "CHAT">("MATCHES");
+  const [activeTab, setActiveTab] = useState<"REQUESTS" | "MATCHES" | "CHAT">("CHAT");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get("tab") as "REQUESTS" | "MATCHES" | "CHAT" | null;
+      if (tabParam === "REQUESTS" || tabParam === "MATCHES" || tabParam === "CHAT") {
+        setActiveTab(tabParam);
+        sessionStorage.setItem("tmd_chat_tab", tabParam);
+        return;
+      }
+      const saved = sessionStorage.getItem("tmd_chat_tab") as "REQUESTS" | "MATCHES" | "CHAT" | null;
+      if (saved === "REQUESTS" || saved === "MATCHES" || saved === "CHAT") {
+        setActiveTab(saved);
+      }
+    }
+  }, []);
+
+  const switchTab = (tab: "REQUESTS" | "MATCHES" | "CHAT") => {
+    setActiveTab(tab);
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("tmd_chat_tab", tab);
+    }
+  };
 
   useEffect(() => {
     async function loadData() {
@@ -77,9 +101,6 @@ export default function ChatPage() {
           setRequests(reqData.requests || []);
           if (typeof reqData.isPaid === "boolean") {
             setIsPaid(reqData.isPaid);
-          }
-          if (reqData.requests?.length > 0) {
-            setActiveTab("REQUESTS");
           }
         }
       } catch (err) {
@@ -103,7 +124,7 @@ export default function ChatPage() {
       const data = await res.json();
       setRequests((prev) => prev.filter((r) => r.id !== likeId));
       if (data.conversationId) {
-        router.push(`/chat/${data.conversationId}`);
+        router.push(`/chat/${data.conversationId}?from=REQUESTS`);
       }
     } catch (err: any) {
       alert(err.message || "Failed to accept request");
@@ -168,7 +189,7 @@ export default function ChatPage() {
       <div className="flex border-b border-[#1e1e26] bg-zinc-950/70 text-xs font-bold px-3 sticky top-14 z-20">
         <button
           type="button"
-          onClick={() => setActiveTab("REQUESTS")}
+          onClick={() => switchTab("REQUESTS")}
           className={`flex-1 py-2.5 text-center transition-all flex items-center justify-center gap-1.5 ${
             activeTab === "REQUESTS"
               ? "text-[#FFC629] border-b-2 border-[#FFC629]"
@@ -184,7 +205,7 @@ export default function ChatPage() {
         </button>
         <button
           type="button"
-          onClick={() => setActiveTab("MATCHES")}
+          onClick={() => switchTab("MATCHES")}
           className={`flex-1 py-2.5 text-center transition-all ${
             activeTab === "MATCHES"
               ? "text-[#FFC629] border-b-2 border-[#FFC629]"
@@ -195,7 +216,7 @@ export default function ChatPage() {
         </button>
         <button
           type="button"
-          onClick={() => setActiveTab("CHAT")}
+          onClick={() => switchTab("CHAT")}
           className={`flex-1 py-2.5 text-center transition-all ${
             activeTab === "CHAT"
               ? "text-[#FFC629] border-b-2 border-[#FFC629]"
@@ -373,7 +394,7 @@ export default function ChatPage() {
                     key={m.matchId}
                     onClick={() => {
                       const id = m.conversationId || m.matchId;
-                      if (id) router.push(`/chat/${id}`);
+                      if (id) router.push(`/chat/${id}?from=MATCHES`);
                     }}
                     className="group relative rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800 hover:border-amber-400/60 transition cursor-pointer flex flex-col aspect-[4/5] shadow-md"
                   >
@@ -443,7 +464,7 @@ export default function ChatPage() {
                     key={c.matchId}
                     onClick={() => {
                       const id = c.conversationId || c.matchId;
-                      if (id) router.push(`/chat/${id}`);
+                      if (id) router.push(`/chat/${id}?from=CHAT`);
                     }}
                     className="flex items-center gap-3.5 p-2.5 rounded-2xl hover:bg-zinc-900/60 cursor-pointer transition active:scale-[0.99]"
                   >

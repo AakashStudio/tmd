@@ -22,6 +22,16 @@ export default function ConversationPage() {
   const router = useRouter();
   const conversationId = params?.id as string;
 
+  const handleBack = () => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const fromTab = urlParams.get("from") || sessionStorage.getItem("tmd_chat_tab") || "CHAT";
+      router.push(`/chat?tab=${encodeURIComponent(fromTab)}`);
+    } else {
+      router.push("/chat?tab=CHAT");
+    }
+  };
+
   const {
     messages,
     partner,
@@ -84,8 +94,9 @@ export default function ConversationPage() {
       <header className="px-3 py-3 border-b border-[#1e1e26] flex items-center justify-between sticky top-0 bg-[#0a0a0c]/95 backdrop-blur-md z-30">
         <div className="flex items-center gap-2.5">
           <button
-            onClick={() => router.push("/chat")}
+            onClick={handleBack}
             className="p-1.5 rounded-full hover:bg-zinc-800 text-zinc-400 hover:text-white transition"
+            title="Back"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
