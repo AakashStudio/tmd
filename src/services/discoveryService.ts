@@ -39,6 +39,8 @@ export interface CandidateCard {
   anthemTitle?: string | null;
   anthemArtist?: string | null;
   anthemCoverUrl?: string | null;
+  voicePromptUrl?: string | null;
+  voicePromptDuration?: number | null;
 }
 
 export interface DiscoveryFeedResult {
@@ -146,6 +148,8 @@ export async function getDiscoveryFeed(
           anthemTitle: true,
           anthemArtist: true,
           anthemCoverUrl: true,
+          voicePromptUrl: true,
+          voicePromptDuration: true,
           photos: {
             where: { status: "APPROVED" },
             orderBy: { order: "asc" },
@@ -219,6 +223,8 @@ export async function getDiscoveryFeed(
         anthemTitle: p.anthemTitle || anthemFallback.title,
         anthemArtist: p.anthemArtist || anthemFallback.artist,
         anthemCoverUrl: p.anthemCoverUrl || anthemFallback.coverUrl,
+        voicePromptUrl: p.voicePromptUrl || null,
+        voicePromptDuration: p.voicePromptDuration || null,
       };
     });
 

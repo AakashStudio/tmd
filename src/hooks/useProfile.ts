@@ -35,6 +35,8 @@ export interface ProfileData {
   anthemTitle?: string | null;
   anthemArtist?: string | null;
   anthemCoverUrl?: string | null;
+  voicePromptUrl?: string | null;
+  voicePromptDuration?: number | null;
 }
 
 export function useProfile() {

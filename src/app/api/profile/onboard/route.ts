@@ -20,6 +20,8 @@ const onboardProfileSchema = z.object({
   profession: z.string().trim().max(100).optional().nullable(),
   education: z.string().trim().max(100).optional().nullable(),
   height: z.number().int().min(100).max(250).optional().nullable(),
+  voicePromptUrl: z.string().trim().optional().nullable(),
+  voicePromptDuration: z.number().int().optional().nullable(),
   relationshipIntention: z
     .enum(["LONG_TERM", "SHORT_TERM_CASUAL", "FRIENDSHIP", "NOT_SURE_YET"])
     .default("NOT_SURE_YET"),
@@ -87,6 +89,8 @@ export async function POST(req: NextRequest) {
         profession: data.profession || null,
         education: data.education || null,
         height: data.height || null,
+        voicePromptUrl: data.voicePromptUrl || null,
+        voicePromptDuration: data.voicePromptDuration || null,
         relationshipIntention: data.relationshipIntention as RelationshipIntention,
       },
       create: {
@@ -105,6 +109,8 @@ export async function POST(req: NextRequest) {
         profession: data.profession || null,
         education: data.education || null,
         height: data.height || null,
+        voicePromptUrl: data.voicePromptUrl || null,
+        voicePromptDuration: data.voicePromptDuration || null,
         relationshipIntention: data.relationshipIntention as RelationshipIntention,
         isNameLocked: true, // Locked on Free / 49 / 149
       },

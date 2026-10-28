@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { LocationPickerModal } from "@/components/profile/LocationPickerModal";
+import { VoiceNoteRecorder } from "@/components/profile/VoiceNoteRecorder";
 import { calculateAge } from "@/lib/validation";
-import { Camera, Image as ImageIcon, Plus, Trash2, Loader2, MapPin, ChevronDown, ChevronUp, ChevronLeft } from "lucide-react";
+import { Camera, Image as ImageIcon, Plus, Trash2, Loader2, MapPin, ChevronDown, ChevronUp, ChevronLeft, Mic } from "lucide-react";
 
 interface OnboardingWizardProps {
   onCompleted: () => void;
@@ -56,6 +57,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [targetSlotIndex, setTargetSlotIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Voice Note (Step 5)
+  const [voicePromptUrl, setVoicePromptUrl] = useState<string | null>(null);
+  const [voicePromptDuration, setVoicePromptDuration] = useState<number | null>(null);
 
   // Live calculated age
   const calculatedAge = dobString ? calculateAge(new Date(dobString)) : 0;
@@ -147,7 +152,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
     setPhotos((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (overrideVoiceUrl?: string | null, overrideVoiceDuration?: number | null) => {
     if (isUnder18) {
       setError("Under 18 registration is strictly prohibited.");
       return;
@@ -164,6 +169,9 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
     try {
       setIsLoading(true);
       setError(null);
+
+      const finalVoiceUrl = overrideVoiceUrl !== undefined ? overrideVoiceUrl : voicePromptUrl;
+      const finalVoiceDuration = overrideVoiceDuration !== undefined ? overrideVoiceDuration : voicePromptDuration;
 
       const payload = {
         name: name.trim(),
@@ -184,6 +192,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
         interestIds: selectedInterestIds,
         languageIds: selectedLanguageIds,
         photoUrls: photos,
+        voicePromptUrl: finalVoiceUrl || undefined,
+        voicePromptDuration: finalVoiceDuration || undefined,
       };
 
       const res = await fetch("/api/profile/onboard", {
@@ -299,7 +309,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
         </div>
         <div className="flex items-center gap-2">
           <span className="text-[11px] font-bold text-amber-400 bg-amber-400/10 border border-amber-400/30 px-2.5 py-0.5 rounded-full">
-            {step === 0 ? "Location Setup" : `Step ${step} of 4`}
+            {step === 0 ? "Location Setup" : `Step ${step} of 5`}
           </span>
         </div>
       </header>
@@ -308,7 +318,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
       <div className="w-full h-1 bg-zinc-800/80 overflow-hidden">
         <div
           className="h-full bg-gradient-to-r from-amber-500 via-amber-400 to-[#FFC629] transition-all duration-300 ease-out"
-          style={{ width: `${Math.max(15, (step / 4) * 100)}%` }}
+          style={{ width: `${Math.max(12, (step / 5) * 100)}%` }}
         />
       </div>
 
@@ -901,11 +911,70 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
             <Button
               variant="primary"
               className="flex-1"
-              isLoading={isLoading || isUploading}
-              disabled={photos.length === 0}
-              onClick={handleSubmit}
+              disabled={photos.length === 0 || isUploading}
+              onClick={() => {
+                if (photos.length === 0) {
+                  setError("Please upload at least 1 photo to continue.");
+                  return;
+                }
+                setError(null);
+                setStep(5);
+              }}
             >
-              Complete Profile ({photos.length}/6)
+              Next: Voice Note ({photos.length}/6) →
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* STEP 5: VOICE NOTE / AUDIO INTRO */}
+      {step === 5 && (
+        <div className="flex-1 flex flex-col justify-between space-y-4">
+          <div className="space-y-4">
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <h3 className="text-lg font-black text-white flex items-center gap-2">
+                  <Mic className="w-5 h-5 text-amber-400" />
+                  <span>Voice Note Bio</span>
+                </h3>
+                <span className="text-[11px] font-black text-black bg-gradient-to-r from-amber-400 to-[#FFC629] px-2 py-0.5 rounded-full uppercase tracking-wider">
+                  Audio Intro
+                </span>
+              </div>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Add an audio intro to your profile. Matches will be able to tap and hear your real voice while swiping!
+              </p>
+            </div>
+
+            <VoiceNoteRecorder
+              initialUrl={voicePromptUrl}
+              initialDuration={voicePromptDuration}
+              isOnboarding={true}
+              canReplace={true}
+              onSave={(url, durationSec) => {
+                setVoicePromptUrl(url);
+                setVoicePromptDuration(durationSec);
+                handleSubmit(url, durationSec);
+              }}
+              onSkip={() => {
+                setVoicePromptUrl(null);
+                setVoicePromptDuration(null);
+                handleSubmit(null, null);
+              }}
+            />
+          </div>
+
+          <div className="flex gap-3 pt-3">
+            <Button variant="secondary" className="flex-1" onClick={() => setStep(4)}>
+              Back to Photos
+            </Button>
+            <Button
+              variant="primary"
+              className="flex-1"
+              isLoading={isLoading}
+              onClick={() => handleSubmit()}
+            >
+              {voicePromptUrl ? "Complete Profile with Voice ✓" : "Complete Profile"}
             </Button>
           </div>
         </div>

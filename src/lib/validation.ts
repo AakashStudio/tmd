@@ -86,6 +86,8 @@ export const updateProfileSchema = z.object({
   anthemTitle: z.string().trim().max(200).optional().nullable(),
   anthemArtist: z.string().trim().max(200).optional().nullable(),
   anthemCoverUrl: z.string().trim().url().optional().nullable(),
+  voicePromptUrl: z.string().trim().optional().nullable(),
+  voicePromptDuration: z.number().int().optional().nullable(),
 });
 
 export const dobCorrectionRequestSchema = z.object({

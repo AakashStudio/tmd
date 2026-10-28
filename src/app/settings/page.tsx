@@ -8,6 +8,8 @@ import { useProfile } from "@/hooks/useProfile";
 import { BottomNav } from "@/components/navigation/BottomNav";
 import { ProfileDetailSheet } from "@/components/discovery/ProfileDetailSheet";
 import { LocationPickerModal } from "@/components/profile/LocationPickerModal";
+import { VoiceNotePlayer } from "@/components/profile/VoiceNotePlayer";
+import { VoiceNoteRecorder } from "@/components/profile/VoiceNoteRecorder";
 import { DiscoveryCandidate } from "@/hooks/useDiscovery";
 import {
   User,
@@ -23,6 +25,8 @@ import {
   X,
   Eye,
   Check,
+  Mic,
+  Lock,
 } from "lucide-react";
 
 const POPULAR_MOODS = [
@@ -81,6 +85,9 @@ export default function ProfileHubPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [uploadToast, setUploadToast] = useState<string | null>(null);
+  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
+
+  const canReplaceVoice = Boolean(entitlements?.isPaid || entitlements?.isPro || !profile?.voicePromptUrl);
 
   // Selected tags for Interests and Music
   const [selectedInterestIds, setSelectedInterestIds] = useState<string[]>([]);
@@ -317,6 +324,47 @@ export default function ProfileHubPage() {
     anthemTitle: profile.anthemTitle || "Bollywood, Lo-Fi, Indie",
     anthemArtist: "Music",
     anthemCoverUrl: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200",
+    voicePromptUrl: profile.voicePromptUrl,
+    voicePromptDuration: profile.voicePromptDuration,
+  };
+
+  const handleSaveVoiceNote = async (url: string, durationSec: number) => {
+    try {
+      setIsSaving(true);
+      await updateProfile({
+        voicePromptUrl: url,
+        voicePromptDuration: durationSec,
+      });
+      setIsVoiceModalOpen(false);
+      setUploadToast("Voice note saved successfully! 🎙️");
+      setTimeout(() => setUploadToast(null), 3500);
+    } catch (e: any) {
+      alert(e.message || "Failed to update voice note");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteVoiceNote = async () => {
+    if (!entitlements?.isPaid && !entitlements?.isPro) {
+      alert("Deleting or replacing voice note is exclusive to Gold & PRO members.");
+      return;
+    }
+    if (!confirm("Are you sure you want to remove your voice note?")) return;
+    try {
+      setIsSaving(true);
+      await updateProfile({
+        voicePromptUrl: null,
+        voicePromptDuration: null,
+      });
+      setIsVoiceModalOpen(false);
+      setUploadToast("Voice note removed.");
+      setTimeout(() => setUploadToast(null), 3500);
+    } catch (e: any) {
+      alert(e.message || "Failed to remove voice note");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Completion calculation
@@ -596,6 +644,67 @@ export default function ProfileHubPage() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* ================= 4.5 VOICE NOTE BIO (AUDIO INTRO) ================= */}
+        <div className="space-y-2 pt-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Mic className="w-4 h-4 text-amber-400" />
+              <h3 className="font-extrabold text-sm text-white">Voice Note Bio</h3>
+            </div>
+            {profile.voicePromptUrl ? (
+              canReplaceVoice ? (
+                <button
+                  type="button"
+                  onClick={() => setIsVoiceModalOpen(true)}
+                  className="py-1 px-3 rounded-full bg-zinc-900 border border-zinc-700 hover:border-amber-400 text-amber-400 text-xs font-bold transition active:scale-95 flex items-center gap-1 cursor-pointer"
+                >
+                  <Edit2 className="w-3 h-3" />
+                  <span>Replace</span>
+                </button>
+              ) : (
+                <Link
+                  href="/plan"
+                  className="py-1 px-2.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-400 text-[11px] font-bold hover:bg-amber-400/20 transition flex items-center gap-1"
+                >
+                  <Lock className="w-3 h-3" />
+                  <span>Upgrade to Replace</span>
+                </Link>
+              )
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsVoiceModalOpen(true)}
+                className="py-1 px-3.5 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#FFC629] text-black text-xs font-black transition active:scale-95 shadow-sm cursor-pointer"
+              >
+                + Record
+              </button>
+            )}
+          </div>
+
+          {profile.voicePromptUrl ? (
+            <div className="p-3.5 rounded-2xl bg-[#14141a] border border-zinc-800 hover:border-amber-400/40 transition">
+              <VoiceNotePlayer
+                url={profile.voicePromptUrl}
+                durationSeconds={profile.voicePromptDuration}
+                candidateName={profile.name}
+              />
+            </div>
+          ) : (
+            <div
+              onClick={() => setIsVoiceModalOpen(true)}
+              className="p-4 rounded-2xl bg-[#14141a] border border-dashed border-zinc-800 hover:border-amber-400/50 transition cursor-pointer flex items-center gap-3 group"
+            >
+              <div className="w-10 h-10 rounded-full bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400 group-hover:scale-105 transition">
+                <Mic className="w-5 h-5" />
+              </div>
+              <div className="text-left">
+                <p className="text-xs font-bold text-white group-hover:text-amber-400 transition">Record Your Voice Note</p>
+                <p className="text-[11px] text-zinc-400 mt-0.5">Let people hear your voice when swiping on you</p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ================= 5. ABOUT ME & MY MOOD ================= */}
@@ -1087,6 +1196,42 @@ export default function ProfileHubPage() {
               <LogOut className="w-4 h-4" />
               <span>Log Out</span>
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* ================= VOICE NOTE MODAL ================= */}
+      {isVoiceModalOpen && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in">
+          <div className="w-full max-w-sm bg-[#121217] border border-zinc-800 rounded-3xl p-5 text-white flex flex-col shadow-2xl relative overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-400 flex items-center justify-center">
+                  <Mic className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm text-white">Voice Note Bio</h3>
+                  <p className="text-[11px] text-zinc-400">Audio profile intro</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsVoiceModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <VoiceNoteRecorder
+              initialUrl={profile.voicePromptUrl}
+              initialDuration={profile.voicePromptDuration}
+              isOnboarding={false}
+              canReplace={canReplaceVoice}
+              onSave={handleSaveVoiceNote}
+              onDelete={profile.voicePromptUrl ? handleDeleteVoiceNote : undefined}
+            />
           </div>
         </div>
       )}

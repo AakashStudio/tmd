@@ -129,6 +129,8 @@ model Profile {
   anthemTitle           String?
   anthemArtist          String?
   anthemCoverUrl        String?
+  voicePromptUrl        String?
+  voicePromptDuration   Int?
   createdAt             DateTime              @default(now())
   updatedAt             DateTime              @updatedAt
 

@@ -97,6 +97,43 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "File exceeds 15MB size limit" }, { status: 400 });
       }
 
+      // Handle audio / voice note upload
+      const isAudio =
+        file.type.startsWith("audio/") ||
+        file.name.endsWith(".webm") ||
+        file.name.endsWith(".mp3") ||
+        file.name.endsWith(".m4a") ||
+        file.name.endsWith(".ogg") ||
+        file.name.endsWith(".wav") ||
+        formData.get("type") === "audio";
+
+      if (isAudio) {
+        const audioDir = path.join(process.cwd(), "public", "uploads", "audio");
+        if (!fs.existsSync(audioDir)) {
+          fs.mkdirSync(audioDir, { recursive: true });
+        }
+
+        const bytes = await file.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+
+        let ext = "webm";
+        if (file.type.includes("mp3") || file.name.endsWith(".mp3")) ext = "mp3";
+        else if (file.type.includes("mp4") || file.type.includes("m4a") || file.name.endsWith(".m4a")) ext = "m4a";
+        else if (file.type.includes("ogg") || file.name.endsWith(".ogg")) ext = "ogg";
+        else if (file.type.includes("wav") || file.name.endsWith(".wav")) ext = "wav";
+
+        const uniqueFilename = `voice_${Date.now()}_${crypto.randomBytes(4).toString("hex")}.${ext}`;
+        const filePath = path.join(audioDir, uniqueFilename);
+        fs.writeFileSync(filePath, buffer);
+
+        const publicUrl = `/uploads/audio/${uniqueFilename}`;
+        return NextResponse.json({
+          success: true,
+          url: publicUrl,
+          filename: uniqueFilename,
+        });
+      }
+
       // Explicit MIME check
       if (file.type && !ALLOWED_MIME_TYPES.has(file.type.toLowerCase())) {
         return NextResponse.json(
