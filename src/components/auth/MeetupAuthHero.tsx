@@ -88,20 +88,20 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
               />
             </svg>
-            <span>Continue with Google</span>
+            <span className="whitespace-nowrap">Continue with Google</span>
           </button>
 
           {/* Phone Number Button */}
           <button
             type="button"
             onClick={() => setAuthMode("PHONE")}
-            className="w-full flex items-center justify-center gap-3 py-3.5 px-4 rounded-full bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] hover:brightness-105 text-black text-[13px] font-black tracking-wide transition-all shadow-lg shadow-amber-500/25 active:scale-[0.98]"
+            className="w-full flex items-center justify-center gap-3 py-3.5 px-4 rounded-full bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] hover:brightness-105 text-black text-[13px] font-black tracking-wide transition-all shadow-lg shadow-amber-500/25 active:scale-[0.98] whitespace-nowrap"
           >
             {/* Phone Icon */}
             <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
               <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
             </svg>
-            <span>Continue with Phone Number</span>
+            <span className="whitespace-nowrap">Continue with Phone Number</span>
           </button>
 
           {/* Terms Disclaimer */}

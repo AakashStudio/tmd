@@ -334,7 +334,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
           <div className="flex-1 flex flex-col justify-between space-y-6">
             <div className="text-center pt-2 space-y-2">
               <h1 className="text-2xl sm:text-[28px] font-black tracking-tight text-white leading-tight">
-                So, are you from<br />around here?
+                So, are you from around here?
               </h1>
               <p className="text-xs text-zinc-400 font-medium leading-relaxed max-w-xs mx-auto">
                 Set your location to see who&apos;s in your neighborhood or beyond. You won&apos;t be able to match with people otherwise.
@@ -910,7 +910,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
             </Button>
             <Button
               variant="primary"
-              className="flex-1"
+              className="flex-1 whitespace-nowrap"
               disabled={photos.length === 0 || isUploading}
               onClick={() => {
                 if (photos.length === 0) {
@@ -970,7 +970,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
             </Button>
             <Button
               variant="primary"
-              className="flex-1"
+              className="flex-1 whitespace-nowrap"
               isLoading={isLoading}
               onClick={() => handleSubmit()}
             >

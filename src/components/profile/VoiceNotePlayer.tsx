@@ -101,15 +101,10 @@ export const VoiceNotePlayer: React.FC<VoiceNotePlayerProps> = ({
             )}
           </div>
 
-          <div className="flex flex-col text-left min-w-0">
-            <span className="text-xs font-black tracking-tight text-white truncate flex items-center gap-1.5">
-              <span>{isPlaying ? "Playing Voice Note" : candidateName ? `${candidateName}'s Voice Note` : "Listen to Voice"}</span>
-              <Mic className="w-3 h-3 text-amber-400 shrink-0" />
-            </span>
-            <span className="text-[10px] text-zinc-400 truncate">
-              {isPlaying ? "Tap to pause" : "Tap to listen real voice"}
-            </span>
-          </div>
+          <span className="text-xs font-black tracking-tight text-white whitespace-nowrap truncate flex items-center gap-1.5">
+            <span>{isPlaying ? "Playing Voice Note" : candidateName ? `${candidateName}'s Voice Note` : "Listen to Voice"}</span>
+            <Mic className="w-3 h-3 text-amber-400 shrink-0" />
+          </span>
         </div>
 
         {/* Right side: Equalizer wave + Time */}

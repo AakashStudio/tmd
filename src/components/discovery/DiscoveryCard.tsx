@@ -103,20 +103,20 @@ export function DiscoveryCard({ candidate, onOpenProfile }: DiscoveryCardProps) 
         </div>
 
         {/* City & Profession Info */}
-        <div className="flex flex-wrap items-center gap-2 text-sm text-zinc-300">
-          <span className="flex items-center gap-1 font-medium">
+        <div className="flex items-center gap-2 text-sm text-zinc-300 overflow-hidden whitespace-nowrap">
+          <span className="flex items-center gap-1 font-medium shrink-0">
             📍 {candidate.city}
           </span>
           {candidate.profession && (
             <>
-              <span>•</span>
-              <span>💼 {candidate.profession}</span>
+              <span className="shrink-0">•</span>
+              <span className="truncate">💼 {candidate.profession}</span>
             </>
           )}
           {candidate.height && (
             <>
-              <span>•</span>
-              <span>📏 {candidate.height} cm</span>
+              <span className="shrink-0">•</span>
+              <span className="shrink-0">📏 {candidate.height} cm</span>
             </>
           )}
         </div>
@@ -164,7 +164,7 @@ export function DiscoveryCard({ candidate, onOpenProfile }: DiscoveryCardProps) 
             </div>
           ) : <div />}
 
-          <span className="text-[11px] text-rose-300 font-semibold flex items-center gap-1 group-hover:underline">
+          <span className="text-[11px] text-rose-300 font-semibold flex items-center gap-1 group-hover:underline whitespace-nowrap shrink-0">
             View Profile & Reply ✈
           </span>
         </div>

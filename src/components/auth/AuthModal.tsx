@@ -200,7 +200,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               {/* Catchy, distinctive TMD Heading */}
               <div className="space-y-1.5">
                 <h1 className="text-2xl sm:text-[28px] font-black text-white tracking-tight leading-tight">
-                  What&apos;s your<br />number?
+                  What&apos;s your number?
                 </h1>
                 <p className="text-xs text-zinc-400 font-medium leading-relaxed">
                   We&apos;ll send a 6-digit code to verify your account &amp; keep TMD safe for real dates.
@@ -267,7 +267,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               {/* Heading */}
               <div className="space-y-1.5">
                 <h1 className="text-2xl sm:text-[28px] font-black text-white tracking-tight leading-tight">
-                  Enter your<br />code
+                  Enter your code
                 </h1>
                 <div className="flex items-center gap-2 text-xs text-zinc-400 font-medium">
                   <span>
