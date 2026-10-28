@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
+import { LocationPickerModal } from "@/components/profile/LocationPickerModal";
 import { calculateAge } from "@/lib/validation";
 import { Camera, Image as ImageIcon, Plus, Trash2, Loader2, MapPin, ChevronDown, ChevronUp } from "lucide-react";
 
@@ -28,6 +29,9 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
   const [gender, setGender] = useState("Male");
   const [interestedIn, setInterestedIn] = useState("Female");
   const [city, setCity] = useState("Delhi");
+  const [stateName, setStateName] = useState("Delhi");
+  const [countryName, setCountryName] = useState("India");
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const [isDetectingLocation, setIsDetectingLocation] = useState<boolean>(false);
@@ -168,6 +172,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
         gender,
         interestedIn,
         city: city.trim(),
+        state: stateName.trim() || undefined,
+        country: countryName.trim() || "India",
         latitude: latitude || undefined,
         longitude: longitude || undefined,
         bio: bio.trim() || undefined,
@@ -517,7 +523,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
         <div className="space-y-4">
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Current City (Required)</label>
+              <label className="text-xs font-semibold text-zinc-300">Current Location (Worldwide)</label>
               <button
                 type="button"
                 onClick={triggerGpsDetect}
@@ -528,10 +534,39 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
                 <span>{isDetectingLocation ? "Detecting GPS..." : "Auto-detect GPS"}</span>
               </button>
             </div>
-            <Input
-              placeholder="e.g. Delhi, Mumbai, Bengaluru"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
+
+            <button
+              type="button"
+              onClick={() => setIsLocationModalOpen(true)}
+              className="w-full p-3.5 rounded-xl bg-zinc-900 border border-zinc-700/80 hover:border-[#FFC629] text-left text-sm transition flex items-center justify-between group"
+            >
+              <div className="flex items-center gap-2.5 truncate">
+                <span className="text-base">📍</span>
+                <span className="text-white font-bold truncate">
+                  {city
+                    ? `${city}${stateName ? `, ${stateName}` : ""}${countryName ? `, ${countryName}` : ""}`
+                    : "Select Country, State, City..."}
+                </span>
+              </div>
+              <span className="text-xs font-bold text-amber-400 group-hover:underline shrink-0">
+                Choose Dropdown ▾
+              </span>
+            </button>
+
+            <LocationPickerModal
+              isOpen={isLocationModalOpen}
+              onClose={() => setIsLocationModalOpen(false)}
+              currentCity={city}
+              currentState={stateName}
+              currentCountry={countryName}
+              onSave={async (loc) => {
+                setCity(loc.city);
+                if (loc.state) setStateName(loc.state);
+                if (loc.country) setCountryName(loc.country);
+                if (loc.latitude) setLatitude(loc.latitude);
+                if (loc.longitude) setLongitude(loc.longitude);
+                setIsLocationModalOpen(false);
+              }}
             />
             {latitude && longitude && (
               <p className="text-[10px] text-emerald-400 mt-1.5 flex items-center gap-1">

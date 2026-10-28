@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { BottomNav } from "@/components/navigation/BottomNav";
 import { ProfileDetailSheet } from "@/components/discovery/ProfileDetailSheet";
+import { LocationPickerModal } from "@/components/profile/LocationPickerModal";
 import { DiscoveryCandidate } from "@/hooks/useDiscovery";
 import {
   User,
@@ -195,6 +196,32 @@ export default function ProfileHubPage() {
         return;
       }
       setSelectedMusicList((prev) => [...prev, tag]);
+    }
+  };
+
+  const handleSaveLocation = async (loc: {
+    city: string;
+    state?: string;
+    country?: string;
+    latitude?: number;
+    longitude?: number;
+  }) => {
+    setIsSaving(true);
+    try {
+      await updateProfile({
+        city: loc.city,
+        state: loc.state || null,
+        country: loc.country || "India",
+        ...(loc.latitude ? { latitude: loc.latitude } : {}),
+        ...(loc.longitude ? { longitude: loc.longitude } : {}),
+      });
+      setUploadToast("Location updated! 📍");
+      setTimeout(() => setUploadToast(null), 3000);
+      setActiveQuickEdit(null);
+    } catch (err: any) {
+      alert(err.message || "Failed to update location");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -478,7 +505,11 @@ export default function ProfileHubPage() {
               className="px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 hover:border-amber-400/40 whitespace-nowrap flex items-center gap-1.5 transition active:scale-95"
             >
               <span>🏠 Living in</span>
-              <span className="text-amber-400">{profile.city || "+ Add"}</span>
+              <span className="text-amber-400 truncate max-w-[140px]">
+                {profile.city
+                  ? `${profile.city}${profile.country && profile.country !== "India" ? `, ${profile.country}` : ""}`
+                  : "+ Add"}
+              </span>
             </button>
 
             <button
@@ -891,16 +922,25 @@ export default function ProfileHubPage() {
         </div>
       )}
 
-      {/* 5. GENERIC QUICK EDIT FOR BASICS (City, Height, Work, Education) */}
-      {(activeQuickEdit === "LIVING_IN" ||
-        activeQuickEdit === "HEIGHT" ||
+      {/* 5. LOCATION PICKER MODAL (WORLDWIDE Country -> State -> City Dropdowns) */}
+      <LocationPickerModal
+        isOpen={activeQuickEdit === "LIVING_IN"}
+        onClose={() => setActiveQuickEdit(null)}
+        currentCity={profile?.city}
+        currentState={profile?.state}
+        currentCountry={profile?.country}
+        onSave={handleSaveLocation}
+        isSaving={isSaving}
+      />
+
+      {/* 6. GENERIC QUICK EDIT FOR BASICS (Height, Work, Education) */}
+      {(activeQuickEdit === "HEIGHT" ||
         activeQuickEdit === "JOB" ||
         activeQuickEdit === "EDUCATION") && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-sm sm:max-w-md bg-[#121217] border border-zinc-800 rounded-3xl p-5 text-white space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
               <h3 className="font-bold text-sm text-white">
-                {activeQuickEdit === "LIVING_IN" && "Edit City / Location"}
                 {activeQuickEdit === "HEIGHT" && "Edit Height (cm)"}
                 {activeQuickEdit === "JOB" && "Edit Profession / Work"}
                 {activeQuickEdit === "EDUCATION" && "Edit Education"}

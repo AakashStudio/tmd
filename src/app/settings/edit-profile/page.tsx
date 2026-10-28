@@ -7,6 +7,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
+import { LocationPickerModal } from "@/components/profile/LocationPickerModal";
 import { ArrowLeft, Lock, AlertCircle, CheckCircle, MapPin } from "lucide-react";
 
 export default function EditProfilePage() {
@@ -15,6 +16,9 @@ export default function EditProfilePage() {
 
   const [name, setName] = useState("");
   const [city, setCity] = useState("");
+  const [stateName, setStateName] = useState("");
+  const [countryName, setCountryName] = useState("India");
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const [isDetectingGps, setIsDetectingGps] = useState<boolean>(false);
@@ -32,6 +36,8 @@ export default function EditProfilePage() {
     if (profile) {
       setName(profile.name || "");
       setCity(profile.city || "");
+      setStateName(profile.state || "");
+      setCountryName(profile.country || "India");
       setLatitude(profile.latitude ?? null);
       setLongitude(profile.longitude ?? null);
       setBio(profile.bio || "");
@@ -90,6 +96,8 @@ export default function EditProfilePage() {
 
       const updates: Record<string, any> = {
         city: city.trim(),
+        state: stateName.trim() || null,
+        country: countryName.trim() || "India",
         bio: bio.trim() || null,
         profession: profession.trim() || null,
         education: education.trim() || null,
@@ -199,7 +207,7 @@ export default function EditProfilePage() {
         <div>
           <div className="flex items-center justify-between mb-1">
             <label className="text-xs font-semibold text-[#9e9ea8] uppercase tracking-wider">
-              Current City
+              Current Location (Worldwide)
             </label>
             <div className="flex items-center gap-2">
               <button
@@ -220,25 +228,60 @@ export default function EditProfilePage() {
               )}
             </div>
           </div>
-          <Input
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
+
+          <button
+            type="button"
+            onClick={() => entitlements?.canSelectCity && setIsLocationModalOpen(true)}
             disabled={!entitlements?.canSelectCity}
-            helperText={
-              !entitlements?.canSelectCity
-                ? "Free location changes exhausted (3/3). Upgrade to TMD Plus or PRO for unlimited changes."
-                : entitlements?.locationChangesRemaining !== Infinity
-                ? `You have ${entitlements?.locationChangesRemaining} free lifetime location change${entitlements?.locationChangesRemaining === 1 ? "" : "s"} remaining.`
-                : undefined
-            }
-            required
-          />
+            className="w-full p-3.5 rounded-xl bg-zinc-900 border border-zinc-700/80 hover:border-[#FFC629] text-left text-sm transition flex items-center justify-between group disabled:opacity-50"
+          >
+            <div className="flex items-center gap-2.5 truncate">
+              <span className="text-base">📍</span>
+              <span className="text-white font-bold truncate">
+                {city
+                  ? `${city}${stateName ? `, ${stateName}` : ""}${countryName ? `, ${countryName}` : ""}`
+                  : "Select Country, State, City..."}
+              </span>
+            </div>
+            <span className="text-xs font-bold text-amber-400 group-hover:underline shrink-0">
+              Change Dropdown ▾
+            </span>
+          </button>
+
+          {!entitlements?.canSelectCity ? (
+            <p className="text-[11px] text-rose-400 mt-1">
+              Free location changes exhausted (3/3). Upgrade to TMD Plus or PRO for unlimited changes.
+            </p>
+          ) : entitlements?.locationChangesRemaining !== Infinity ? (
+            <p className="text-[11px] text-[#5e5e6e] mt-1">
+              You have {entitlements?.locationChangesRemaining} free lifetime location change
+              {entitlements?.locationChangesRemaining === 1 ? "" : "s"} remaining.
+            </p>
+          ) : null}
+
           {latitude && longitude && (
             <p className="text-[10px] text-emerald-400 mt-1 flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               Location pinned: {latitude.toFixed(3)}°, {longitude.toFixed(3)}°
             </p>
           )}
+
+          {/* Worldwide Location Dropdown Modal */}
+          <LocationPickerModal
+            isOpen={isLocationModalOpen}
+            onClose={() => setIsLocationModalOpen(false)}
+            currentCity={city}
+            currentState={stateName}
+            currentCountry={countryName}
+            onSave={async (loc) => {
+              setCity(loc.city);
+              if (loc.state) setStateName(loc.state);
+              if (loc.country) setCountryName(loc.country);
+              if (loc.latitude) setLatitude(loc.latitude);
+              if (loc.longitude) setLongitude(loc.longitude);
+              setIsLocationModalOpen(false);
+            }}
+          />
         </div>
 
         {/* Profession & Height */}

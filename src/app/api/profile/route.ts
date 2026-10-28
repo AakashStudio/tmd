@@ -124,6 +124,8 @@ export async function PUT(req: NextRequest) {
         ...(data.education !== undefined ? { education: data.education } : {}),
         ...(data.height !== undefined ? { height: data.height } : {}),
         ...(isCityChanging ? { city: data.city!.trim() } : {}),
+        ...(data.state !== undefined ? { state: data.state ? data.state.trim() : null } : {}),
+        ...(data.country !== undefined ? { country: data.country ? data.country.trim() : null } : {}),
         ...(data.latitude !== undefined ? { latitude: data.latitude } : {}),
         ...(data.longitude !== undefined ? { longitude: data.longitude } : {}),
         ...(incrementLocationCount ? { locationChangeCount: { increment: 1 } } : {}),

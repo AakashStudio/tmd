@@ -113,6 +113,8 @@ model Profile {
   gender                String
   interestedIn          String
   city                  String
+  state                 String?
+  country               String?               @default("India")
   latitude              Float?
   longitude             Float?
   bio                   String?

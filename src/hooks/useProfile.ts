@@ -11,6 +11,8 @@ export interface ProfileData {
   gender: string;
   interestedIn: string;
   city: string;
+  state?: string | null;
+  country?: string | null;
   latitude?: number | null;
   longitude?: number | null;
   bio: string | null;
@@ -71,6 +73,8 @@ export function useProfile() {
     gender: string;
     interestedIn: string;
     city: string;
+    state?: string;
+    country?: string;
     bio?: string;
     profession?: string;
     education?: string;
