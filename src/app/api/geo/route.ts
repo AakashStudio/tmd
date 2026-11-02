@@ -59,11 +59,26 @@ export async function GET(req: NextRequest) {
       let cities: Array<{ name: string; latitude?: string; longitude?: string }> = [];
 
       if (stateCode) {
-        cities = City.getCitiesOfState(countryCode, stateCode).map((c) => ({
+        const stateCities = City.getCitiesOfState(countryCode, stateCode);
+        cities = stateCities.map((c) => ({
           name: c.name,
           latitude: c.latitude || undefined,
           longitude: c.longitude || undefined,
         }));
+
+        // If state has no listed cities in dataset, fallback to state name itself
+        if (cities.length === 0) {
+          const stateObj = State.getStateByCodeAndCountry(stateCode, countryCode);
+          if (stateObj) {
+            cities = [
+              {
+                name: stateObj.name,
+                latitude: stateObj.latitude || undefined,
+                longitude: stateObj.longitude || undefined,
+              },
+            ];
+          }
+        }
       }
 
       // If state has no listed cities or no state provided, fallback to country cities
