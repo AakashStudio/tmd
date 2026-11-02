@@ -193,48 +193,32 @@ export function ProfileDetailSheet({
             </div>
           )}
 
-          {/* Screenshot 1 exact style: White Pill Reply button at bottom right */}
-          <button
-            type="button"
-            onClick={() => openReply("PHOTO", `${candidate.name}'s photo`)}
-            className="absolute bottom-4 right-4 z-20 px-3.5 py-1.5 rounded-full bg-white/95 text-zinc-900 hover:bg-white shadow-xl flex items-center gap-1.5 text-xs font-bold transition active:scale-95"
-          >
-            <Send className="w-3.5 h-3.5 text-sky-500 fill-sky-500 rotate-[-25deg]" />
-            <span>Reply</span>
-          </button>
-        </div>
-
-        {/* 1.5 Voice Note Audio Intro Card - Prominently located directly below photo */}
-        <div className="p-4 rounded-2xl bg-gradient-to-br from-[#181820] to-[#121216] border border-amber-500/30 space-y-3 shadow-lg shadow-amber-500/5">
-          <div className="flex items-center justify-between text-zinc-400">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-400">
-              <Mic className="w-3.5 h-3.5 text-amber-400" />
-              <span className="uppercase tracking-wider font-extrabold text-[11px]">Voice Note Intro</span>
+          {/* Bottom Overlay: Voice Note Player (Left) + Reply Button (Right) */}
+          <div className="absolute bottom-4 inset-x-3.5 z-20 flex items-center justify-between gap-2 pointer-events-none">
+            {/* Left: Voice Note Player directly ON the Photo (where arrow points) */}
+            <div className="pointer-events-auto flex-1 min-w-0 max-w-[calc(100%-80px)]">
+              <VoiceNotePlayer
+                url={
+                  candidate.voicePromptUrl ||
+                  (candidate.gender === "MALE" || candidate.gender === "MAN"
+                    ? "/uploads/audio/aarav_voice.wav"
+                    : "/uploads/audio/lisa_voice.wav")
+                }
+                durationSeconds={candidate.voicePromptDuration || 10}
+                candidateName={candidate.name}
+                compact={true}
+                className="w-full shadow-2xl backdrop-blur-xl bg-black/85 border-amber-400/50"
+              />
             </div>
-            <span className="text-[10px] bg-amber-400/10 text-amber-300 border border-amber-400/20 px-2 py-0.5 rounded-full font-bold">
-              Audio Bio
-            </span>
-          </div>
 
-          <VoiceNotePlayer
-            url={
-              candidate.voicePromptUrl ||
-              (candidate.gender === "MALE" || candidate.gender === "MAN"
-                ? "/uploads/audio/aarav_voice.wav"
-                : "/uploads/audio/lisa_voice.wav")
-            }
-            durationSeconds={candidate.voicePromptDuration || 10}
-            candidateName={candidate.name}
-          />
-
-          <div className="flex justify-end pt-1">
+            {/* Right: Reply button */}
             <button
               type="button"
-              onClick={() => openReply("BIO", `${candidate.name}'s voice note`)}
-              className="px-3.5 py-1.5 rounded-full bg-zinc-800/90 text-white hover:bg-zinc-700 shadow-md flex items-center gap-1.5 text-xs font-bold transition active:scale-95 border border-zinc-700/60"
+              onClick={() => openReply("PHOTO", `${candidate.name}'s photo`)}
+              className="pointer-events-auto shrink-0 px-3.5 py-1.5 rounded-full bg-white/95 text-zinc-900 hover:bg-white shadow-xl flex items-center gap-1.5 text-xs font-bold transition active:scale-95 cursor-pointer"
             >
-              <Send className="w-3.5 h-3.5 text-amber-400 fill-amber-400 rotate-[-25deg]" />
-              <span>Reply to Voice</span>
+              <Send className="w-3.5 h-3.5 text-sky-500 fill-sky-500 rotate-[-25deg]" />
+              <span>Reply</span>
             </button>
           </div>
         </div>
