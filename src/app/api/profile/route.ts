@@ -114,26 +114,7 @@ export async function PUT(req: NextRequest) {
       }
     }
 
-    // 5. Voice Note Replacement Authorization Check (Members only can replace after initial setup)
-    const isVoiceReplacing =
-      data.voicePromptUrl !== undefined &&
-      data.voicePromptUrl !== (user.profile as any).voicePromptUrl &&
-      Boolean((user.profile as any).voicePromptUrl);
-
-    if (isVoiceReplacing) {
-      const isMember = user.entitlements.isPro || user.entitlements.canSelectCity;
-      if (!isMember) {
-        return NextResponse.json(
-          {
-            error:
-              "Replacing your Voice Note is exclusive to Gold & PRO members. Upgrade your plan to record a new voice note.",
-          },
-          { status: 403 }
-        );
-      }
-    }
-
-    // 6. Update Profile
+    // 5. Update Profile
     const updated = await prisma.profile.update({
       where: { id: user.profile.id },
       data: {

@@ -277,7 +277,7 @@ export const VoiceNoteRecorder: React.FC<VoiceNoteRecorderProps> = ({
         />
       )}
 
-      {/* Membership Rule Banner */}
+      {/* Voice Note Banner */}
       <div className="w-full mb-5 p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/20 text-left">
         <div className="flex items-start gap-2.5">
           <div className="w-7 h-7 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
@@ -285,24 +285,10 @@ export const VoiceNoteRecorder: React.FC<VoiceNoteRecorderProps> = ({
           </div>
           <div>
             <h4 className="text-xs font-black uppercase tracking-wider text-amber-400">
-              {isOnboarding ? "Free 1-Time Voice Intro" : "Voice Note Bio"}
+              Voice Note Bio
             </h4>
             <p className="text-[12px] text-zinc-300 mt-0.5 leading-relaxed">
-              {isOnboarding ? (
-                <>
-                  Free members record their Voice Note <strong className="text-white">once</strong> during registration.
-                  Replacing or changing your voice note later in settings is exclusive to{" "}
-                  <span className="text-amber-400 font-bold">Gold & PRO members</span>. Make it count!
-                </>
-              ) : canReplace ? (
-                <>
-                  You have <strong className="text-amber-400">VIP Voice privileges</strong>. You can record or replace your voice note anytime!
-                </>
-              ) : (
-                <>
-                  <span className="text-amber-400 font-bold">Gold / PRO Locked:</span> Free members can only record during onboarding. Upgrade to replace your Voice Note.
-                </>
-              )}
+              Record a 30-second voice intro! Anyone viewing your profile or swiping can tap to hear your real voice. You can listen, retake, or replace it anytime.
             </p>
           </div>
         </div>

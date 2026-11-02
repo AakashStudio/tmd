@@ -87,7 +87,7 @@ export default function ProfileHubPage() {
   const [uploadToast, setUploadToast] = useState<string | null>(null);
   const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
 
-  const canReplaceVoice = Boolean(entitlements?.isPaid || entitlements?.isPro || !profile?.voicePromptUrl);
+  const canReplaceVoice = true;
 
   // Selected tags for Interests and Music
   const [selectedInterestIds, setSelectedInterestIds] = useState<string[]>([]);
@@ -654,24 +654,14 @@ export default function ProfileHubPage() {
               <h3 className="font-extrabold text-sm text-white">Voice Note Bio</h3>
             </div>
             {profile.voicePromptUrl ? (
-              canReplaceVoice ? (
-                <button
-                  type="button"
-                  onClick={() => setIsVoiceModalOpen(true)}
-                  className="py-1 px-3 rounded-full bg-zinc-900 border border-zinc-700 hover:border-amber-400 text-amber-400 text-xs font-bold transition active:scale-95 flex items-center gap-1 cursor-pointer"
-                >
-                  <Edit2 className="w-3 h-3" />
-                  <span>Replace</span>
-                </button>
-              ) : (
-                <Link
-                  href="/plan"
-                  className="py-1 px-2.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-400 text-[11px] font-bold hover:bg-amber-400/20 transition flex items-center gap-1"
-                >
-                  <Lock className="w-3 h-3" />
-                  <span>Upgrade to Replace</span>
-                </Link>
-              )
+              <button
+                type="button"
+                onClick={() => setIsVoiceModalOpen(true)}
+                className="py-1 px-3 rounded-full bg-zinc-900 border border-zinc-700 hover:border-amber-400 text-amber-400 text-xs font-bold transition active:scale-95 flex items-center gap-1 cursor-pointer"
+              >
+                <Edit2 className="w-3 h-3" />
+                <span>Replace</span>
+              </button>
             ) : (
               <button
                 type="button"

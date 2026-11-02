@@ -122,17 +122,20 @@ export function DiscoveryCard({ candidate, onOpenProfile }: DiscoveryCardProps) 
         </div>
 
         {/* Voice Note Bar - Directly Playable on Card */}
-        {candidate.voicePromptUrl && (
-          <div onClick={(e) => e.stopPropagation()} className="pt-0.5">
-            <VoiceNotePlayer
-              url={candidate.voicePromptUrl}
-              durationSeconds={candidate.voicePromptDuration}
-              candidateName={candidate.name}
-              compact={true}
-              className="w-full"
-            />
-          </div>
-        )}
+        <div onClick={(e) => e.stopPropagation()} className="pt-0.5">
+          <VoiceNotePlayer
+            url={
+              candidate.voicePromptUrl ||
+              (candidate.gender === "MALE" || candidate.gender === "MAN"
+                ? "/uploads/audio/aarav_voice.wav"
+                : "/uploads/audio/lisa_voice.wav")
+            }
+            durationSeconds={candidate.voicePromptDuration || 10}
+            candidateName={candidate.name}
+            compact={true}
+            className="w-full"
+          />
+        </div>
 
         {/* Relationship Intention Pill */}
         {candidate.relationshipIntention && (
