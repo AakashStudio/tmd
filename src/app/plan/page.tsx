@@ -7,6 +7,7 @@ import { BottomNav } from "@/components/navigation/BottomNav";
 import { useProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "@/components/auth/AuthModal";
+import { PaymentInformationModal } from "@/components/payments/PaymentInformationModal";
 import {
   ArrowLeft,
   X,
@@ -72,6 +73,7 @@ export default function PlansPage() {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [selectedPlanCode, setSelectedPlanCode] = useState<string>("TIER_149");
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
+  const [showPaymentInfoModal, setShowPaymentInfoModal] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -610,18 +612,20 @@ export default function PlansPage() {
           ) : (
             <button
               type="button"
-              onClick={handleExecutePayment}
+              onClick={() => {
+                if (!user) {
+                  setShowAuthModal(true);
+                  return;
+                }
+                setShowPaymentInfoModal(true);
+              }}
               disabled={isProcessing}
-              className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] hover:brightness-105 text-black font-black text-sm tracking-tight transition active:scale-[0.98] shadow-xl shadow-amber-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] hover:brightness-105 text-black font-black text-sm tracking-tight transition active:scale-[0.98] shadow-xl shadow-amber-500/20 flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
             >
-              {isProcessing ? (
-                <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <span>
-                  {currentRank > 0 ? "Upgrade to " : "Continue - "}
-                  {currentSelectedPkg.title} · ₹{currentSelectedPkg.totalPrice}.00
-                </span>
-              )}
+              <span>
+                {currentRank > 0 ? "Upgrade to " : "Continue - "}
+                {currentSelectedPkg.title} · ₹{currentSelectedPkg.totalPrice}.00
+              </span>
             </button>
           )}
         </div>
@@ -637,9 +641,41 @@ export default function PlansPage() {
             setShowAuthModal(false);
             await refreshUser();
             await refreshProfile();
-            handleExecutePayment();
+            setShowPaymentInfoModal(true);
           }}
           onCancel={() => setShowAuthModal(false)}
+        />
+      )}
+
+      {/* Astrotalk-style Payment Information Modal */}
+      {showPaymentInfoModal && (
+        <PaymentInformationModal
+          isOpen={showPaymentInfoModal}
+          onClose={() => setShowPaymentInfoModal(false)}
+          plan={{
+            code: selectedPlanCode,
+            name: currentSelectedPkg.title,
+            priceInRupees: currentSelectedPkg.totalPrice,
+            durationDays: selectedPlanCode === "PRO_499" ? 10 : 15,
+            isPro: selectedPlanCode === "PRO_499",
+          }}
+          userProfile={{
+            name: profile?.name || undefined,
+            state: profile?.state || "Maharashtra",
+            phone: user?.phone || undefined,
+          }}
+          onPaymentSuccess={async (planCode) => {
+            await refreshProfile();
+            await refreshUser();
+            setSuccessMessage(
+              `Success! You are now upgraded to ${currentSelectedPkg.title}. All VIP features are active! 🎉`
+            );
+            const plansRes = await fetch("/api/plans");
+            if (plansRes.ok) {
+              const data = await plansRes.json();
+              setSubscription(data.subscription || null);
+            }
+          }}
         />
       )}
       </div>

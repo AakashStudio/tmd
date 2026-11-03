@@ -105,6 +105,13 @@ export async function POST(req: NextRequest) {
       paymentId = payment.id;
     }
 
+    const merchantVpa = process.env.MERCHANT_UPI_ID || "thematchdate@okaxis";
+    const merchantName = process.env.MERCHANT_NAME || "The Match Date";
+    const amountInRupees = (targetAmountInPaise / 100).toFixed(2);
+    const txnNote = `TMD ${targetPlan?.name || "VIP"} Plan`;
+
+    const baseUpiParams = `pa=${encodeURIComponent(merchantVpa)}&pn=${encodeURIComponent(merchantName)}&am=${amountInRupees}&cu=INR&tn=${encodeURIComponent(txnNote)}&tr=${encodeURIComponent(razorpayOrderId)}`;
+
     return NextResponse.json({
       success: true,
       order_id: razorpayOrderId,
@@ -124,6 +131,17 @@ export async function POST(req: NextRequest) {
           }
         : null,
       paymentId,
+      upiDetails: {
+        payeeVpa: merchantVpa,
+        payeeName: merchantName,
+        amountInRupees: parseFloat(amountInRupees),
+        transactionNote: txnNote,
+        upiIntentUrl: `upi://pay?${baseUpiParams}`,
+        gpayUrl: `tez://upi/pay?${baseUpiParams}`,
+        phonepeUrl: `phonepe://pay?${baseUpiParams}`,
+        paytmUrl: `paytmmp://pay?${baseUpiParams}`,
+        credUrl: `upi://pay?${baseUpiParams}`,
+      },
     });
   } catch (error: any) {
     console.error("Payment create order error:", error);
