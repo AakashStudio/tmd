@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   ArrowLeft,
   Check,
@@ -68,19 +68,17 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
   const [couponError, setCouponError] = useState<string | null>(null);
 
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [launchingAppMessage, setLaunchingAppMessage] = useState<string | null>(null);
   const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
   const [upiDetails, setUpiDetails] = useState<any | null>(null);
 
-  // Modals for secondary flows
+  // QR Modal for Desktop or explicit QR selection
   const [showQrModal, setShowQrModal] = useState<boolean>(false);
-  const [showUtrModal, setShowUtrModal] = useState<boolean>(false);
-  const [utrInput, setUtrInput] = useState<string>("");
-  const [isVerifyingUtr, setIsVerifyingUtr] = useState<boolean>(false);
   const [copiedVpa, setCopiedVpa] = useState<boolean>(false);
-  const [manualVpa, setManualVpa] = useState<string>("");
 
   // Success Celebration State
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState<boolean>(false);
+  const pollingTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Calculate pricing & GST
   const baseOriginal = plan.priceInRupees || 149;
@@ -92,6 +90,12 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
   const gstAmount = finalPayable - rechargeAmount;
 
   const billingState = userProfile?.state || "Maharashtra";
+
+  // Check if device is mobile
+  const isMobile = () => {
+    if (typeof window === "undefined") return false;
+    return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+  };
 
   // Handle Coupon Apply
   const handleApplyCoupon = () => {
@@ -124,10 +128,82 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
     setCouponError(null);
   };
 
-  // Main payment execution
-  const handleProceedToPay = async () => {
+  // Auto-verify helper
+  const triggerAutoVerification = async (orderId: string) => {
+    try {
+      const res = await fetch("/api/payments/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId,
+          paymentId: `pay_upi_${Date.now()}`,
+          signature: "upi_direct_verified",
+          planCode: plan.code,
+        }),
+      });
+
+      if (res.ok) {
+        if (pollingTimerRef.current) clearInterval(pollingTimerRef.current);
+        setShowQrModal(false);
+        setIsProcessing(false);
+        setLaunchingAppMessage(null);
+        setIsSuccessModalOpen(true);
+        onPaymentSuccess(plan.code);
+        return true;
+      }
+    } catch (err) {
+      // Continue polling silently
+    }
+    return false;
+  };
+
+  // Automated background polling for payment completion
+  useEffect(() => {
+    if (!activeOrderId) return;
+
+    let isSubscribed = true;
+    pollingTimerRef.current = setInterval(async () => {
+      if (!isSubscribed) return;
+      await triggerAutoVerification(activeOrderId);
+    }, 2500);
+
+    // Also check immediately when user switches tab or app back to TMD
+    const handleVisibilityOrFocus = async () => {
+      if (document.visibilityState === "visible" && activeOrderId && isSubscribed) {
+        await triggerAutoVerification(activeOrderId);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityOrFocus);
+    window.addEventListener("focus", handleVisibilityOrFocus);
+
+    return () => {
+      isSubscribed = false;
+      if (pollingTimerRef.current) clearInterval(pollingTimerRef.current);
+      document.removeEventListener("visibilitychange", handleVisibilityOrFocus);
+      window.removeEventListener("focus", handleVisibilityOrFocus);
+    };
+  }, [activeOrderId]);
+
+  // Main payment execution: directly launches app
+  const executePayment = async (methodOverride?: PaymentMethodType) => {
+    const methodToUse = methodOverride || selectedMethod;
+    setSelectedMethod(methodToUse);
+
     try {
       setIsProcessing(true);
+      const appName =
+        methodToUse === "gpay"
+          ? "Google Pay"
+          : methodToUse === "phonepe"
+          ? "PhonePe"
+          : methodToUse === "paytm"
+          ? "Paytm"
+          : methodToUse === "cred"
+          ? "CRED"
+          : "UPI App";
+
+      setLaunchingAppMessage(`Opening ${appName}...`);
 
       // 1. Create order
       const orderRes = await fetch("/api/payments/create-order", {
@@ -150,80 +226,51 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
 
       const upi = orderData.upiDetails;
 
-      // 2. Route according to selected method
-      if (selectedMethod === "upi_qr") {
+      // If user is on Desktop / Laptop, mobile apps cannot be opened, show QR Code directly
+      if (!isMobile() || methodToUse === "upi_qr") {
         setShowQrModal(true);
         setIsProcessing(false);
+        setLaunchingAppMessage(null);
         return;
       }
 
+      // 2. Select intent URL
       let intentUrl = upi?.upiIntentUrl;
-      if (selectedMethod === "gpay" && upi?.gpayUrl) {
+      if (methodToUse === "gpay" && upi?.gpayUrl) {
         intentUrl = upi.gpayUrl;
-      } else if (selectedMethod === "phonepe" && upi?.phonepeUrl) {
+      } else if (methodToUse === "phonepe" && upi?.phonepeUrl) {
         intentUrl = upi.phonepeUrl;
-      } else if (selectedMethod === "paytm" && upi?.paytmUrl) {
+      } else if (methodToUse === "paytm" && upi?.paytmUrl) {
         intentUrl = upi.paytmUrl;
-      } else if (selectedMethod === "cred" && upi?.credUrl) {
+      } else if (methodToUse === "cred" && upi?.credUrl) {
         intentUrl = upi.credUrl;
-      } else if (selectedMethod === "other_upi") {
+      } else if (methodToUse === "other_upi") {
         intentUrl = upi?.upiIntentUrl;
       }
 
-      if (intentUrl && (selectedMethod === "gpay" || selectedMethod === "phonepe" || selectedMethod === "paytm" || selectedMethod === "cred" || selectedMethod === "other_upi")) {
-        // Trigger native mobile deep link
-        window.location.href = intentUrl;
+      if (intentUrl) {
+        // Direct launch into the user's UPI app! No extra modal!
+        const anchor = document.createElement("a");
+        anchor.href = intentUrl;
+        anchor.target = "_self";
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
 
-        // Show verification tray for user return
+        // Keep a non-intrusive status pill active
         setTimeout(() => {
-          setShowUtrModal(true);
           setIsProcessing(false);
-        }, 1200);
+          setLaunchingAppMessage("Waiting for UPI payment confirmation...");
+        }, 1500);
       } else {
-        // Fallback for Cards / Net banking / manual
-        setShowUtrModal(true);
+        setShowQrModal(true);
         setIsProcessing(false);
+        setLaunchingAppMessage(null);
       }
     } catch (err: any) {
       alert(err.message || "Could not proceed to payment");
       setIsProcessing(false);
-    }
-  };
-
-  // Verify UTR or auto-check
-  const handleVerifyPayment = async (overrideUtr?: string) => {
-    const utr = overrideUtr || utrInput.trim() || `pay_upi_${Date.now()}`;
-    if (!activeOrderId) {
-      alert("Order not found. Please initiate payment again.");
-      return;
-    }
-
-    try {
-      setIsVerifyingUtr(true);
-      const res = await fetch("/api/payments/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId: activeOrderId,
-          paymentId: utr,
-          signature: "upi_direct_verified",
-          planCode: plan.code,
-        }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Payment verification failed");
-      }
-
-      setShowUtrModal(false);
-      setShowQrModal(false);
-      setIsSuccessModalOpen(true);
-      onPaymentSuccess(plan.code);
-    } catch (err: any) {
-      alert(err.message || "Verification failed. Please check UTR / Transaction ID.");
-    } finally {
-      setIsVerifyingUtr(false);
+      setLaunchingAppMessage(null);
     }
   };
 
@@ -260,6 +307,25 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {/* Status banner when returning from UPI app */}
+        {launchingAppMessage && (
+          <div className="px-4 py-2.5 bg-gradient-to-r from-amber-500/10 via-amber-500/20 to-amber-500/10 border-b border-amber-500/30 text-amber-900 text-xs font-bold flex items-center justify-between animate-pulse shrink-0">
+            <div className="flex items-center gap-2">
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-700" />
+              <span>{launchingAppMessage}</span>
+            </div>
+            {activeOrderId && (
+              <button
+                type="button"
+                onClick={() => triggerAutoVerification(activeOrderId)}
+                className="text-[11px] underline font-black text-amber-900 hover:text-black cursor-pointer"
+              >
+                I have paid
+              </button>
+            )}
+          </div>
+        )}
 
         {/* 2. Scrollable Body */}
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3.5 scrollbar-thin">
@@ -356,7 +422,7 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
             )}
           </div>
 
-          {/* Section 3: Pay via UPI (Primary Grid) */}
+          {/* Section 3: Pay via UPI (Primary Grid - 1-Click Launch) */}
           <div className="space-y-2">
             <h3 className="text-xs font-bold text-zinc-600 uppercase tracking-wider px-1">
               Pay via UPI
@@ -368,7 +434,7 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
                 {/* 1. GPay */}
                 <button
                   type="button"
-                  onClick={() => setSelectedMethod("gpay")}
+                  onClick={() => executePayment("gpay")}
                   className={`relative flex flex-col items-center justify-center p-2.5 rounded-2xl border transition active:scale-95 cursor-pointer ${
                     selectedMethod === "gpay"
                       ? "border-blue-500 bg-blue-50/40 shadow-sm ring-1 ring-blue-500"
@@ -395,7 +461,7 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
                 {/* 2. PhonePe */}
                 <button
                   type="button"
-                  onClick={() => setSelectedMethod("phonepe")}
+                  onClick={() => executePayment("phonepe")}
                   className={`relative flex flex-col items-center justify-center p-2.5 rounded-2xl border transition active:scale-95 cursor-pointer ${
                     selectedMethod === "phonepe"
                       ? "border-blue-500 bg-blue-50/40 shadow-sm ring-1 ring-blue-500"
@@ -417,7 +483,7 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
                 {/* 3. Paytm */}
                 <button
                   type="button"
-                  onClick={() => setSelectedMethod("paytm")}
+                  onClick={() => executePayment("paytm")}
                   className={`relative flex flex-col items-center justify-center p-2.5 rounded-2xl border transition active:scale-95 cursor-pointer ${
                     selectedMethod === "paytm"
                       ? "border-blue-500 bg-blue-50/40 shadow-sm ring-1 ring-blue-500"
@@ -441,7 +507,7 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
                 {/* 4. CRED UPI */}
                 <button
                   type="button"
-                  onClick={() => setSelectedMethod("cred")}
+                  onClick={() => executePayment("cred")}
                   className={`relative flex flex-col items-center justify-center p-2 rounded-2xl border transition active:scale-95 cursor-pointer overflow-hidden ${
                     selectedMethod === "cred"
                       ? "border-blue-500 bg-blue-50/40 shadow-sm ring-1 ring-blue-500"
@@ -468,7 +534,7 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
               {/* Pay with other UPI apps option */}
               <button
                 type="button"
-                onClick={() => setSelectedMethod("other_upi")}
+                onClick={() => executePayment("other_upi")}
                 className={`w-full py-2.5 px-3 rounded-xl border flex items-center justify-between transition cursor-pointer ${
                   selectedMethod === "other_upi"
                     ? "bg-blue-50/50 border-blue-400 text-blue-900 font-bold"
@@ -479,7 +545,7 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
                   <div className="w-5 h-5 rounded-md bg-zinc-200 text-zinc-800 flex items-center justify-center text-[11px] font-bold">
                     Δ
                   </div>
-                  <span>Pay with other UPI apps</span>
+                  <span>Pay with other UPI apps (BHIM, Navi, Super.money)</span>
                 </div>
                 <ChevronRight className="w-4 h-4 text-zinc-400" />
               </button>
@@ -522,7 +588,7 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
             <div className="bg-white rounded-2xl border border-zinc-200/90 shadow-sm divide-y divide-zinc-100">
               {/* Option: UPI QR Code */}
               <div
-                onClick={() => setSelectedMethod("upi_qr")}
+                onClick={() => executePayment("upi_qr")}
                 className={`p-3.5 flex items-center justify-between transition cursor-pointer first:rounded-t-2xl ${
                   selectedMethod === "upi_qr" ? "bg-blue-50/30" : "hover:bg-zinc-50"
                 }`}
@@ -542,28 +608,6 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
                   }`}
                 >
                   {selectedMethod === "upi_qr" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-                </div>
-              </div>
-
-              {/* Option: Manual UPI ID */}
-              <div
-                onClick={() => setSelectedMethod("upi_manual")}
-                className={`p-3.5 flex items-center justify-between transition cursor-pointer ${
-                  selectedMethod === "upi_manual" ? "bg-blue-50/30" : "hover:bg-zinc-50"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 rounded-lg bg-zinc-100 text-zinc-700 flex items-center justify-center text-[10px] font-black">
-                    UPI
-                  </div>
-                  <span className="text-xs font-bold text-zinc-900">UPI ID / VPA</span>
-                </div>
-                <div
-                  className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                    selectedMethod === "upi_manual" ? "border-blue-600 bg-blue-600" : "border-zinc-300 bg-white"
-                  }`}
-                >
-                  {selectedMethod === "upi_manual" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                 </div>
               </div>
 
@@ -621,7 +665,7 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
         <div className="p-4 bg-white border-t border-zinc-200/90 shrink-0 shadow-lg">
           <button
             type="button"
-            onClick={handleProceedToPay}
+            onClick={() => executePayment()}
             disabled={isProcessing}
             className="w-full py-3.5 rounded-2xl bg-[#F5D020] hover:bg-[#F2C70E] active:scale-[0.99] text-black font-extrabold text-sm tracking-tight transition shadow-md shadow-yellow-500/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
@@ -637,21 +681,21 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
         </div>
       </div>
 
-      {/* ================= MODAL 1: QR CODE MODAL ================= */}
+      {/* ================= MODAL: SCAN & PAY QR (Used on Desktop or explicit QR) ================= */}
       {showQrModal && upiDetails && (
         <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/85 p-4 animate-in fade-in">
           <div className="w-full max-w-sm bg-white rounded-3xl p-6 text-zinc-900 shadow-2xl relative text-center">
             <button
               type="button"
               onClick={() => setShowQrModal(false)}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center"
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center hover:bg-zinc-200"
             >
               <X className="w-4 h-4" />
             </button>
 
             <h3 className="text-base font-black text-zinc-900">Scan & Pay via any UPI App</h3>
             <p className="text-xs text-zinc-500 mt-1">
-              GPay, PhonePe, Paytm, BHIM, CRED
+              Open GPay, PhonePe, Paytm or CRED on your phone and scan:
             </p>
 
             {/* Dynamic QR Display */}
@@ -671,7 +715,7 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
 
             {/* UPI ID copy */}
             <div className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-100 text-xs mb-4">
-              <span className="font-mono text-zinc-600 truncate">{upiDetails.payeeVpa}</span>
+              <span className="font-mono text-zinc-600 truncate text-[11px]">{upiDetails.payeeVpa}</span>
               <button
                 type="button"
                 onClick={() => handleCopyVpa(upiDetails.payeeVpa)}
@@ -684,8 +728,10 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
 
             <button
               type="button"
-              onClick={() => handleVerifyPayment()}
-              className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs transition"
+              onClick={() => {
+                if (activeOrderId) triggerAutoVerification(activeOrderId);
+              }}
+              className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs transition active:scale-95 cursor-pointer shadow-md shadow-emerald-600/20"
             >
               I Have Completed Payment
             </button>
@@ -693,71 +739,7 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
         </div>
       )}
 
-      {/* ================= MODAL 2: UTR / RETURN VERIFICATION SHEET ================= */}
-      {showUtrModal && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/85 p-4 animate-in fade-in">
-          <div className="w-full max-w-sm bg-white rounded-3xl p-6 text-zinc-900 shadow-2xl relative text-center">
-            <button
-              type="button"
-              onClick={() => setShowUtrModal(false)}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            <div className="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-3">
-              <Sparkles className="w-6 h-6" />
-            </div>
-
-            <h3 className="text-base font-black text-zinc-900">Confirming Your Payment</h3>
-            <p className="text-xs text-zinc-500 mt-1 max-w-xs mx-auto">
-              If you have completed the payment in your UPI app, click below to verify and activate your plan immediately!
-            </p>
-
-            <div className="my-5 p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200 text-left">
-              <label className="text-[11px] font-bold text-zinc-600 block mb-1">
-                12-digit UPI Ref / UTR No. (Optional for fast track):
-              </label>
-              <input
-                type="text"
-                value={utrInput}
-                onChange={(e) => setUtrInput(e.target.value.trim())}
-                placeholder="e.g. 431289561234"
-                maxLength={16}
-                className="w-full px-3 py-2 rounded-xl bg-white border border-zinc-300 text-xs font-mono font-bold text-zinc-900 focus:outline-none focus:border-amber-500"
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <button
-                type="button"
-                onClick={() => handleVerifyPayment()}
-                disabled={isVerifyingUtr}
-                className="w-full py-3.5 rounded-xl bg-[#F5D020] hover:bg-[#F2C70E] text-black font-extrabold text-xs transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-              >
-                {isVerifyingUtr ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>Verifying with Bank...</span>
-                  </>
-                ) : (
-                  <span>Verify & Unlock {plan.name}</span>
-                )}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setShowUtrModal(false)}
-                className="w-full py-2.5 text-xs text-zinc-500 hover:text-zinc-700 font-bold"
-              >
-                Go Back to Payment
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ================= MODAL 3: CELEBRATION SUCCESS MODAL ================= */}
+      {/* ================= CELEBRATION SUCCESS MODAL ================= */}
       {isSuccessModalOpen && (
         <div className="fixed inset-0 z-70 flex items-center justify-center bg-black/90 p-4 animate-in zoom-in-95">
           <div className="w-full max-w-sm bg-gradient-to-b from-[#181820] to-[#0c0c10] border border-amber-500/40 rounded-3xl p-6 text-white text-center shadow-2xl relative overflow-hidden">
