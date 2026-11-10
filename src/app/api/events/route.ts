@@ -12,18 +12,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // STRICT PRO GATING: Only PRO users can view events
-    if (!user.entitlements.canAccessEvents) {
-      return NextResponse.json(
-        {
-          error: "Events is an exclusive feature for TMD PRO members.",
-          code: "PRO_REQUIRED",
-          isPro: false,
-        },
-        { status: 403 }
-      );
-    }
-
     const { searchParams } = new URL(req.url);
     const category = searchParams.get("category");
 
@@ -72,75 +60,109 @@ export async function GET(req: NextRequest) {
       orderBy: { startDateTime: "asc" },
     });
 
-    // BATCH ATTENDANCE QUERY: Eliminate N+1 queries by fetching all attendances in 1 query
+    // BATCH ATTENDANCE & TICKETS QUERY: Eliminate N+1 queries
     const eventIds = events.map((e) => e.id);
-    const userAttendances = await prisma.eventAttendee.findMany({
-      where: {
-        userId: user.id,
-        eventId: { in: eventIds },
-      },
-    });
+    const [userAttendances, userTickets] = await Promise.all([
+      prisma.eventAttendee.findMany({
+        where: {
+          userId: user.id,
+          eventId: { in: eventIds },
+        },
+      }),
+      prisma.eventTicket.findMany({
+        where: {
+          userId: user.id,
+          eventId: { in: eventIds },
+          paymentStatus: "PAID",
+        },
+      }),
+    ]);
+
     const attendanceMap = new Map<string, string>(
       userAttendances.map((a) => [a.eventId, a.status])
+    );
+    const ticketMap = new Map<string, any>(
+      userTickets.map((t) => [t.eventId, t])
     );
 
     // Format events & apply residential masking
     const formattedEvents = events.map((event) => {
       const myAttendanceStatus = attendanceMap.get(event.id) || null;
+      const myTicket = ticketMap.get(event.id) || null;
       const isOrganizer = event.organizerId === user.id;
-      const isApproved = myAttendanceStatus === "APPROVED";
+      const isApproved = myAttendanceStatus === "APPROVED" || Boolean(myTicket);
 
-        // Residential Privacy Masking: Hide exact address and coordinates if residential and not approved
-        let displayAddress = event.address;
-        let displayLatitude = event.latitude;
-        let displayLongitude = event.longitude;
+      // Residential Privacy Masking: Hide exact address and coordinates if residential and not approved
+      let displayAddress = event.address;
+      let displayLatitude = event.latitude;
+      let displayLongitude = event.longitude;
 
-        if (event.isResidential && !isOrganizer && !isApproved) {
-          displayAddress = "Residential Area (Exact address revealed upon RSVP approval)";
-          displayLatitude = null;
-          displayLongitude = null;
-        }
+      if (event.isResidential && !isOrganizer && !isApproved) {
+        displayAddress = "Residential Area (Exact address revealed upon ticket booking)";
+        displayLatitude = null;
+        displayLongitude = null;
+      }
 
-        return {
-          id: event.id,
-          title: event.title,
-          category: event.category,
-          description: event.description,
-          coverPhotoUrl: event.coverPhotoUrl,
-          startDateTime: event.startDateTime,
-          endDateTime: event.endDateTime,
-          venue: event.venue,
-          address: displayAddress,
-          latitude: displayLatitude,
-          longitude: displayLongitude,
-          isResidential: event.isResidential,
-          minAge: event.minAge,
-          capacity: event.capacity,
-          seatsLeft: event.seatsLeft,
-          feeInPaise: event.feeInPaise,
-          feeInRupees: event.entryFee || event.feeInPaise / 100,
-          isPaid: event.isPaid || event.entryFee > 0 || event.feeInPaise > 0,
-          entryFee: event.entryFee || Math.round(event.feeInPaise / 100),
-          requireLinkedin: event.requireLinkedin,
-          isLinkedinMandatory: event.isLinkedinMandatory,
-          organizerLinkedin: event.organizerLinkedin,
-          attendanceMode: event.attendanceMode,
-          organizer: {
-            id: event.organizer.id,
-            name: event.organizer.profile?.name || "Organizer",
-            photoUrl: event.organizer.profile?.photos[0]?.url || null,
-            isVerified: event.organizer.isVerified,
-          },
-          attendeeCount: event.attendees.length,
-          sampleAttendees: event.attendees.slice(0, 3).map((a) => ({
-            userId: a.userId,
-            name: a.user.profile?.name || "Attendee",
-            photoUrl: a.user.profile?.photos[0]?.url || null,
-          })),
-          myAttendanceStatus,
-          isOrganizer,
-        };
-      });
+      return {
+        id: event.id,
+        title: event.title,
+        category: event.category,
+        description: event.description,
+        coverPhotoUrl: event.coverPhotoUrl,
+        startDateTime: event.startDateTime,
+        endDateTime: event.endDateTime,
+        venue: event.venue,
+        address: displayAddress,
+        latitude: displayLatitude,
+        longitude: displayLongitude,
+        isResidential: event.isResidential,
+        minAge: event.minAge,
+        capacity: event.capacity,
+        seatsLeft: event.seatsLeft,
+        feeInPaise: event.feeInPaise,
+        feeInRupees: event.entryFee || event.feeInPaise / 100,
+        isPaid: event.isPaid || event.entryFee > 0 || event.feeInPaise > 0,
+        entryFee: event.entryFee || Math.round(event.feeInPaise / 100),
+
+        // BookMyShow Pricing & Marketplace:
+        malePassPrice: event.malePassPrice || 499,
+        femalePassPrice: event.femalePassPrice || 199,
+        couplePassPrice: event.couplePassPrice || 799,
+        generalPassPrice: event.generalPassPrice || 399,
+        fnbCoverIncluded: event.fnbCoverIncluded || null,
+        convenienceFee: event.convenienceFee || 39,
+        isFeatured: event.isFeatured || false,
+        myTicket: myTicket
+          ? {
+              id: myTicket.id,
+              ticketCode: myTicket.ticketCode,
+              ticketType: myTicket.ticketType,
+              quantity: myTicket.quantity,
+              totalAmountInRupees: Math.round(myTicket.totalAmountInPaise / 100),
+              checkedIn: myTicket.checkedIn,
+            }
+          : null,
+
+        requireLinkedin: event.requireLinkedin,
+        isLinkedinMandatory: event.isLinkedinMandatory,
+        organizerLinkedin: event.organizerLinkedin,
+        attendanceMode: event.attendanceMode,
+        organizer: {
+          id: event.organizer.id,
+          name: event.organizer.profile?.name || "Organizer",
+          photoUrl: event.organizer.profile?.photos[0]?.url || null,
+          isVerified: event.organizer.isVerified,
+        },
+        attendeeCount: event.attendees.length,
+        sampleAttendees: event.attendees.slice(0, 3).map((a) => ({
+          userId: a.userId,
+          name: a.user.profile?.name || "Attendee",
+          photoUrl: a.user.profile?.photos[0]?.url || null,
+        })),
+        myAttendanceStatus,
+        isOrganizer,
+      };
+    });
 
     return NextResponse.json({
       events: formattedEvents,
@@ -160,17 +182,6 @@ export async function POST(req: NextRequest) {
     const user = await getCurrentUser(req);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // STRICT PRO GATING: Only PRO users can create events
-    if (!user.entitlements.canCreateEvents) {
-      return NextResponse.json(
-        {
-          error: "Creating events is a TMD PRO exclusive feature.",
-          code: "PRO_REQUIRED",
-        },
-        { status: 403 }
-      );
     }
 
     const body = await req.json().catch(() => ({}));
@@ -218,6 +229,18 @@ export async function POST(req: NextRequest) {
         feeInPaise: (data.entryFee || 0) * 100 || data.feeInPaise,
         isPaid: data.isPaid || data.entryFee > 0,
         entryFee: data.entryFee || Math.round(data.feeInPaise / 100),
+
+        // BookMyShow Marketplace Fields:
+        malePassPrice: body.malePassPrice ? Number(body.malePassPrice) : 499,
+        femalePassPrice: body.femalePassPrice ? Number(body.femalePassPrice) : 199,
+        couplePassPrice: body.couplePassPrice ? Number(body.couplePassPrice) : 799,
+        generalPassPrice: body.generalPassPrice ? Number(body.generalPassPrice) : (data.entryFee || 399),
+        fnbCoverIncluded: body.fnbCoverIncluded || null,
+        tmdCommissionPercent: 0.15,
+        convenienceFee: 39,
+        hostUpiId: body.hostUpiId || null,
+        hostPhone: body.hostPhone || user.phone || null,
+
         requireLinkedin: data.requireLinkedin || data.isLinkedinMandatory,
         isLinkedinMandatory: data.isLinkedinMandatory,
         organizerLinkedin: data.organizerLinkedin || null,

@@ -19,11 +19,14 @@ import {
   Compass,
   Layers,
   ExternalLink,
+  Ticket,
 } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { useProfile } from "@/hooks/useProfile";
+import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
+import { EventTicketBookingModal } from "@/components/events/EventTicketBookingModal";
 
 interface EventItem {
   id: string;
@@ -42,6 +45,23 @@ interface EventItem {
   feeInRupees: number;
   isPaid: boolean;
   entryFee: number;
+
+  // BookMyShow Pricing & Marketplace:
+  malePassPrice?: number;
+  femalePassPrice?: number;
+  couplePassPrice?: number;
+  generalPassPrice?: number;
+  fnbCoverIncluded?: string | null;
+  convenienceFee?: number;
+  myTicket?: {
+    id: string;
+    ticketCode: string;
+    ticketType: string;
+    quantity: number;
+    totalAmountInRupees: number;
+    checkedIn: boolean;
+  } | null;
+
   requireLinkedin: boolean;
   isLinkedinMandatory: boolean;
   organizerLinkedin?: string | null;
@@ -63,7 +83,8 @@ interface EventItem {
 }
 
 export default function MapPage() {
-  const { entitlements } = useProfile();
+  const { user } = useAuth();
+  const { profile, entitlements } = useProfile();
   const isPro = Boolean(entitlements?.canAccessEvents);
 
   const [events, setEvents] = useState<EventItem[]>([]);
@@ -73,6 +94,7 @@ export default function MapPage() {
   const [selectedPinEvent, setSelectedPinEvent] = useState<EventItem | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
+  const [bookingModalEvent, setBookingModalEvent] = useState<EventItem | null>(null);
 
   // Form State for creating events
   const [newTitle, setNewTitle] = useState("");
@@ -84,8 +106,14 @@ export default function MapPage() {
   const [newStart, setNewStart] = useState("");
   const [newEnd, setNewEnd] = useState("");
   const [newDesc, setNewDesc] = useState("");
-  const [newIsPaid, setNewIsPaid] = useState<boolean>(false);
-  const [newEntryFee, setNewEntryFee] = useState<string>("299");
+  const [newIsPaid, setNewIsPaid] = useState<boolean>(true);
+  const [newEntryFee, setNewEntryFee] = useState<string>("399");
+  const [newMalePassPrice, setNewMalePassPrice] = useState<string>("499");
+  const [newFemalePassPrice, setNewFemalePassPrice] = useState<string>("199");
+  const [newCouplePassPrice, setNewCouplePassPrice] = useState<string>("799");
+  const [newFnbCover, setNewFnbCover] = useState<string>("Free mocktail / coffee included");
+  const [newHostUpiId, setNewHostUpiId] = useState<string>("");
+  const [newHostPhone, setNewHostPhone] = useState<string>("");
   const [newOrganizerLinkedin, setNewOrganizerLinkedin] = useState<string>("");
   const [newRequireLinkedin, setNewRequireLinkedin] = useState<boolean>(false);
   const [newIsLinkedinMandatory, setNewIsLinkedinMandatory] = useState<boolean>(false);
@@ -136,10 +164,6 @@ export default function MapPage() {
   ];
 
   const fetchEvents = async () => {
-    if (!isPro) {
-      setIsLoading(false);
-      return;
-    }
     setIsLoading(true);
     try {
       const url =
@@ -160,7 +184,7 @@ export default function MapPage() {
 
   useEffect(() => {
     fetchEvents();
-  }, [isPro, selectedCategory]);
+  }, [selectedCategory]);
 
   const loadManageAttendees = async (eventId: string) => {
     setManageLoading(true);
@@ -270,6 +294,13 @@ export default function MapPage() {
           isPaid: newIsPaid,
           entryFee: parsedFee,
           feeInPaise: parsedFee * 100,
+          malePassPrice: parseInt(newMalePassPrice, 10) || 499,
+          femalePassPrice: parseInt(newFemalePassPrice, 10) || 199,
+          couplePassPrice: parseInt(newCouplePassPrice, 10) || 799,
+          generalPassPrice: parsedFee || 399,
+          fnbCoverIncluded: newFnbCover.trim() || null,
+          hostUpiId: newHostUpiId.trim() || null,
+          hostPhone: newHostPhone.trim() || undefined,
           requireLinkedin: newRequireLinkedin,
           isLinkedinMandatory: newRequireLinkedin && newIsLinkedinMandatory,
           organizerLinkedin: newOrganizerLinkedin.trim() || undefined,
@@ -293,6 +324,12 @@ export default function MapPage() {
       setNewOrganizerLinkedin("");
       setNewRequireLinkedin(false);
       setNewIsLinkedinMandatory(false);
+      setNewMalePassPrice("499");
+      setNewFemalePassPrice("199");
+      setNewCouplePassPrice("799");
+      setNewFnbCover("Free mocktail / coffee included");
+      setNewHostUpiId("");
+      setNewHostPhone("");
       await fetchEvents();
     } catch (err: any) {
       alert(err.message || "Failed to create event");
@@ -301,82 +338,6 @@ export default function MapPage() {
     }
   };
 
-  // 1. Non-PRO Gate Screen
-  if (!isPro) {
-    return (
-      <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start py-4 sm:py-8 px-3 sm:px-4 w-full box-border overflow-x-hidden">
-        <div className="w-full max-w-md bg-[#0c0c10] text-white rounded-3xl border border-white/[0.08] shadow-2xl p-5 sm:p-6 pb-24 relative box-border overflow-hidden flex flex-col justify-center">
-          <div className="space-y-4 text-center">
-            <div className="relative w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-[#FFC629] via-[#F59E0B] to-amber-600 p-0.5 shadow-xl shadow-[#FFC629]/20">
-              <div className="w-full h-full rounded-2xl bg-[#0e0e14] flex items-center justify-center">
-                <MapPin className="w-8 h-8 text-[#FFC629] animate-bounce" />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFC629]/15 text-[#FFC629] border border-[#FFC629]/30 text-[11px] font-extrabold uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5 text-[#FFC629]" /> TMD VIP PRO Exclusives
-              </div>
-              <h1 className="text-2xl font-black tracking-tight text-white">Events Map</h1>
-              <p className="text-xs text-zinc-400 max-w-xs mx-auto leading-relaxed">
-                Meet real people in real life. Curated house parties, standup comedy nights, weekend brunches, and rooftop mixers in your city.
-              </p>
-            </div>
-
-            {/* Feature Highlights */}
-            <div className="space-y-2 text-left w-full pt-1">
-              <Card className="p-3.5 bg-[#121217] border border-white/10 hover:border-[#FFC629]/30 transition flex items-center gap-3 rounded-2xl">
-                <div className="w-10 h-10 rounded-xl bg-[#FFC629]/10 border border-[#FFC629]/20 flex items-center justify-center text-[#FFC629] shrink-0 text-base font-bold">
-                  🎉
-                </div>
-                <div className="text-xs">
-                  <span className="font-bold text-white block">Exclusive Local Events</span>
-                  <span className="text-zinc-400">Discover and join verified singles gatherings.</span>
-                </div>
-              </Card>
-
-              <Card className="p-3.5 bg-[#121217] border border-white/10 hover:border-[#FFC629]/30 transition flex items-center gap-3 rounded-2xl">
-                <div className="w-10 h-10 rounded-xl bg-[#FFC629]/10 border border-[#FFC629]/20 flex items-center justify-center text-[#FFC629] shrink-0 text-base font-bold">
-                  🛡️
-                </div>
-                <div className="text-xs">
-                  <span className="font-bold text-white block">Residential Privacy Guard</span>
-                  <span className="text-zinc-400">Exact home locations revealed only after organizer approval.</span>
-                </div>
-              </Card>
-
-              <Card className="p-3.5 bg-[#121217] border border-white/10 hover:border-[#FFC629]/30 transition flex items-center gap-3 rounded-2xl">
-                <div className="w-10 h-10 rounded-xl bg-[#FFC629]/10 border border-[#FFC629]/20 flex items-center justify-center text-[#FFC629] shrink-0 text-base font-bold">
-                  👑
-                </div>
-                <div className="text-xs">
-                  <span className="font-bold text-white block">Host Your Own Events</span>
-                  <span className="text-zinc-400">Create private or open meetups and approve guest lists.</span>
-                </div>
-              </Card>
-            </div>
-          </div>
-
-          <div className="pt-5 space-y-2">
-            <Link
-              href="/plan"
-              className="w-full py-3.5 px-4 rounded-2xl font-extrabold text-xs text-black bg-gradient-to-r from-[#FFC629] to-[#F59E0B] hover:brightness-110 active:scale-95 shadow-lg shadow-[#FFC629]/25 flex items-center justify-center gap-2 transition"
-            >
-              <Sparkles className="w-4 h-4 text-black" />
-              Upgrade to TMD VIP PRO (₹499) to Unlock →
-            </Link>
-            <p className="text-[11px] text-center text-zinc-500">
-              Includes unlimited swipes, all Who Liked You, rewind, and zero ads.
-            </p>
-          </div>
-
-          <BottomNav />
-        </div>
-      </div>
-    );
-  }
-
-  // 2. Full PRO Events Hub
   return (
     <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start py-4 sm:py-8 px-3 sm:px-4 w-full box-border overflow-x-hidden">
       <div className="w-full max-w-md bg-[#0c0c10] text-white rounded-3xl border border-white/[0.08] shadow-2xl relative box-border overflow-hidden flex flex-col pb-24">
@@ -738,6 +699,14 @@ export default function MapPage() {
                       >
                         <Users className="w-4 h-4 text-[#FFC629]" /> Manage Guest Requests 📋
                       </button>
+                    ) : selectedPinEvent.myTicket ? (
+                      <button
+                        type="button"
+                        onClick={() => setBookingModalEvent(selectedPinEvent)}
+                        className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/20"
+                      >
+                        <Ticket className="w-4 h-4" /> View Ticket Pass (QR) 🎟️
+                      </button>
                     ) : selectedPinEvent.myAttendanceStatus === "APPROVED" ? (
                       <div className="w-full py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 font-bold text-xs flex items-center justify-center gap-1.5">
                         <Check className="w-4 h-4" /> You&apos;re Confirmed!
@@ -750,6 +719,15 @@ export default function MapPage() {
                       <div className="w-full py-2 rounded-xl bg-zinc-900 text-zinc-500 font-bold text-xs text-center border border-zinc-800">
                         Event Full (Waitlist)
                       </div>
+                    ) : selectedPinEvent.isPaid ? (
+                      <button
+                        type="button"
+                        onClick={() => setBookingModalEvent(selectedPinEvent)}
+                        className="w-full py-2.5 rounded-xl font-extrabold text-xs text-black bg-gradient-to-r from-[#FFC629] to-[#F59E0B] hover:brightness-110 active:scale-95 transition shadow-lg shadow-[#FFC629]/25 flex items-center justify-center gap-1.5"
+                      >
+                        <Ticket className="w-4 h-4 text-black" />
+                        Book Passes (From ₹{selectedPinEvent.femalePassPrice || 199}) 🎟️
+                      </button>
                     ) : (
                       <button
                         type="button"
@@ -807,11 +785,11 @@ export default function MapPage() {
                         </span>
                       )}
                       <span className={`px-2.5 py-1 rounded-full text-black font-extrabold shadow ${
-                        event.isPaid && event.entryFee > 0
+                        event.isPaid
                           ? "bg-gradient-to-r from-[#FFC629] to-[#F59E0B]"
                           : "bg-emerald-400"
                       }`}>
-                        {event.isPaid && event.entryFee > 0 ? `₹${event.entryFee}` : "Free Entry"}
+                        {event.isPaid ? `From ₹${event.femalePassPrice || 199}` : "Free Entry"}
                       </span>
                     </div>
                   </div>
@@ -852,6 +830,26 @@ export default function MapPage() {
                         <span className="text-[11px] text-zinc-400">{event.address}</span>
                       </div>
                     </div>
+
+                    {/* BookMyShow Pass Pricing Badges */}
+                    {event.isPaid && (
+                      <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                        <span className="px-2 py-0.5 rounded-md bg-[#FFC629]/15 text-[#FFC629] font-bold text-[10px] border border-[#FFC629]/30">
+                          Male Pass ₹{event.malePassPrice || 499}
+                        </span>
+                        <span className="px-2 py-0.5 rounded-md bg-pink-500/15 text-pink-300 font-bold text-[10px] border border-pink-500/30">
+                          Female Pass ₹{event.femalePassPrice || 199}
+                        </span>
+                        <span className="px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-300 font-bold text-[10px] border border-purple-500/30">
+                          Couple Pass ₹{event.couplePassPrice || 799}
+                        </span>
+                        {event.fnbCoverIncluded && (
+                          <span className="text-[10px] text-amber-200/90 font-medium flex items-center gap-1">
+                            ☕ {event.fnbCoverIncluded}
+                          </span>
+                        )}
+                      </div>
+                    )}
 
                     {/* LinkedIn Requirement Notice */}
                     {event.requireLinkedin && (
@@ -932,6 +930,14 @@ export default function MapPage() {
                       >
                         <Users className="w-4 h-4 text-[#FFC629]" /> Manage Guest Requests 📋
                       </button>
+                    ) : event.myTicket ? (
+                      <button
+                        type="button"
+                        onClick={() => setBookingModalEvent(event)}
+                        className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/20"
+                      >
+                        <Ticket className="w-4 h-4" /> View My Digital Pass (QR) 🎟️
+                      </button>
                     ) : isConfirmed ? (
                       <div className="w-full py-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 font-bold text-xs flex items-center justify-center gap-1.5">
                         <Check className="w-4 h-4" /> You&apos;re Confirmed!
@@ -944,6 +950,15 @@ export default function MapPage() {
                       <div className="w-full py-2.5 rounded-xl bg-zinc-900 text-zinc-500 font-bold text-xs text-center border border-zinc-800">
                         Event Full (Waitlist)
                       </div>
+                    ) : event.isPaid ? (
+                      <button
+                        type="button"
+                        onClick={() => setBookingModalEvent(event)}
+                        className="w-full py-3 rounded-xl font-extrabold text-xs text-black bg-gradient-to-r from-[#FFC629] to-[#F59E0B] hover:brightness-110 active:scale-95 transition shadow-lg shadow-[#FFC629]/25 flex items-center justify-center gap-1.5"
+                      >
+                        <Ticket className="w-4 h-4 text-black" />
+                        Book Passes (From ₹{event.femalePassPrice || 199}) 🎟️
+                      </button>
                     ) : (
                       <button
                         type="button"
@@ -1468,11 +1483,125 @@ export default function MapPage() {
                 />
               </div>
 
+              {/* BookMyShow Ticketing & Marketplace Pass Pricing */}
+              <div className="p-3.5 rounded-2xl bg-[#14141d] border border-amber-500/30 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Ticket className="w-4 h-4 text-[#FFC629]" />
+                    <span className="text-xs font-bold text-white">Sell Passes (BookMyShow Flow)</span>
+                  </div>
+                  <input
+                    type="checkbox"
+                    id="isPaidEvent"
+                    checked={newIsPaid}
+                    onChange={(e) => setNewIsPaid(e.target.checked)}
+                    className="rounded bg-[#161620] border-zinc-700 text-[#FFC629] focus:ring-[#FFC629]"
+                  />
+                </div>
+
+                {newIsPaid && (
+                  <div className="space-y-3 pt-2 border-t border-white/5 text-xs animate-in fade-in">
+                    <p className="text-[11px] text-zinc-400">
+                      Set pass prices. Users book passes with instant UPI, and TMD settles 85% payout to your UPI post-event.
+                    </p>
+
+                    <div className="grid grid-cols-2 gap-2.5">
+                      <div>
+                        <label className="text-zinc-400 block mb-1 font-semibold text-[11px]">Female Pass (₹)</label>
+                        <input
+                          type="number"
+                          value={newFemalePassPrice}
+                          onChange={(e) => setNewFemalePassPrice(e.target.value)}
+                          placeholder="199"
+                          className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white font-mono focus:outline-none focus:border-[#FFC629]"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-zinc-400 block mb-1 font-semibold text-[11px]">Male Pass (₹)</label>
+                        <input
+                          type="number"
+                          value={newMalePassPrice}
+                          onChange={(e) => setNewMalePassPrice(e.target.value)}
+                          placeholder="499"
+                          className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white font-mono focus:outline-none focus:border-[#FFC629]"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-zinc-400 block mb-1 font-semibold text-[11px]">Couple Pass (₹)</label>
+                        <input
+                          type="number"
+                          value={newCouplePassPrice}
+                          onChange={(e) => setNewCouplePassPrice(e.target.value)}
+                          placeholder="799"
+                          className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white font-mono focus:outline-none focus:border-[#FFC629]"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-zinc-400 block mb-1 font-semibold text-[11px]">General Pass (₹)</label>
+                        <input
+                          type="number"
+                          value={newEntryFee}
+                          onChange={(e) => setNewEntryFee(e.target.value)}
+                          placeholder="399"
+                          className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white font-mono focus:outline-none focus:border-[#FFC629]"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-zinc-400 block mb-1 font-semibold text-[11px]">F&B / Cover Included (Optional)</label>
+                      <input
+                        type="text"
+                        value={newFnbCover}
+                        onChange={(e) => setNewFnbCover(e.target.value)}
+                        placeholder="e.g. Free coffee / drink voucher included"
+                        className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629]"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2.5">
+                      <div>
+                        <label className="text-zinc-400 block mb-1 font-semibold text-[11px]">Your Payout UPI ID *</label>
+                        <input
+                          type="text"
+                          value={newHostUpiId}
+                          onChange={(e) => setNewHostUpiId(e.target.value)}
+                          placeholder="cafe@upi"
+                          className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white font-mono focus:outline-none focus:border-[#FFC629]"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-zinc-400 block mb-1 font-semibold text-[11px]">Host WhatsApp / Phone</label>
+                        <input
+                          type="tel"
+                          value={newHostPhone}
+                          onChange={(e) => setNewHostPhone(e.target.value)}
+                          placeholder="98260XXXXX"
+                          className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white font-mono focus:outline-none focus:border-[#FFC629]"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="p-2.5 rounded-xl bg-[#1a1714] border border-amber-500/20 text-[10px] text-amber-300 space-y-1">
+                      <div className="font-bold flex items-center gap-1 text-white">
+                        <Sparkles className="w-3 h-3 text-[#FFC629]" /> TMD Marketplace Economics:
+                      </div>
+                      <p className="text-zinc-300">
+                        • Guest pays pass price + ₹39 convenience fee to TMD.
+                      </p>
+                      <p className="text-zinc-300">
+                        • 85% of ticket sales are directly settled to your UPI ID post-event (15% TMD platform cut).
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* Host Approval Notice */}
               <div className="p-2.5 rounded-xl bg-[#161620] border border-white/10 flex items-center gap-2 text-[11px] text-zinc-300">
                 <span className="text-base">🛡️</span>
                 <span>
-                  Host Approval Only: User request bhej sakega. Aap decide karenge kisko approve karna hai aur kisko decline.
+                  Door QR Scanner & Guest List: Organizer can scan guest passes at the cafe door for entry.
                 </span>
               </div>
 
@@ -1498,6 +1627,22 @@ export default function MapPage() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* BookMyShow Style Digital Pass & Ticketing Modal */}
+      {bookingModalEvent && (
+        <EventTicketBookingModal
+          isOpen={Boolean(bookingModalEvent)}
+          onClose={() => setBookingModalEvent(null)}
+          event={bookingModalEvent}
+          userProfile={{
+            name: profile?.name,
+            phone: user?.phone || undefined,
+          }}
+          onBookingComplete={() => {
+            fetchEvents();
+          }}
+        />
       )}
 
       <BottomNav />

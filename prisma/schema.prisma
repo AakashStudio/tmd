@@ -56,6 +56,7 @@ model User {
   payments             Payment[]
   eventsOrganized      Event[]               @relation("EventsOrganized")
   eventAttendances     EventAttendee[]
+  eventTickets         EventTicket[]
   reportsFiled         Report[]              @relation("ReportsFiled")
   reportsAgainst       Report[]              @relation("ReportsAgainst")
   blocksInitiated      Block[]               @relation("BlocksInitiated")
@@ -492,6 +493,19 @@ model Event {
   feeInPaise          Int            @default(0)
   isPaid              Boolean        @default(false)
   entryFee            Int            @default(0)
+
+  // BookMyShow Style Pricing & Marketplace Fields:
+  malePassPrice        Int?           @default(499)
+  femalePassPrice      Int?           @default(199)
+  couplePassPrice      Int?           @default(799)
+  generalPassPrice     Int?           @default(399)
+  fnbCoverIncluded     String?
+  tmdCommissionPercent Float          @default(0.15)
+  convenienceFee       Int            @default(39)
+  hostUpiId            String?
+  hostPhone            String?
+  isFeatured           Boolean        @default(false)
+
   requireLinkedin     Boolean        @default(false)
   isLinkedinMandatory Boolean        @default(false)
   organizerLinkedin   String?
@@ -502,11 +516,57 @@ model Event {
 
   organizer User            @relation("EventsOrganized", fields: [organizerId], references: [id], onDelete: Cascade)
   attendees EventAttendee[]
+  tickets   EventTicket[]
   reports   Report[]
 
   @@index([status, startDateTime])
   @@index([category])
   @@map("events")
+}
+
+enum TicketPassType {
+  MALE_PASS
+  FEMALE_PASS
+  COUPLE_PASS
+  GENERAL_PASS
+}
+
+enum TicketPaymentStatus {
+  PENDING
+  PAID
+  CANCELLED
+  REFUNDED
+}
+
+model EventTicket {
+  id                     String              @id @default(cuid())
+  eventId                String
+  userId                 String
+  ticketType             TicketPassType      @default(GENERAL_PASS)
+  quantity               Int                 @default(1)
+  basePriceInPaise       Int
+  convenienceFeeInPaise  Int                 @default(3900)
+  totalAmountInPaise     Int
+  tmdCommissionInPaise   Int                 @default(0)
+  organizerPayoutInPaise Int                 @default(0)
+  ticketCode             String              @unique
+  qrData                 String
+  paymentStatus          TicketPaymentStatus @default(PAID)
+  paymentMethod          String?             @default("UPI")
+  paymentTxnId           String?
+  checkedIn              Boolean             @default(false)
+  checkedInAt            DateTime?
+  attendeeName           String?
+  attendeePhone          String?
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([eventId, paymentStatus])
+  @@index([userId])
+  @@map("event_tickets")
 }
 
 enum AttendeeStatus {
