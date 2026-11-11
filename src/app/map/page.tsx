@@ -20,6 +20,8 @@ import {
   Layers,
   ExternalLink,
   Ticket,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
@@ -114,6 +116,8 @@ export default function MapPage() {
   const [newFnbCover, setNewFnbCover] = useState<string>("Free mocktail / coffee included");
   const [newHostUpiId, setNewHostUpiId] = useState<string>("");
   const [newHostPhone, setNewHostPhone] = useState<string>("");
+  const [showAdvancedPricing, setShowAdvancedPricing] = useState<boolean>(false);
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState<boolean>(false);
   const [newOrganizerLinkedin, setNewOrganizerLinkedin] = useState<string>("");
   const [newRequireLinkedin, setNewRequireLinkedin] = useState<boolean>(false);
   const [newIsLinkedinMandatory, setNewIsLinkedinMandatory] = useState<boolean>(false);
@@ -268,36 +272,46 @@ export default function MapPage() {
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTitle || !newVenue || !newAddress || !newStart || !newEnd || !newDesc) {
-      alert("Please fill in all required fields.");
+    const effectiveVenue = newVenue.trim();
+    const effectiveAddress = (newAddress || newVenue).trim();
+
+    if (!newTitle.trim() || !effectiveVenue || !newStart || !newDesc.trim()) {
+      alert("Please enter title, venue, date and short description.");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const parsedFee = newIsPaid ? parseInt(newEntryFee, 10) || 0 : 0;
+      const parsedFee = newIsPaid ? parseInt(newEntryFee, 10) || 299 : 0;
+      const malePrice = showAdvancedPricing && newMalePassPrice ? parseInt(newMalePassPrice, 10) || parsedFee : parsedFee;
+      const femalePrice = showAdvancedPricing && newFemalePassPrice ? parseInt(newFemalePassPrice, 10) : Math.max(99, Math.round(malePrice * 0.5));
+      const couplePrice = showAdvancedPricing && newCouplePassPrice ? parseInt(newCouplePassPrice, 10) : Math.round(malePrice * 1.6);
+
+      const startDate = new Date(newStart);
+      const endDate = newEnd ? new Date(newEnd) : new Date(startDate.getTime() + 3 * 60 * 60 * 1000);
+
       const res = await fetch("/api/events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: newTitle,
+          title: newTitle.trim(),
           category: newCategory,
-          description: newDesc,
-          venue: newVenue,
-          address: newAddress,
+          description: newDesc.trim(),
+          venue: effectiveVenue,
+          address: effectiveAddress,
           isResidential: newIsResidential,
-          capacity: parseInt(newCapacity, 10) || 20,
-          startDateTime: new Date(newStart).toISOString(),
-          endDateTime: new Date(newEnd).toISOString(),
+          capacity: parseInt(newCapacity, 10) || 30,
+          startDateTime: startDate.toISOString(),
+          endDateTime: endDate.toISOString(),
           attendanceMode: "REQUEST_APPROVAL",
           minAge: 18,
           isPaid: newIsPaid,
           entryFee: parsedFee,
           feeInPaise: parsedFee * 100,
-          malePassPrice: parseInt(newMalePassPrice, 10) || 499,
-          femalePassPrice: parseInt(newFemalePassPrice, 10) || 199,
-          couplePassPrice: parseInt(newCouplePassPrice, 10) || 799,
-          generalPassPrice: parsedFee || 399,
+          malePassPrice: malePrice,
+          femalePassPrice: femalePrice,
+          couplePassPrice: couplePrice,
+          generalPassPrice: parsedFee,
           fnbCoverIncluded: newFnbCover.trim() || null,
           hostUpiId: newHostUpiId.trim() || null,
           hostPhone: newHostPhone.trim() || undefined,
@@ -312,24 +326,26 @@ export default function MapPage() {
         throw new Error(data.error || "Failed to create event");
       }
 
-      alert("Event created successfully!");
+      alert("Event published successfully! 🎉");
       setShowCreateModal(false);
       // Reset form
       setNewTitle("");
       setNewVenue("");
       setNewAddress("");
       setNewDesc("");
-      setNewIsPaid(false);
+      setNewIsPaid(true);
       setNewEntryFee("299");
       setNewOrganizerLinkedin("");
       setNewRequireLinkedin(false);
       setNewIsLinkedinMandatory(false);
-      setNewMalePassPrice("499");
+      setNewMalePassPrice("399");
       setNewFemalePassPrice("199");
-      setNewCouplePassPrice("799");
-      setNewFnbCover("Free mocktail / coffee included");
+      setNewCouplePassPrice("599");
+      setNewFnbCover("");
       setNewHostUpiId("");
       setNewHostPhone("");
+      setShowAdvancedPricing(false);
+      setShowAdvancedOptions(false);
       await fetchEvents();
     } catch (err: any) {
       alert(err.message || "Failed to create event");
@@ -1238,391 +1254,287 @@ export default function MapPage() {
         </div>
       )}
 
-      {/* Create Event Modal */}
+      {/* Create Event Modal - Streamlined Minimalist UI */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-in fade-in">
-          <div className="w-full max-w-sm rounded-3xl bg-[#0f0f15] border border-[#FFC629]/30 p-6 space-y-4 shadow-2xl relative my-8">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-extrabold text-white">Host a Singles Event</h2>
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in">
+          <div className="w-full max-w-sm rounded-3xl bg-[#0f0f15] border border-[#FFC629]/25 p-5 space-y-4 shadow-2xl relative my-6 text-xs text-white">
+            {/* Header */}
+            <div className="flex items-center justify-between pb-1 border-b border-white/5">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-[#FFC629]/15 flex items-center justify-center text-[#FFC629]">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-extrabold text-white">Host an Event</h2>
+                  <p className="text-[10px] text-zinc-400">Post mixers, speed dating & cafe parties</p>
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                className="p-1 rounded-full text-zinc-400 hover:text-white"
+                className="p-1 rounded-full text-zinc-400 hover:text-white transition"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateSubmit} className="space-y-3 text-xs">
+            <form onSubmit={handleCreateSubmit} className="space-y-3.5">
+              {/* 1. Title */}
               <div>
-                <label className="text-zinc-400 block mb-1 font-medium">Event Title *</label>
+                <label className="text-zinc-300 block mb-1 font-semibold text-[11px]">Event Name *</label>
                 <input
                   type="text"
                   required
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="e.g. Friday Rooftop Cocktails & Mingling"
-                  className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629]"
+                  placeholder="e.g. Saturday Rooftop Singles Mixer"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#161620] border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFC629] text-xs font-medium"
                 />
               </div>
 
-              <div>
-                <label className="text-zinc-400 block mb-1 font-medium">Category</label>
-                <select
-                  value={newCategory}
-                  onChange={(e) => setNewCategory(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629]"
-                >
-                  <option value="House Party">House Party</option>
-                  <option value="Standup">Standup</option>
-                  <option value="Dinner">Dinner</option>
-                  <option value="Sports">Sports</option>
-                  <option value="Music">Music</option>
-                  <option value="Networking">Networking</option>
-                  <option value="Meetup">Meetup</option>
-                </select>
-              </div>
-
-              {/* Free vs Paid Event Selection */}
-              <div className="space-y-2">
-                <label className="text-zinc-400 block font-medium">Event Pricing *</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setNewIsPaid(false)}
-                    className={`py-2 px-3 rounded-xl font-bold text-xs transition border ${
-                      !newIsPaid
-                        ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/50"
-                        : "bg-[#161620] text-zinc-400 border-white/10 hover:border-white/20"
-                    }`}
-                  >
-                    🟢 Free Event
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setNewIsPaid(true)}
-                    className={`py-2 px-3 rounded-xl font-bold text-xs transition border ${
-                      newIsPaid
-                        ? "bg-[#FFC629]/20 text-[#FFC629] border-[#FFC629]/50"
-                        : "bg-[#161620] text-zinc-400 border-white/10 hover:border-white/20"
-                    }`}
-                  >
-                    💰 Paid Event
-                  </button>
-                </div>
-
-                {newIsPaid && (
-                  <div className="p-3 rounded-xl bg-[#161620] border border-[#FFC629]/30 space-y-1.5 animate-in fade-in">
-                    <label className="text-[#FFC629] block text-xs font-semibold">Entry Fee (₹) *</label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-2 text-zinc-400 font-bold">₹</span>
-                      <input
-                        type="number"
-                        min="1"
-                        required={newIsPaid}
-                        value={newEntryFee}
-                        onChange={(e) => setNewEntryFee(e.target.value)}
-                        placeholder="e.g. 299"
-                        className="w-full pl-7 pr-3 py-2 rounded-xl bg-[#121217] border border-white/10 text-white focus:outline-none focus:border-[#FFC629] font-semibold"
-                      />
-                    </div>
-                    <p className="text-[10px] text-zinc-400">
-                      Entry fee will be shown directly on your event card.
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* LinkedIn Section */}
-              <div className="p-3.5 rounded-2xl bg-[#161620] border border-blue-500/30 space-y-3">
+              {/* 2. Category & Date in 2 columns */}
+              <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="text-zinc-300 block mb-1 font-semibold flex items-center justify-between text-xs">
-                    <span className="flex items-center gap-1.5 text-blue-400">
-                      <span>🔗</span>
-                      <span>Host LinkedIn Profile Link</span>
-                    </span>
-                    <span className="text-[10px] text-zinc-500 font-normal">Optional</span>
-                  </label>
-                  <input
-                    type="url"
-                    value={newOrganizerLinkedin}
-                    onChange={(e) => setNewOrganizerLinkedin(e.target.value)}
-                    placeholder="https://www.linkedin.com/in/yourname"
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#121217] border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 text-xs"
-                  />
-                  <p className="text-[10px] text-zinc-400 mt-1">
-                    Apna LinkedIn link yaha dalein taki event dekhne wale guests aapki verified profile dekh sakein.
-                  </p>
+                  <label className="text-zinc-300 block mb-1 font-semibold text-[11px]">Category</label>
+                  <select
+                    value={newCategory}
+                    onChange={(e) => setNewCategory(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629] text-xs"
+                  >
+                    <option value="Cafe Mixer">Cafe Mixer</option>
+                    <option value="Speed Dating">Speed Dating</option>
+                    <option value="House Party">House Party</option>
+                    <option value="Dinner & Drinks">Dinner & Drinks</option>
+                    <option value="Live Music">Live Music</option>
+                    <option value="Standup">Standup</option>
+                    <option value="Networking">Networking</option>
+                  </select>
                 </div>
 
-                <div className="pt-2.5 border-t border-white/10 space-y-2">
-                  <div className="flex items-start gap-2.5">
-                    <input
-                      type="checkbox"
-                      id="requireLinkedin"
-                      checked={newRequireLinkedin}
-                      onChange={(e) => {
-                        setNewRequireLinkedin(e.target.checked);
-                        if (!e.target.checked) setNewIsLinkedinMandatory(false);
-                      }}
-                      className="mt-0.5 rounded bg-[#121217] border-zinc-700 text-blue-500 focus:ring-blue-500"
-                    />
-                    <div>
-                      <label htmlFor="requireLinkedin" className="text-white font-medium block">
-                        Require Attendees to submit LinkedIn link
-                      </label>
-                      <p className="text-[11px] text-zinc-400">
-                        Joining request bhejne se pehle guests se unka LinkedIn profile link maangein.
-                      </p>
-                    </div>
-                  </div>
-
-                  {newRequireLinkedin && (
-                    <div className="pl-6 pt-1 border-t border-white/5 animate-in fade-in">
-                      <div className="flex items-start gap-2">
-                        <input
-                          type="checkbox"
-                          id="isLinkedinMandatory"
-                          checked={newIsLinkedinMandatory}
-                          onChange={(e) => setNewIsLinkedinMandatory(e.target.checked)}
-                          className="mt-0.5 rounded bg-[#121217] border-zinc-700 text-[#FFC629] focus:ring-[#FFC629]"
-                        />
-                        <div>
-                          <label htmlFor="isLinkedinMandatory" className="text-[#FFC629] font-semibold block text-xs">
-                            Mark as Mandatory (Required)
-                          </label>
-                          <p className="text-[10px] text-zinc-400">
-                            Bina LinkedIn link ke applicant request nahi bhej payega.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <label className="text-zinc-400 block mb-1">Venue Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={newVenue}
-                  onChange={(e) => setNewVenue(e.target.value)}
-                  placeholder="e.g. The Rooftop Lounge"
-                  className="w-full px-3 py-2.5 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629]"
-                />
-              </div>
-
-              <div>
-                <label className="text-zinc-400 block mb-1">Address *</label>
-                <input
-                  type="text"
-                  required
-                  value={newAddress}
-                  onChange={(e) => setNewAddress(e.target.value)}
-                  placeholder="e.g. 102 Arera Hills, Bhopal"
-                  className="w-full px-3 py-2.5 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629]"
-                />
-              </div>
-
-              <div className="flex items-center gap-2 py-1">
-                <input
-                  type="checkbox"
-                  id="residential"
-                  checked={newIsResidential}
-                  onChange={(e) => setNewIsResidential(e.target.checked)}
-                  className="rounded bg-[#161620] border-zinc-700 text-[#FFC629] focus:ring-[#FFC629]"
-                />
-                <label htmlFor="residential" className="text-zinc-300">
-                  This is a residential address (Enable address masking)
-                </label>
-              </div>
-
-              {/* Start & End Time - Fixed height, spacious and dark-mode styled */}
-              <div className="space-y-3">
                 <div>
-                  <label className="text-zinc-300 block mb-1.5 font-medium flex items-center gap-1.5 text-xs">
-                    <Calendar className="w-4 h-4 text-[#FFC629] shrink-0" />
-                    <span>Start Date &amp; Time *</span>
-                  </label>
+                  <label className="text-zinc-300 block mb-1 font-semibold text-[11px]">Date &amp; Time *</label>
                   <input
                     type="datetime-local"
                     required
                     value={newStart}
                     onChange={(e) => setNewStart(e.target.value)}
                     style={{ colorScheme: "dark" }}
-                    className="w-full h-12 px-3.5 py-2.5 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629] text-sm font-medium"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-zinc-300 block mb-1.5 font-medium flex items-center gap-1.5 text-xs">
-                    <Clock className="w-4 h-4 text-[#FFC629] shrink-0" />
-                    <span>End Date &amp; Time *</span>
-                  </label>
-                  <input
-                    type="datetime-local"
-                    required
-                    value={newEnd}
-                    onChange={(e) => setNewEnd(e.target.value)}
-                    style={{ colorScheme: "dark" }}
-                    className="w-full h-12 px-3.5 py-2.5 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629] text-sm font-medium"
+                    className="w-full px-2.5 py-2 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629] text-[11px]"
                   />
                 </div>
               </div>
 
+              {/* 3. Venue & Location */}
               <div>
-                <label className="text-zinc-400 block mb-1">Capacity</label>
+                <label className="text-zinc-300 block mb-1 font-semibold text-[11px]">Venue / Cafe &amp; Area *</label>
                 <input
-                  type="number"
-                  min="2"
-                  max="500"
-                  value={newCapacity}
-                  onChange={(e) => setNewCapacity(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629]"
+                  type="text"
+                  required
+                  value={newVenue}
+                  onChange={(e) => {
+                    setNewVenue(e.target.value);
+                    if (!newAddress) setNewAddress(e.target.value);
+                  }}
+                  placeholder="e.g. Third Wave Coffee, Arera Hills"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#161620] border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFC629] text-xs"
                 />
               </div>
 
-              {/* BookMyShow Ticketing & Marketplace Pass Pricing */}
-              <div className="p-3.5 rounded-2xl bg-[#14141d] border border-amber-500/30 space-y-3">
+              {/* 4. Ticket Pricing (Clean 2-tab Pill Selector) */}
+              <div className="p-3 rounded-2xl bg-[#14141e] border border-white/10 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Ticket className="w-4 h-4 text-[#FFC629]" />
-                    <span className="text-xs font-bold text-white">Sell Passes (BookMyShow Flow)</span>
+                  <span className="text-[11px] font-bold text-zinc-300">Ticket Type</span>
+                  <div className="flex items-center bg-[#0c0c12] p-0.5 rounded-xl border border-white/10">
+                    <button
+                      type="button"
+                      onClick={() => setNewIsPaid(false)}
+                      className={`px-3 py-1 rounded-lg font-bold text-[10px] transition ${
+                        !newIsPaid ? "bg-emerald-500 text-black shadow" : "text-zinc-400 hover:text-white"
+                      }`}
+                    >
+                      Free RSVP
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNewIsPaid(true)}
+                      className={`px-3 py-1 rounded-lg font-bold text-[10px] transition ${
+                        newIsPaid ? "bg-[#FFC629] text-black shadow" : "text-zinc-400 hover:text-white"
+                      }`}
+                    >
+                      Paid Pass 🎟️
+                    </button>
                   </div>
-                  <input
-                    type="checkbox"
-                    id="isPaidEvent"
-                    checked={newIsPaid}
-                    onChange={(e) => setNewIsPaid(e.target.checked)}
-                    className="rounded bg-[#161620] border-zinc-700 text-[#FFC629] focus:ring-[#FFC629]"
-                  />
                 </div>
 
                 {newIsPaid && (
-                  <div className="space-y-3 pt-2 border-t border-white/5 text-xs animate-in fade-in">
-                    <p className="text-[11px] text-zinc-400">
-                      Set pass prices. Users book passes with instant UPI, and TMD settles 85% payout to your UPI post-event.
-                    </p>
+                  <div className="space-y-2 pt-1 animate-in fade-in">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-zinc-400 block mb-1 text-[10px]">Pass Price (₹) *</label>
+                        <div className="relative">
+                          <span className="absolute left-2.5 top-2 text-zinc-500 font-bold text-xs">₹</span>
+                          <input
+                            type="number"
+                            min="1"
+                            value={newEntryFee}
+                            onChange={(e) => setNewEntryFee(e.target.value)}
+                            placeholder="299"
+                            className="w-full pl-6 pr-2.5 py-2 rounded-xl bg-[#1b1b26] border border-white/10 text-white font-mono text-xs focus:outline-none focus:border-[#FFC629]"
+                          />
+                        </div>
+                      </div>
 
-                    <div className="grid grid-cols-2 gap-2.5">
                       <div>
-                        <label className="text-zinc-400 block mb-1 font-semibold text-[11px]">Female Pass (₹)</label>
-                        <input
-                          type="number"
-                          value={newFemalePassPrice}
-                          onChange={(e) => setNewFemalePassPrice(e.target.value)}
-                          placeholder="199"
-                          className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white font-mono focus:outline-none focus:border-[#FFC629]"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-zinc-400 block mb-1 font-semibold text-[11px]">Male Pass (₹)</label>
-                        <input
-                          type="number"
-                          value={newMalePassPrice}
-                          onChange={(e) => setNewMalePassPrice(e.target.value)}
-                          placeholder="499"
-                          className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white font-mono focus:outline-none focus:border-[#FFC629]"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-zinc-400 block mb-1 font-semibold text-[11px]">Couple Pass (₹)</label>
-                        <input
-                          type="number"
-                          value={newCouplePassPrice}
-                          onChange={(e) => setNewCouplePassPrice(e.target.value)}
-                          placeholder="799"
-                          className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white font-mono focus:outline-none focus:border-[#FFC629]"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-zinc-400 block mb-1 font-semibold text-[11px]">General Pass (₹)</label>
-                        <input
-                          type="number"
-                          value={newEntryFee}
-                          onChange={(e) => setNewEntryFee(e.target.value)}
-                          placeholder="399"
-                          className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white font-mono focus:outline-none focus:border-[#FFC629]"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="text-zinc-400 block mb-1 font-semibold text-[11px]">F&B / Cover Included (Optional)</label>
-                      <input
-                        type="text"
-                        value={newFnbCover}
-                        onChange={(e) => setNewFnbCover(e.target.value)}
-                        placeholder="e.g. Free coffee / drink voucher included"
-                        className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629]"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2.5">
-                      <div>
-                        <label className="text-zinc-400 block mb-1 font-semibold text-[11px]">Your Payout UPI ID *</label>
+                        <label className="text-zinc-400 block mb-1 text-[10px]">Payout UPI ID *</label>
                         <input
                           type="text"
                           value={newHostUpiId}
                           onChange={(e) => setNewHostUpiId(e.target.value)}
-                          placeholder="cafe@upi"
-                          className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white font-mono focus:outline-none focus:border-[#FFC629]"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-zinc-400 block mb-1 font-semibold text-[11px]">Host WhatsApp / Phone</label>
-                        <input
-                          type="tel"
-                          value={newHostPhone}
-                          onChange={(e) => setNewHostPhone(e.target.value)}
-                          placeholder="98260XXXXX"
-                          className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white font-mono focus:outline-none focus:border-[#FFC629]"
+                          placeholder="e.g. cafe@upi"
+                          className="w-full px-2.5 py-2 rounded-xl bg-[#1b1b26] border border-white/10 text-white font-mono text-xs focus:outline-none focus:border-[#FFC629]"
                         />
                       </div>
                     </div>
 
-                    <div className="p-2.5 rounded-xl bg-[#1a1714] border border-amber-500/20 text-[10px] text-amber-300 space-y-1">
-                      <div className="font-bold flex items-center gap-1 text-white">
-                        <Sparkles className="w-3 h-3 text-[#FFC629]" /> TMD Marketplace Economics:
+                    <div className="flex items-center justify-between text-[10px] text-zinc-400 pt-0.5">
+                      <span>Female: ₹{Math.max(99, Math.round(Number(newEntryFee || 299) * 0.5))} (50% Off)</span>
+                      <button
+                        type="button"
+                        onClick={() => setShowAdvancedPricing(!showAdvancedPricing)}
+                        className="text-[#FFC629] hover:underline font-semibold"
+                      >
+                        {showAdvancedPricing ? "Hide custom prices ▲" : "Custom Male/Female prices ▼"}
+                      </button>
+                    </div>
+
+                    {showAdvancedPricing && (
+                      <div className="grid grid-cols-3 gap-2 pt-1 border-t border-white/5 animate-in fade-in">
+                        <div>
+                          <label className="text-zinc-400 block mb-1 text-[9px]">Female (₹)</label>
+                          <input
+                            type="number"
+                            value={newFemalePassPrice}
+                            onChange={(e) => setNewFemalePassPrice(e.target.value)}
+                            className="w-full px-2 py-1.5 rounded-lg bg-[#121218] border border-white/10 text-white font-mono text-[11px]"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-zinc-400 block mb-1 text-[9px]">Male (₹)</label>
+                          <input
+                            type="number"
+                            value={newMalePassPrice}
+                            onChange={(e) => setNewMalePassPrice(e.target.value)}
+                            className="w-full px-2 py-1.5 rounded-lg bg-[#121218] border border-white/10 text-white font-mono text-[11px]"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-zinc-400 block mb-1 text-[9px]">Couple (₹)</label>
+                          <input
+                            type="number"
+                            value={newCouplePassPrice}
+                            onChange={(e) => setNewCouplePassPrice(e.target.value)}
+                            className="w-full px-2 py-1.5 rounded-lg bg-[#121218] border border-white/10 text-white font-mono text-[11px]"
+                          />
+                        </div>
                       </div>
-                      <p className="text-zinc-300">
-                        • Guest pays pass price + ₹39 convenience fee to TMD.
-                      </p>
-                      <p className="text-zinc-300">
-                        • 85% of ticket sales are directly settled to your UPI ID post-event (15% TMD platform cut).
-                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* 5. Vibe & Short Description */}
+              <div>
+                <label className="text-zinc-300 block mb-1 font-semibold text-[11px]">Event Description *</label>
+                <textarea
+                  required
+                  rows={2}
+                  value={newDesc}
+                  onChange={(e) => setNewDesc(e.target.value)}
+                  placeholder="What's the vibe? Dress code, icebreakers, or free drink details..."
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#161620] border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFC629] text-xs resize-none"
+                />
+              </div>
+
+              {/* 6. Advanced / Privacy Options (Collapsed) */}
+              <div className="pt-0.5">
+                <button
+                  type="button"
+                  onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
+                  className="w-full py-2 px-3 rounded-xl bg-[#14141e] border border-white/5 hover:border-white/15 text-zinc-400 hover:text-zinc-200 flex items-center justify-between text-[11px] transition"
+                >
+                  <span className="font-medium">More Options (Capacity, Privacy, LinkedIn)</span>
+                  {showAdvancedOptions ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                </button>
+
+                {showAdvancedOptions && (
+                  <div className="mt-2 p-3 rounded-2xl bg-[#12121a] border border-white/5 space-y-2.5 animate-in fade-in text-xs">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-zinc-400 block mb-1 text-[10px]">End Time (Optional)</label>
+                        <input
+                          type="datetime-local"
+                          value={newEnd}
+                          onChange={(e) => setNewEnd(e.target.value)}
+                          style={{ colorScheme: "dark" }}
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-[#161622] border border-white/10 text-white text-[10px]"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-zinc-400 block mb-1 text-[10px]">Max Capacity</label>
+                        <input
+                          type="number"
+                          min="2"
+                          max="500"
+                          value={newCapacity}
+                          onChange={(e) => setNewCapacity(e.target.value)}
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-[#161622] border border-white/10 text-white text-[10px]"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-1 border-t border-white/5">
+                      <input
+                        type="checkbox"
+                        id="resAddress"
+                        checked={newIsResidential}
+                        onChange={(e) => setNewIsResidential(e.target.checked)}
+                        className="rounded bg-[#161622] border-zinc-700 text-[#FFC629] focus:ring-[#FFC629]"
+                      />
+                      <label htmlFor="resAddress" className="text-zinc-300 text-[11px] cursor-pointer">
+                        Residential address (Hide house number until RSVP)
+                      </label>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="reqLinkedIn"
+                        checked={newRequireLinkedin}
+                        onChange={(e) => setNewRequireLinkedin(e.target.checked)}
+                        className="rounded bg-[#161622] border-zinc-700 text-blue-400 focus:ring-blue-400"
+                      />
+                      <label htmlFor="reqLinkedIn" className="text-zinc-300 text-[11px] cursor-pointer">
+                        Require guests to share LinkedIn profile
+                      </label>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Host Approval Notice */}
-              <div className="p-2.5 rounded-xl bg-[#161620] border border-white/10 flex items-center gap-2 text-[11px] text-zinc-300">
-                <span className="text-base">🛡️</span>
-                <span>
-                  Door QR Scanner & Guest List: Organizer can scan guest passes at the cafe door for entry.
-                </span>
-              </div>
-
-              <div>
-                <label className="text-zinc-400 block mb-1">Description *</label>
-                <textarea
-                  required
-                  rows={3}
-                  value={newDesc}
-                  onChange={(e) => setNewDesc(e.target.value)}
-                  placeholder="What's the vibe? Any dress code or icebreakers?"
-                  className="w-full px-3 py-2 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629]"
-                />
-              </div>
-
+              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3.5 rounded-xl font-extrabold text-xs text-black bg-gradient-to-r from-[#FFC629] to-[#F59E0B] hover:brightness-110 active:scale-95 transition shadow-lg shadow-[#FFC629]/25 disabled:opacity-50"
+                className="w-full py-3 rounded-2xl font-black text-xs text-black bg-gradient-to-r from-[#FFC629] via-[#F59E0B] to-[#FFC629] hover:brightness-105 active:scale-95 transition shadow-lg shadow-[#FFC629]/25 disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                {isSubmitting ? "Publishing Event..." : "Publish Event 🚀"}
+                {isSubmitting ? (
+                  <span>Publishing Event...</span>
+                ) : (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5 text-black" />
+                    <span>Publish Event 🚀</span>
+                  </>
+                )}
               </button>
             </form>
           </div>
