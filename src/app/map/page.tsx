@@ -1396,6 +1396,11 @@ export default function MapPage() {
                       </div>
                     </div>
 
+                    <div className="flex items-center gap-1.5 text-[10px] text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                      <span>✨</span>
+                      <span>Host keeps 93% payout — TMD platform cut is only 7%</span>
+                    </div>
+
                     <div className="flex items-center justify-between text-[10px] text-zinc-400 pt-0.5">
                       <span>Female: ₹{Math.max(99, Math.round(Number(newEntryFee || 299) * 0.5))} (50% Off)</span>
                       <button

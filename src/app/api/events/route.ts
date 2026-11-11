@@ -236,7 +236,7 @@ export async function POST(req: NextRequest) {
         couplePassPrice: body.couplePassPrice ? Number(body.couplePassPrice) : 799,
         generalPassPrice: body.generalPassPrice ? Number(body.generalPassPrice) : (data.entryFee || 399),
         fnbCoverIncluded: body.fnbCoverIncluded || null,
-        tmdCommissionPercent: 0.15,
+        tmdCommissionPercent: 0.07,
         convenienceFee: 39,
         hostUpiId: body.hostUpiId || null,
         hostPhone: body.hostPhone || user.phone || null,

@@ -500,7 +500,7 @@ model Event {
   couplePassPrice      Int?           @default(799)
   generalPassPrice     Int?           @default(399)
   fnbCoverIncluded     String?
-  tmdCommissionPercent Float          @default(0.15)
+  tmdCommissionPercent Float          @default(0.07)
   convenienceFee       Int            @default(39)
   hostUpiId            String?
   hostPhone            String?

@@ -75,8 +75,8 @@ export async function POST(
     const totalAmountInPaise = basePriceInPaise + convenienceFeeInPaise;
 
     // Platform profit calculation:
-    // TMD keeps: 100% of convenienceFee (₹39) + 15% host commission from base ticket!
-    const commissionRate = event.tmdCommissionPercent || 0.15;
+    // TMD keeps: 100% of convenienceFee (₹39) + 7% host commission from base ticket!
+    const commissionRate = event.tmdCommissionPercent || 0.07;
     const tmdCommissionInPaise = Math.round(basePriceInPaise * commissionRate);
     const organizerPayoutInPaise = basePriceInPaise - tmdCommissionInPaise;
 
