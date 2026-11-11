@@ -126,18 +126,7 @@ export const preferenceFilterSchema = z.object({
 
 export const createEventSchema = z.object({
   title: z.string().trim().min(3).max(100),
-  category: z.enum([
-    "House Party",
-    "Standup",
-    "Music",
-    "Sports",
-    "Dinner",
-    "Networking",
-    "Workshop",
-    "Game Night",
-    "Meetup",
-    "Other",
-  ]),
+  category: z.string().trim().min(2).max(50),
   description: z.string().trim().min(10).max(2000),
   coverPhotoUrl: z.string().url().optional().nullable(),
   startDateTime: z.coerce.date(),

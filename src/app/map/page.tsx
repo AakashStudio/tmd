@@ -20,8 +20,6 @@ import {
   Layers,
   ExternalLink,
   Ticket,
-  ChevronDown,
-  ChevronUp,
 } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
@@ -84,6 +82,29 @@ interface EventItem {
   isOrganizer: boolean;
 }
 
+const CURATED_VENUES = [
+  { name: "The Rooftop Lounge, Arera Hills", address: "Arera Hills, Bhopal" },
+  { name: "Third Wave Coffee, MP Nagar", address: "Zone-II, MP Nagar, Bhopal" },
+  { name: "Social Club & Bar, 10 No. Market", address: "10 No. Market, Arera Colony, Bhopal" },
+  { name: "Mocha Cafe & Bar, E-8 Arera Colony", address: "E-8, Arera Colony, Bhopal" },
+  { name: "Under The Mango Tree, Shamla Hills", address: "Shamla Hills, Bhopal" },
+  { name: "House Party / Private Rooftop", address: "Bhopal" },
+  { name: "Custom / Other Cafe or Venue", address: "" },
+];
+
+const AVAILABLE_TAGS = [
+  "🎵 Live Music",
+  "🎧 DJ Night",
+  "🍹 Drinks & Cocktails",
+  "💃 Dance Floor",
+  "🍻 Pub & Bar",
+  "☕ Coffee & Hangout",
+  "🍕 Food & Snacks",
+  "🎲 Games & Icebreakers",
+  "🎤 Standup Comedy",
+  "🥂 Free Welcome Drink",
+];
+
 export default function MapPage() {
   const { user } = useAuth();
   const { profile, entitlements } = useProfile();
@@ -100,28 +121,45 @@ export default function MapPage() {
 
   // Form State for creating events
   const [newTitle, setNewTitle] = useState("");
-  const [newCategory, setNewCategory] = useState("House Party");
-  const [newVenue, setNewVenue] = useState("");
-  const [newAddress, setNewAddress] = useState("");
-  const [newIsResidential, setNewIsResidential] = useState(false);
-  const [newCapacity, setNewCapacity] = useState("20");
+  const [newCategory, setNewCategory] = useState("Cafe Mixer");
+  const [selectedVenuePreset, setSelectedVenuePreset] = useState("The Rooftop Lounge, Arera Hills");
+  const [newVenue, setNewVenue] = useState("The Rooftop Lounge, Arera Hills");
+  const [newAddress, setNewAddress] = useState("Arera Hills, Bhopal");
   const [newStart, setNewStart] = useState("");
-  const [newEnd, setNewEnd] = useState("");
   const [newDesc, setNewDesc] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([
+    "🎵 Live Music",
+    "🍹 Drinks & Cocktails",
+  ]);
   const [newIsPaid, setNewIsPaid] = useState<boolean>(true);
-  const [newEntryFee, setNewEntryFee] = useState<string>("399");
-  const [newMalePassPrice, setNewMalePassPrice] = useState<string>("499");
-  const [newFemalePassPrice, setNewFemalePassPrice] = useState<string>("199");
-  const [newCouplePassPrice, setNewCouplePassPrice] = useState<string>("799");
-  const [newFnbCover, setNewFnbCover] = useState<string>("Free mocktail / coffee included");
+  const [newEntryFee, setNewEntryFee] = useState<string>("299");
+  const [newMalePassPrice, setNewMalePassPrice] = useState<string>("299");
+  const [newFemalePassPrice, setNewFemalePassPrice] = useState<string>("149");
+  const [newCouplePassPrice, setNewCouplePassPrice] = useState<string>("499");
   const [newHostUpiId, setNewHostUpiId] = useState<string>("");
   const [newHostPhone, setNewHostPhone] = useState<string>("");
   const [showAdvancedPricing, setShowAdvancedPricing] = useState<boolean>(false);
-  const [showAdvancedOptions, setShowAdvancedOptions] = useState<boolean>(false);
-  const [newOrganizerLinkedin, setNewOrganizerLinkedin] = useState<string>("");
-  const [newRequireLinkedin, setNewRequireLinkedin] = useState<boolean>(false);
-  const [newIsLinkedinMandatory, setNewIsLinkedinMandatory] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  };
+
+  const handleVenuePresetChange = (presetName: string) => {
+    setSelectedVenuePreset(presetName);
+    if (presetName === "Custom / Other Cafe or Venue") {
+      setNewVenue("");
+      setNewAddress("");
+    } else {
+      const match = CURATED_VENUES.find((v) => v.name === presetName);
+      if (match) {
+        setNewVenue(match.name);
+        setNewAddress(match.address);
+      }
+    }
+  };
 
   // Join Request Modal State
   const [requestModalEvent, setRequestModalEvent] = useState<EventItem | null>(null);
@@ -288,7 +326,7 @@ export default function MapPage() {
       const couplePrice = showAdvancedPricing && newCouplePassPrice ? parseInt(newCouplePassPrice, 10) : Math.round(malePrice * 1.6);
 
       const startDate = new Date(newStart);
-      const endDate = newEnd ? new Date(newEnd) : new Date(startDate.getTime() + 3 * 60 * 60 * 1000);
+      const endDate = new Date(startDate.getTime() + 3 * 60 * 60 * 1000); // Default 3 hours
 
       const res = await fetch("/api/events", {
         method: "POST",
@@ -299,8 +337,8 @@ export default function MapPage() {
           description: newDesc.trim(),
           venue: effectiveVenue,
           address: effectiveAddress,
-          isResidential: newIsResidential,
-          capacity: parseInt(newCapacity, 10) || 30,
+          isResidential: false,
+          capacity: 30,
           startDateTime: startDate.toISOString(),
           endDateTime: endDate.toISOString(),
           attendanceMode: "REQUEST_APPROVAL",
@@ -312,12 +350,11 @@ export default function MapPage() {
           femalePassPrice: femalePrice,
           couplePassPrice: couplePrice,
           generalPassPrice: parsedFee,
-          fnbCoverIncluded: newFnbCover.trim() || null,
+          fnbCoverIncluded: selectedTags.length > 0 ? selectedTags.join(" • ") : null,
           hostUpiId: newHostUpiId.trim() || null,
           hostPhone: newHostPhone.trim() || undefined,
-          requireLinkedin: newRequireLinkedin,
-          isLinkedinMandatory: newRequireLinkedin && newIsLinkedinMandatory,
-          organizerLinkedin: newOrganizerLinkedin.trim() || undefined,
+          requireLinkedin: false,
+          isLinkedinMandatory: false,
         }),
       });
 
@@ -330,22 +367,19 @@ export default function MapPage() {
       setShowCreateModal(false);
       // Reset form
       setNewTitle("");
-      setNewVenue("");
-      setNewAddress("");
+      setSelectedVenuePreset("The Rooftop Lounge, Arera Hills");
+      setNewVenue("The Rooftop Lounge, Arera Hills");
+      setNewAddress("Arera Hills, Bhopal");
       setNewDesc("");
+      setSelectedTags(["🎵 Live Music", "🍹 Drinks & Cocktails"]);
       setNewIsPaid(true);
       setNewEntryFee("299");
-      setNewOrganizerLinkedin("");
-      setNewRequireLinkedin(false);
-      setNewIsLinkedinMandatory(false);
-      setNewMalePassPrice("399");
-      setNewFemalePassPrice("199");
-      setNewCouplePassPrice("599");
-      setNewFnbCover("");
+      setNewMalePassPrice("299");
+      setNewFemalePassPrice("149");
+      setNewCouplePassPrice("499");
       setNewHostUpiId("");
       setNewHostPhone("");
       setShowAdvancedPricing(false);
-      setShowAdvancedOptions(false);
       await fetchEvents();
     } catch (err: any) {
       alert(err.message || "Failed to create event");
@@ -664,6 +698,20 @@ export default function MapPage() {
                     </div>
                   </div>
 
+                  {/* Event Highlights & Vibe Tags */}
+                  {selectedPinEvent.fnbCoverIncluded && (
+                    <div className="flex flex-wrap gap-1 pt-0.5">
+                      {selectedPinEvent.fnbCoverIncluded.split("•").map((tag, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-0.5 rounded-full bg-[#FFC629]/15 text-[#FFC629] border border-[#FFC629]/30 text-[10px] font-bold tracking-tight"
+                        >
+                          {tag.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
                   {selectedPinEvent.requireLinkedin && (
                     <div className="flex items-center gap-1.5 text-[10px] text-blue-400 bg-blue-500/10 px-2 py-1 rounded-lg border border-blue-500/20">
                       <span>🔗</span>
@@ -847,6 +895,20 @@ export default function MapPage() {
                       </div>
                     </div>
 
+                    {/* Event Highlights & Vibe Tags */}
+                    {event.fnbCoverIncluded && (
+                      <div className="flex flex-wrap gap-1.5 pt-0.5">
+                        {event.fnbCoverIncluded.split("•").map((tag, idx) => (
+                          <span
+                            key={idx}
+                            className="px-2 py-0.5 rounded-full bg-[#FFC629]/15 text-[#FFC629] border border-[#FFC629]/30 text-[10px] font-bold tracking-tight"
+                          >
+                            {tag.trim()}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
                     {/* BookMyShow Pass Pricing Badges */}
                     {event.isPaid && (
                       <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
@@ -859,11 +921,6 @@ export default function MapPage() {
                         <span className="px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-300 font-bold text-[10px] border border-purple-500/30">
                           Couple Pass ₹{event.couplePassPrice || 799}
                         </span>
-                        {event.fnbCoverIncluded && (
-                          <span className="text-[10px] text-amber-200/90 font-medium flex items-center gap-1">
-                            ☕ {event.fnbCoverIncluded}
-                          </span>
-                        )}
                       </div>
                     )}
 
@@ -1303,11 +1360,12 @@ export default function MapPage() {
                   >
                     <option value="Cafe Mixer">Cafe Mixer</option>
                     <option value="Speed Dating">Speed Dating</option>
+                    <option value="Pub & Nightlife">Pub & Nightlife</option>
+                    <option value="Live Music & DJ">Live Music & DJ</option>
                     <option value="House Party">House Party</option>
                     <option value="Dinner & Drinks">Dinner & Drinks</option>
-                    <option value="Live Music">Live Music</option>
-                    <option value="Standup">Standup</option>
-                    <option value="Networking">Networking</option>
+                    <option value="Standup Comedy">Standup Comedy</option>
+                    <option value="Networking & Meetup">Networking & Meetup</option>
                   </select>
                 </div>
 
@@ -1324,20 +1382,41 @@ export default function MapPage() {
                 </div>
               </div>
 
-              {/* 3. Venue & Location */}
+              {/* 3. Venue & Location Dropdown */}
               <div>
                 <label className="text-zinc-300 block mb-1 font-semibold text-[11px]">Venue / Cafe &amp; Area *</label>
-                <input
-                  type="text"
-                  required
-                  value={newVenue}
-                  onChange={(e) => {
-                    setNewVenue(e.target.value);
-                    if (!newAddress) setNewAddress(e.target.value);
-                  }}
-                  placeholder="e.g. Third Wave Coffee, Arera Hills"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#161620] border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFC629] text-xs"
-                />
+                <select
+                  value={selectedVenuePreset}
+                  onChange={(e) => handleVenuePresetChange(e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629] text-xs mb-2"
+                >
+                  {CURATED_VENUES.map((v) => (
+                    <option key={v.name} value={v.name}>
+                      {v.name}
+                    </option>
+                  ))}
+                </select>
+
+                {selectedVenuePreset === "Custom / Other Cafe or Venue" && (
+                  <div className="space-y-2 animate-in fade-in">
+                    <input
+                      type="text"
+                      required
+                      value={newVenue}
+                      onChange={(e) => setNewVenue(e.target.value)}
+                      placeholder="Cafe or Venue Name (e.g. Ten Downing Street)"
+                      className="w-full px-3.5 py-2 rounded-xl bg-[#161620] border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFC629] text-xs"
+                    />
+                    <input
+                      type="text"
+                      required
+                      value={newAddress}
+                      onChange={(e) => setNewAddress(e.target.value)}
+                      placeholder="Area / Landmark (e.g. DB City Mall, Bhopal)"
+                      className="w-full px-3.5 py-2 rounded-xl bg-[#161620] border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFC629] text-xs"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* 4. Ticket Pricing (Clean 2-tab Pill Selector) */}
@@ -1447,7 +1526,36 @@ export default function MapPage() {
                 )}
               </div>
 
-              {/* 5. Vibe & Short Description */}
+              {/* 5. What's Happening (Activity & Vibe Tags) */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-zinc-300 font-semibold text-[11px] flex items-center gap-1.5">
+                    <span>What&apos;s happening? (Event Highlights)</span>
+                  </label>
+                  <span className="text-[10px] text-zinc-400">{selectedTags.length} selected</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {AVAILABLE_TAGS.map((tag) => {
+                    const isSel = selectedTags.includes(tag);
+                    return (
+                      <button
+                        type="button"
+                        key={tag}
+                        onClick={() => toggleTag(tag)}
+                        className={`px-2.5 py-1.5 rounded-xl text-[11px] font-medium transition cursor-pointer border ${
+                          isSel
+                            ? "bg-[#FFC629] text-black font-extrabold border-[#FFC629] shadow-md shadow-[#FFC629]/30 scale-[1.02]"
+                            : "bg-[#161622] text-zinc-300 border-white/10 hover:border-white/25 hover:text-white"
+                        }`}
+                      >
+                        {tag}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 6. Event Description */}
               <div>
                 <label className="text-zinc-300 block mb-1 font-semibold text-[11px]">Event Description *</label>
                 <textarea
@@ -1455,75 +1563,9 @@ export default function MapPage() {
                   rows={2}
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
-                  placeholder="What's the vibe? Dress code, icebreakers, or free drink details..."
+                  placeholder="What's the vibe? Music playlist, dress code, icebreakers..."
                   className="w-full px-3.5 py-2.5 rounded-xl bg-[#161620] border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFC629] text-xs resize-none"
                 />
-              </div>
-
-              {/* 6. Advanced / Privacy Options (Collapsed) */}
-              <div className="pt-0.5">
-                <button
-                  type="button"
-                  onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
-                  className="w-full py-2 px-3 rounded-xl bg-[#14141e] border border-white/5 hover:border-white/15 text-zinc-400 hover:text-zinc-200 flex items-center justify-between text-[11px] transition"
-                >
-                  <span className="font-medium">More Options (Capacity, Privacy, LinkedIn)</span>
-                  {showAdvancedOptions ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                </button>
-
-                {showAdvancedOptions && (
-                  <div className="mt-2 p-3 rounded-2xl bg-[#12121a] border border-white/5 space-y-2.5 animate-in fade-in text-xs">
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="text-zinc-400 block mb-1 text-[10px]">End Time (Optional)</label>
-                        <input
-                          type="datetime-local"
-                          value={newEnd}
-                          onChange={(e) => setNewEnd(e.target.value)}
-                          style={{ colorScheme: "dark" }}
-                          className="w-full px-2.5 py-1.5 rounded-lg bg-[#161622] border border-white/10 text-white text-[10px]"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-zinc-400 block mb-1 text-[10px]">Max Capacity</label>
-                        <input
-                          type="number"
-                          min="2"
-                          max="500"
-                          value={newCapacity}
-                          onChange={(e) => setNewCapacity(e.target.value)}
-                          className="w-full px-2.5 py-1.5 rounded-lg bg-[#161622] border border-white/10 text-white text-[10px]"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 pt-1 border-t border-white/5">
-                      <input
-                        type="checkbox"
-                        id="resAddress"
-                        checked={newIsResidential}
-                        onChange={(e) => setNewIsResidential(e.target.checked)}
-                        className="rounded bg-[#161622] border-zinc-700 text-[#FFC629] focus:ring-[#FFC629]"
-                      />
-                      <label htmlFor="resAddress" className="text-zinc-300 text-[11px] cursor-pointer">
-                        Residential address (Hide house number until RSVP)
-                      </label>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="reqLinkedIn"
-                        checked={newRequireLinkedin}
-                        onChange={(e) => setNewRequireLinkedin(e.target.checked)}
-                        className="rounded bg-[#161622] border-zinc-700 text-blue-400 focus:ring-blue-400"
-                      />
-                      <label htmlFor="reqLinkedIn" className="text-zinc-300 text-[11px] cursor-pointer">
-                        Require guests to share LinkedIn profile
-                      </label>
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* Submit Button */}
