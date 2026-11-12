@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
+import { sendPushNotificationToUser } from "@/lib/push-notifications";
 
 export const dynamic = "force-dynamic";
 
@@ -70,6 +71,14 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
         where: { id: eventId },
         data: { seatsLeft: Math.max(0, event.capacity - approvedCount) },
       });
+
+      // Send Push notification to approved attendee
+      sendPushNotificationToUser(updatedAttendee.userId, {
+        title: "✨ RSVP Approved!",
+        body: `You are confirmed for "${event.title}"! Open map to view details.`,
+        url: "/map",
+        tag: `rsvp-${eventId}`,
+      }).catch(() => {});
     }
 
     return NextResponse.json({

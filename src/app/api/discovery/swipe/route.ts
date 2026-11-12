@@ -5,6 +5,7 @@ import { swipeActionSchema, formatZodError } from "@/lib/validation";
 import { getCurrentSwipeWindow } from "@/lib/swipe-window";
 import { getCanonicalMatchPair } from "@/lib/match-helper";
 import { createNotification } from "@/lib/notifications";
+import { sendPushNotificationToUser } from "@/lib/push-notifications";
 
 export const dynamic = "force-dynamic";
 
@@ -238,6 +239,16 @@ export async function POST(req: NextRequest) {
           title: "It's a Match! 🎉",
           body: `You and ${targetName} liked each other! Start chatting now.`,
           linkUrl: `/chat/${conversation.id}`,
+        }),
+        sendPushNotificationToUser(targetUserId, {
+          title: "It's a Match! 🎉",
+          body: `You and ${myName} liked each other! Start chatting now.`,
+          url: `/chat/${conversation.id}`,
+        }),
+        sendPushNotificationToUser(user.id, {
+          title: "It's a Match! 🎉",
+          body: `You and ${targetName} liked each other! Start chatting now.`,
+          url: `/chat/${conversation.id}`,
         }),
       ]).catch(() => null);
 

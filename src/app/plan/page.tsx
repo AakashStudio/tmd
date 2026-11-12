@@ -44,24 +44,6 @@ const PLAN_RANKS: Record<string, number> = {
   PRO_499: 3,
 };
 
-function loadRazorpayScript(): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (typeof window === "undefined") return resolve(false);
-    if ((window as any).Razorpay) return resolve(true);
-    const existing = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
-    if (existing) {
-      existing.addEventListener("load", () => resolve(true));
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-}
-
 export default function PlansPage() {
   const router = useRouter();
   const { profile, entitlements, refreshProfile } = useProfile();
@@ -184,107 +166,6 @@ export default function PlansPage() {
       const pData = await plansRes.json();
       setPlans(pData.plans || []);
       setSubscription(pData.subscription || null);
-    }
-  };
-
-  const handleExecutePayment = async () => {
-    if (!user) {
-      setShowAuthModal(true);
-      return;
-    }
-
-    setIsProcessing(true);
-    try {
-      // 1. Create order on server
-      const orderRes = await fetch("/api/payments/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planCode: selectedPlanCode }),
-      });
-
-      if (!orderRes.ok) {
-        if (orderRes.status === 401) {
-          setShowAuthModal(true);
-          throw new Error("Please log in to complete purchase.");
-        }
-        const err = await orderRes.json().catch(() => ({}));
-        throw new Error(err.error || "Failed to create order");
-      }
-
-      const orderData = await orderRes.json();
-
-      // Check if Razorpay keys are configured (not placeholder)
-      const isPlaceholderKey =
-        !orderData.keyId || orderData.keyId.includes("placeholder");
-
-      if (isPlaceholderKey) {
-        // Fallback for dev / unconfigured test environment
-        await verifyAndActivate(
-          orderData.orderId,
-          `pay_dev_${Date.now()}`,
-          "dev_signature"
-        );
-        setIsProcessing(false);
-        return;
-      }
-
-      // Load official Razorpay Checkout SDK
-      const scriptLoaded = await loadRazorpayScript();
-      if (!scriptLoaded) {
-        throw new Error(
-          "Failed to load Razorpay checkout SDK. Please check your internet connection."
-        );
-      }
-
-      // Standard Razorpay Checkout Modal
-      const options = {
-        key:
-          process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
-          orderData.key_id ||
-          orderData.keyId,
-        amount: orderData.amount || orderData.amountInPaise,
-        currency: orderData.currency || "INR",
-        name: "TMD — The Match Date",
-        description: `${orderData.plan?.name || "Premium"} Plan Subscription`,
-        order_id: orderData.order_id || orderData.orderId,
-        prefill: {
-          name: profile?.name || "",
-          contact: user?.phone || "",
-        },
-        theme: {
-          color: "#FFC629", // Aura Gold accent
-        },
-        modal: {
-          ondismiss: function () {
-            setIsProcessing(false);
-          },
-        },
-        handler: async function (response: any) {
-          try {
-            await verifyAndActivate(
-              response.razorpay_order_id,
-              response.razorpay_payment_id,
-              response.razorpay_signature
-            );
-          } catch (vErr: any) {
-            alert(vErr.message || "Payment verification failed.");
-          } finally {
-            setIsProcessing(false);
-          }
-        },
-      };
-
-      const rzp = new (window as any).Razorpay(options);
-      rzp.on("payment.failed", function (response: any) {
-        setIsProcessing(false);
-        alert(
-          `Payment failed: ${response.error?.description || "Transaction declined"}`
-        );
-      });
-      rzp.open();
-    } catch (err: any) {
-      alert(err.message || "Payment could not be completed.");
-      setIsProcessing(false);
     }
   };
 

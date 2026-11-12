@@ -8,6 +8,7 @@ import {
   validateChatParticipant,
 } from "@/services/chatService";
 import { createNotification } from "@/lib/notifications";
+import { sendPushNotificationToUser } from "@/lib/push-notifications";
 import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
@@ -109,12 +110,20 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
           : validation.conversation.match.user1Id;
 
       const senderName = user.profile?.name || "Your match";
+      const previewText = trimmed.length > 60 ? `${trimmed.substring(0, 57)}...` : trimmed;
       createNotification({
         userId: partnerId,
         type: "MESSAGE",
         title: senderName,
-        body: trimmed.length > 60 ? `${trimmed.substring(0, 57)}...` : trimmed,
+        body: previewText,
         linkUrl: `/chat/${realConversationId}`,
+      }).catch(() => null);
+
+      sendPushNotificationToUser(partnerId, {
+        title: `💬 ${senderName}`,
+        body: previewText,
+        url: `/chat/${realConversationId}`,
+        tag: `chat-${realConversationId}`,
       }).catch(() => null);
 
       return NextResponse.json({
@@ -198,6 +207,13 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
         title: senderName,
         body: "📷 Sent you a view-once photo",
         linkUrl: `/chat/${realConversationId}`,
+      }).catch(() => null);
+
+      sendPushNotificationToUser(partnerId, {
+        title: `📷 ${senderName}`,
+        body: "Sent you a view-once photo",
+        url: `/chat/${realConversationId}`,
+        tag: `chat-${realConversationId}`,
       }).catch(() => null);
 
       return NextResponse.json({

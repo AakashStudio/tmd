@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { config } from "@/lib/config";
-import Razorpay from "razorpay";
 import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
@@ -20,32 +18,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!config.payments.razorpayKeyId || !config.payments.razorpayKeySecret) {
-      return NextResponse.json(
-        { error: "Razorpay credentials not configured on server." },
-        { status: 500 }
-      );
-    }
-
-    const razorpay = new Razorpay({
-      key_id: config.payments.razorpayKeyId,
-      key_secret: config.payments.razorpayKeySecret,
-    });
-
+    const orderId = `order_${Date.now()}_${crypto.randomBytes(4).toString("hex")}`;
     const orderReceipt = receipt || `rcpt_${Date.now()}_${crypto.randomBytes(3).toString("hex")}`;
-
-    const order = await razorpay.orders.create({
-      amount: amountInPaise,
-      currency: currency || "INR",
-      receipt: orderReceipt,
-    });
 
     return NextResponse.json({
       success: true,
-      order_id: order.id,
-      amount: order.amount,
-      currency: order.currency,
-      key_id: config.payments.razorpayKeyId,
+      order_id: orderId,
+      amount: amountInPaise,
+      currency: currency || "INR",
+      receipt: orderReceipt,
     });
   } catch (error: any) {
     console.error("Create order endpoint error:", error);

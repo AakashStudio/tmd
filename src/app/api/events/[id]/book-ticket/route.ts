@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
+import { sendPushNotificationToUser } from "@/lib/push-notifications";
 import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
@@ -144,6 +145,24 @@ export async function POST(
 
       return newTicket;
     });
+
+    // Notify event host about new booking
+    if (event.organizerId && event.organizerId !== user.id) {
+      sendPushNotificationToUser(event.organizerId, {
+        title: "🎟️ New Pass Booked!",
+        body: `${attendeeName} booked ${quantity}x ${ticketType} for "${event.title}".`,
+        url: "/map",
+        tag: `event-${event.id}`,
+      }).catch(() => {});
+    }
+
+    // Notify booking attendee
+    sendPushNotificationToUser(user.id, {
+      title: "🎟️ Pass Confirmed!",
+      body: `Your ticket for "${event.title}" is confirmed! Show QR code at entry.`,
+      url: "/map",
+      tag: `ticket-${ticket.id}`,
+    }).catch(() => {});
 
     return NextResponse.json({
       success: true,

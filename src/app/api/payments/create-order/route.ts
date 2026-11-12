@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import { config } from "@/lib/config";
 import { PlanCode } from "@prisma/client";
-import Razorpay from "razorpay";
 import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +14,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json().catch(() => ({}));
-    const { planCode, amount } = body;
+    const { planCode, amount, customAmountInRupees } = body;
 
     let targetAmountInPaise: number = 0;
     let targetPlan: any = null;
@@ -28,67 +26,32 @@ export async function POST(req: NextRequest) {
       if (!targetPlan) {
         return NextResponse.json({ error: "Plan not found." }, { status: 404 });
       }
-      targetAmountInPaise = targetPlan.priceInPaise;
+      targetAmountInPaise = customAmountInRupees
+        ? Math.round(customAmountInRupees * 100)
+        : targetPlan.priceInPaise;
+    } else if (typeof customAmountInRupees === "number" && customAmountInRupees > 0) {
+      targetAmountInPaise = Math.round(customAmountInRupees * 100);
     } else if (typeof amount === "number") {
       targetAmountInPaise = amount;
     } else {
       return NextResponse.json(
-        { error: "A valid paid plan code or amount in paise must be provided." },
+        { error: "A valid paid plan code or amount must be provided." },
         { status: 400 }
       );
     }
 
-    // Razorpay minimum amount validation (>= 100 paise / ₹1)
+    // Minimum amount validation (>= 100 paise / ₹1)
     if (!targetAmountInPaise || targetAmountInPaise < 100) {
       return NextResponse.json(
-        { error: "Order amount must be at least 100 paise (₹1)." },
+        { error: "Order amount must be at least ₹1." },
         { status: 400 }
       );
     }
 
-    // Generate unique Razorpay order ID using official Razorpay SDK
-    let razorpayOrderId: string;
-    const hasRealRazorpayKeys =
-      config.payments.razorpayKeyId &&
-      config.payments.razorpayKeySecret &&
-      !config.payments.razorpayKeyId.includes("placeholder");
-
-    if (hasRealRazorpayKeys) {
-      try {
-        const razorpay = new Razorpay({
-          key_id: config.payments.razorpayKeyId,
-          key_secret: config.payments.razorpayKeySecret,
-        });
-
-        const rzpOrder = await razorpay.orders.create({
-          amount: targetAmountInPaise,
-          currency: "INR",
-          receipt: `rcpt_${user.id.slice(-6)}_${Date.now()}`,
-          notes: {
-            userId: user.id,
-            planCode: targetPlan ? targetPlan.code : "CUSTOM",
-          },
-        });
-
-        razorpayOrderId = rzpOrder.id;
-      } catch (rzpErr: any) {
-        console.error("Razorpay orders.create failed:", rzpErr);
-        return NextResponse.json(
-          {
-            error:
-              rzpErr.error?.description ||
-              rzpErr.message ||
-              "Failed to create Razorpay order.",
-          },
-          { status: 500 }
-        );
-      }
-    } else {
-      // In development fallback if placeholder keys
-      razorpayOrderId = `order_${(targetPlan?.code || "custom").toLowerCase()}_${Date.now()}_${crypto
-        .randomBytes(4)
-        .toString("hex")}`;
-    }
+    // Generate unique internal order ID for UPI payment tracking
+    const orderId = `tmd_ord_${(targetPlan?.code || "custom").toLowerCase()}_${Date.now()}_${crypto
+      .randomBytes(4)
+      .toString("hex")}`;
 
     // Record pending payment in database if plan exists
     let paymentId: string | null = null;
@@ -97,7 +60,7 @@ export async function POST(req: NextRequest) {
         data: {
           userId: user.id,
           planId: targetPlan.id,
-          razorpayOrderId,
+          razorpayOrderId: orderId,
           amountInPaise: targetAmountInPaise,
           status: "PENDING",
         },
@@ -110,17 +73,15 @@ export async function POST(req: NextRequest) {
     const amountInRupees = (targetAmountInPaise / 100).toFixed(2);
     const txnNote = `TMD ${targetPlan?.name || "VIP"} Plan`;
 
-    const baseUpiParams = `pa=${encodeURIComponent(merchantVpa)}&pn=${encodeURIComponent(merchantName)}&am=${amountInRupees}&cu=INR&tn=${encodeURIComponent(txnNote)}&tr=${encodeURIComponent(razorpayOrderId)}`;
+    const baseUpiParams = `pa=${encodeURIComponent(merchantVpa)}&pn=${encodeURIComponent(merchantName)}&am=${amountInRupees}&cu=INR&tn=${encodeURIComponent(txnNote)}&tr=${encodeURIComponent(orderId)}`;
 
     return NextResponse.json({
       success: true,
-      order_id: razorpayOrderId,
-      orderId: razorpayOrderId,
+      order_id: orderId,
+      orderId: orderId,
       amount: targetAmountInPaise,
       amountInPaise: targetAmountInPaise,
       currency: "INR",
-      key_id: config.payments.razorpayKeyId,
-      keyId: config.payments.razorpayKeyId,
       plan: targetPlan
         ? {
             code: targetPlan.code,

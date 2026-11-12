@@ -12,6 +12,9 @@ const envSchema = z.object({
   RAZORPAY_KEY_ID: z.string().default("rzp_test_placeholder"),
   RAZORPAY_KEY_SECRET: z.string().default("placeholder_secret"),
   RAZORPAY_WEBHOOK_SECRET: z.string().default("placeholder_webhook"),
+  NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().optional(),
+  VAPID_PRIVATE_KEY: z.string().optional(),
+  VAPID_SUBJECT: z.string().optional(),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 
@@ -44,6 +47,14 @@ export const config = {
     razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET || "placeholder_secret",
     razorpayWebhookSecret:
       process.env.RAZORPAY_WEBHOOK_SECRET || "placeholder_webhook",
+  },
+  vapid: {
+    publicKey:
+      process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
+      "BD1ttQeOPAg9vamR0gIqFKxJSSM2PsVFNRDFuGIhMmbZUIpBnVqIG8RpY7e4rdwyiG2lxCiDiU4qTRAwCFLaGAs",
+    privateKey:
+      process.env.VAPID_PRIVATE_KEY || "vm5Ua7OhbYG6-Arb6P7pfgLq6KuaVBiNQTa_tWbKWqg",
+    subject: process.env.VAPID_SUBJECT || "mailto:support@tmd.dizitio.com",
   },
 };
 
