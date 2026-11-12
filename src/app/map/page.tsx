@@ -38,6 +38,7 @@ interface EventItem {
   endDateTime: string;
   venue: string;
   address: string;
+  googleMapsUrl?: string | null;
   isResidential: boolean;
   minAge: number;
   capacity: number;
@@ -82,16 +83,6 @@ interface EventItem {
   isOrganizer: boolean;
 }
 
-const CURATED_VENUES = [
-  { name: "The Rooftop Lounge, Arera Hills", address: "Arera Hills, Bhopal" },
-  { name: "Third Wave Coffee, MP Nagar", address: "Zone-II, MP Nagar, Bhopal" },
-  { name: "Social Club & Bar, 10 No. Market", address: "10 No. Market, Arera Colony, Bhopal" },
-  { name: "Mocha Cafe & Bar, E-8 Arera Colony", address: "E-8, Arera Colony, Bhopal" },
-  { name: "Under The Mango Tree, Shamla Hills", address: "Shamla Hills, Bhopal" },
-  { name: "House Party / Private Rooftop", address: "Bhopal" },
-  { name: "Custom / Other Cafe or Venue", address: "" },
-];
-
 const AVAILABLE_TAGS = [
   "🎵 Live Music",
   "🎧 DJ Night",
@@ -104,6 +95,14 @@ const AVAILABLE_TAGS = [
   "🎤 Standup Comedy",
   "🥂 Free Welcome Drink",
 ];
+
+const getInitialStartDateTime = () => {
+  const d = new Date();
+  d.setHours(d.getHours() + 2);
+  d.setMinutes(0, 0, 0);
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
 
 export default function MapPage() {
   const { user } = useAuth();
@@ -122,10 +121,9 @@ export default function MapPage() {
   // Form State for creating events
   const [newTitle, setNewTitle] = useState("");
   const [newCategory, setNewCategory] = useState("Cafe Mixer");
-  const [selectedVenuePreset, setSelectedVenuePreset] = useState("The Rooftop Lounge, Arera Hills");
-  const [newVenue, setNewVenue] = useState("The Rooftop Lounge, Arera Hills");
-  const [newAddress, setNewAddress] = useState("Arera Hills, Bhopal");
-  const [newStart, setNewStart] = useState("");
+  const [newVenue, setNewVenue] = useState("");
+  const [newGoogleMapsUrl, setNewGoogleMapsUrl] = useState("");
+  const [newStart, setNewStart] = useState(getInitialStartDateTime());
   const [newDesc, setNewDesc] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([
     "🎵 Live Music",
@@ -136,29 +134,13 @@ export default function MapPage() {
   const [newMalePassPrice, setNewMalePassPrice] = useState<string>("299");
   const [newFemalePassPrice, setNewFemalePassPrice] = useState<string>("149");
   const [newCouplePassPrice, setNewCouplePassPrice] = useState<string>("499");
-  const [newHostUpiId, setNewHostUpiId] = useState<string>("");
-  const [newHostPhone, setNewHostPhone] = useState<string>("");
-  const [showAdvancedPricing, setShowAdvancedPricing] = useState<boolean>(false);
+  const [showAdvancedPricing, setShowAdvancedPricing] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
-  };
-
-  const handleVenuePresetChange = (presetName: string) => {
-    setSelectedVenuePreset(presetName);
-    if (presetName === "Custom / Other Cafe or Venue") {
-      setNewVenue("");
-      setNewAddress("");
-    } else {
-      const match = CURATED_VENUES.find((v) => v.name === presetName);
-      if (match) {
-        setNewVenue(match.name);
-        setNewAddress(match.address);
-      }
-    }
   };
 
   // Join Request Modal State
@@ -311,22 +293,21 @@ export default function MapPage() {
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const effectiveVenue = newVenue.trim();
-    const effectiveAddress = (newAddress || newVenue).trim();
 
     if (!newTitle.trim() || !effectiveVenue || !newStart || !newDesc.trim()) {
-      alert("Please enter title, venue, date and short description.");
+      alert("Please enter event name, venue name, date and short description.");
       return;
     }
 
     setIsSubmitting(true);
     try {
       const parsedFee = newIsPaid ? parseInt(newEntryFee, 10) || 299 : 0;
-      const malePrice = showAdvancedPricing && newMalePassPrice ? parseInt(newMalePassPrice, 10) || parsedFee : parsedFee;
-      const femalePrice = showAdvancedPricing && newFemalePassPrice ? parseInt(newFemalePassPrice, 10) : Math.max(99, Math.round(malePrice * 0.5));
-      const couplePrice = showAdvancedPricing && newCouplePassPrice ? parseInt(newCouplePassPrice, 10) : Math.round(malePrice * 1.6);
+      const malePrice = newMalePassPrice ? parseInt(newMalePassPrice, 10) || parsedFee : parsedFee;
+      const femalePrice = newFemalePassPrice ? parseInt(newFemalePassPrice, 10) : Math.max(99, Math.round(malePrice * 0.5));
+      const couplePrice = newCouplePassPrice ? parseInt(newCouplePassPrice, 10) : Math.round(malePrice * 1.6);
 
       const startDate = new Date(newStart);
-      const endDate = new Date(startDate.getTime() + 3 * 60 * 60 * 1000); // Default 3 hours
+      const endDate = new Date(startDate.getTime() + 4 * 60 * 60 * 1000); // Default 4 hours duration
 
       const res = await fetch("/api/events", {
         method: "POST",
@@ -336,9 +317,10 @@ export default function MapPage() {
           category: newCategory,
           description: newDesc.trim(),
           venue: effectiveVenue,
-          address: effectiveAddress,
+          address: effectiveVenue,
+          googleMapsUrl: newGoogleMapsUrl.trim() || null,
           isResidential: false,
-          capacity: 30,
+          capacity: 50,
           startDateTime: startDate.toISOString(),
           endDateTime: endDate.toISOString(),
           attendanceMode: "REQUEST_APPROVAL",
@@ -351,8 +333,6 @@ export default function MapPage() {
           couplePassPrice: couplePrice,
           generalPassPrice: parsedFee,
           fnbCoverIncluded: selectedTags.length > 0 ? selectedTags.join(" • ") : null,
-          hostUpiId: newHostUpiId.trim() || null,
-          hostPhone: newHostPhone.trim() || undefined,
           requireLinkedin: false,
           isLinkedinMandatory: false,
         }),
@@ -367,9 +347,8 @@ export default function MapPage() {
       setShowCreateModal(false);
       // Reset form
       setNewTitle("");
-      setSelectedVenuePreset("The Rooftop Lounge, Arera Hills");
-      setNewVenue("The Rooftop Lounge, Arera Hills");
-      setNewAddress("Arera Hills, Bhopal");
+      setNewVenue("");
+      setNewGoogleMapsUrl("");
       setNewDesc("");
       setSelectedTags(["🎵 Live Music", "🍹 Drinks & Cocktails"]);
       setNewIsPaid(true);
@@ -377,9 +356,7 @@ export default function MapPage() {
       setNewMalePassPrice("299");
       setNewFemalePassPrice("149");
       setNewCouplePassPrice("499");
-      setNewHostUpiId("");
-      setNewHostPhone("");
-      setShowAdvancedPricing(false);
+      setSelectedCategory("ALL");
       await fetchEvents();
     } catch (err: any) {
       alert(err.message || "Failed to create event");
@@ -694,7 +671,18 @@ export default function MapPage() {
                     <MapPin className="w-3.5 h-3.5 text-[#FFC629] shrink-0 mt-0.5" />
                     <div>
                       <span className="font-bold text-white block">{selectedPinEvent.venue}</span>
-                      <span className="text-[11px] text-zinc-400">{selectedPinEvent.address}</span>
+                      {selectedPinEvent.googleMapsUrl && (
+                        <a
+                          href={selectedPinEvent.googleMapsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] text-[#FFC629] hover:underline font-semibold mt-0.5"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <span>Open in Google Maps</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
                     </div>
                   </div>
 
@@ -891,7 +879,18 @@ export default function MapPage() {
                       <MapPin className="w-4 h-4 text-[#FFC629] shrink-0 mt-0.5" />
                       <div>
                         <span className="font-bold text-white block">{event.venue}</span>
-                        <span className="text-[11px] text-zinc-400">{event.address}</span>
+                        {event.googleMapsUrl && (
+                          <a
+                            href={event.googleMapsUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[11px] text-[#FFC629] hover:underline font-semibold mt-0.5"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <span>Open in Google Maps</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
                       </div>
                     </div>
 
@@ -1374,6 +1373,7 @@ export default function MapPage() {
                   <input
                     type="datetime-local"
                     required
+                    min={new Date().toISOString().slice(0, 16)}
                     value={newStart}
                     onChange={(e) => setNewStart(e.target.value)}
                     style={{ colorScheme: "dark" }}
@@ -1382,41 +1382,33 @@ export default function MapPage() {
                 </div>
               </div>
 
-              {/* 3. Venue & Location Dropdown */}
-              <div>
-                <label className="text-zinc-300 block mb-1 font-semibold text-[11px]">Venue / Cafe &amp; Area *</label>
-                <select
-                  value={selectedVenuePreset}
-                  onChange={(e) => handleVenuePresetChange(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[#161620] border border-white/10 text-white focus:outline-none focus:border-[#FFC629] text-xs mb-2"
-                >
-                  {CURATED_VENUES.map((v) => (
-                    <option key={v.name} value={v.name}>
-                      {v.name}
-                    </option>
-                  ))}
-                </select>
+              {/* 3. Venue / Cafe Name & Google Maps Link */}
+              <div className="space-y-2.5">
+                <div>
+                  <label className="text-zinc-300 block mb-1 font-semibold text-[11px]">Venue / Cafe Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={newVenue}
+                    onChange={(e) => setNewVenue(e.target.value)}
+                    placeholder="e.g. Ten Downing Street, The Rooftop Lounge..."
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#161620] border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFC629] text-xs font-medium"
+                  />
+                </div>
 
-                {selectedVenuePreset === "Custom / Other Cafe or Venue" && (
-                  <div className="space-y-2 animate-in fade-in">
-                    <input
-                      type="text"
-                      required
-                      value={newVenue}
-                      onChange={(e) => setNewVenue(e.target.value)}
-                      placeholder="Cafe or Venue Name (e.g. Ten Downing Street)"
-                      className="w-full px-3.5 py-2 rounded-xl bg-[#161620] border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFC629] text-xs"
-                    />
-                    <input
-                      type="text"
-                      required
-                      value={newAddress}
-                      onChange={(e) => setNewAddress(e.target.value)}
-                      placeholder="Area / Landmark (e.g. DB City Mall, Bhopal)"
-                      className="w-full px-3.5 py-2 rounded-xl bg-[#161620] border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFC629] text-xs"
-                    />
-                  </div>
-                )}
+                <div>
+                  <label className="text-zinc-300 block mb-1 font-semibold text-[11px] flex items-center justify-between">
+                    <span>Google Maps Link</span>
+                    <span className="text-[10px] text-[#FFC629]">📍 Location URL</span>
+                  </label>
+                  <input
+                    type="url"
+                    value={newGoogleMapsUrl}
+                    onChange={(e) => setNewGoogleMapsUrl(e.target.value)}
+                    placeholder="e.g. https://maps.app.goo.gl/xyz or Google link"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#161620] border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFC629] text-xs"
+                  />
+                </div>
               </div>
 
               {/* 4. Ticket Pricing (Clean 2-tab Pill Selector) */}
@@ -1446,82 +1438,66 @@ export default function MapPage() {
                 </div>
 
                 {newIsPaid && (
-                  <div className="space-y-2 pt-1 animate-in fade-in">
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="text-zinc-400 block mb-1 text-[10px]">Pass Price (₹) *</label>
-                        <div className="relative">
-                          <span className="absolute left-2.5 top-2 text-zinc-500 font-bold text-xs">₹</span>
-                          <input
-                            type="number"
-                            min="1"
-                            value={newEntryFee}
-                            onChange={(e) => setNewEntryFee(e.target.value)}
-                            placeholder="299"
-                            className="w-full pl-6 pr-2.5 py-2 rounded-xl bg-[#1b1b26] border border-white/10 text-white font-mono text-xs focus:outline-none focus:border-[#FFC629]"
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="text-zinc-400 block mb-1 text-[10px]">Payout UPI ID *</label>
+                  <div className="space-y-2.5 pt-1 animate-in fade-in">
+                    <div>
+                      <label className="text-zinc-400 block mb-1 text-[10px]">General / Base Pass Price (₹) *</label>
+                      <div className="relative">
+                        <span className="absolute left-2.5 top-2 text-zinc-500 font-bold text-xs">₹</span>
                         <input
-                          type="text"
-                          value={newHostUpiId}
-                          onChange={(e) => setNewHostUpiId(e.target.value)}
-                          placeholder="e.g. cafe@upi"
-                          className="w-full px-2.5 py-2 rounded-xl bg-[#1b1b26] border border-white/10 text-white font-mono text-xs focus:outline-none focus:border-[#FFC629]"
+                          type="number"
+                          min="1"
+                          value={newEntryFee}
+                          onChange={(e) => {
+                            setNewEntryFee(e.target.value);
+                            setNewMalePassPrice(e.target.value);
+                            setNewFemalePassPrice(Math.max(99, Math.round(Number(e.target.value || 299) * 0.5)).toString());
+                            setNewCouplePassPrice(Math.round(Number(e.target.value || 299) * 1.6).toString());
+                          }}
+                          placeholder="299"
+                          className="w-full pl-6 pr-2.5 py-2 rounded-xl bg-[#1b1b26] border border-white/10 text-white font-mono text-xs focus:outline-none focus:border-[#FFC629]"
                         />
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1.5 text-[10px] text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-                      <span>✨</span>
-                      <span>Host keeps 93% payout — TMD platform cut is only 7%</span>
-                    </div>
-
                     <div className="flex items-center justify-between text-[10px] text-zinc-400 pt-0.5">
-                      <span>Female: ₹{Math.max(99, Math.round(Number(newEntryFee || 299) * 0.5))} (50% Off)</span>
-                      <button
-                        type="button"
-                        onClick={() => setShowAdvancedPricing(!showAdvancedPricing)}
-                        className="text-[#FFC629] hover:underline font-semibold"
-                      >
-                        {showAdvancedPricing ? "Hide custom prices ▲" : "Custom Male/Female prices ▼"}
-                      </button>
+                      <span className="text-zinc-300 font-semibold">Custom Pass Pricing (₹)</span>
+                      <span className="text-emerald-400 font-bold">Host gets 93% payout</span>
                     </div>
 
-                    {showAdvancedPricing && (
-                      <div className="grid grid-cols-3 gap-2 pt-1 border-t border-white/5 animate-in fade-in">
-                        <div>
-                          <label className="text-zinc-400 block mb-1 text-[9px]">Female (₹)</label>
-                          <input
-                            type="number"
-                            value={newFemalePassPrice}
-                            onChange={(e) => setNewFemalePassPrice(e.target.value)}
-                            className="w-full px-2 py-1.5 rounded-lg bg-[#121218] border border-white/10 text-white font-mono text-[11px]"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-zinc-400 block mb-1 text-[9px]">Male (₹)</label>
-                          <input
-                            type="number"
-                            value={newMalePassPrice}
-                            onChange={(e) => setNewMalePassPrice(e.target.value)}
-                            className="w-full px-2 py-1.5 rounded-lg bg-[#121218] border border-white/10 text-white font-mono text-[11px]"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-zinc-400 block mb-1 text-[9px]">Couple (₹)</label>
-                          <input
-                            type="number"
-                            value={newCouplePassPrice}
-                            onChange={(e) => setNewCouplePassPrice(e.target.value)}
-                            className="w-full px-2 py-1.5 rounded-lg bg-[#121218] border border-white/10 text-white font-mono text-[11px]"
-                          />
-                        </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div>
+                        <label className="text-pink-300 block mb-1 text-[10px] font-semibold">Female (₹)</label>
+                        <input
+                          type="number"
+                          value={newFemalePassPrice}
+                          onChange={(e) => setNewFemalePassPrice(e.target.value)}
+                          className="w-full px-2 py-1.5 rounded-lg bg-[#121218] border border-pink-500/30 text-white font-mono text-xs focus:outline-none focus:border-pink-400"
+                        />
                       </div>
-                    )}
+                      <div>
+                        <label className="text-[#FFC629] block mb-1 text-[10px] font-semibold">Male (₹)</label>
+                        <input
+                          type="number"
+                          value={newMalePassPrice}
+                          onChange={(e) => setNewMalePassPrice(e.target.value)}
+                          className="w-full px-2 py-1.5 rounded-lg bg-[#121218] border border-[#FFC629]/30 text-white font-mono text-xs focus:outline-none focus:border-[#FFC629]"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-purple-300 block mb-1 text-[10px] font-semibold">Couple (₹)</label>
+                        <input
+                          type="number"
+                          value={newCouplePassPrice}
+                          onChange={(e) => setNewCouplePassPrice(e.target.value)}
+                          className="w-full px-2 py-1.5 rounded-lg bg-[#121218] border border-purple-500/30 text-white font-mono text-xs focus:outline-none focus:border-purple-400"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 text-[10px] text-zinc-400 bg-black/40 px-2.5 py-1.5 rounded-lg border border-white/5">
+                      <span>💳</span>
+                      <span>Passes booked via instant TMD UPI — settlements credited to host post-event.</span>
+                    </div>
                   </div>
                 )}
               </div>

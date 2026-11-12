@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { createEventSchema, formatZodError } from "@/lib/validation";
+import { sendEventCreatedEmail } from "@/lib/email";
+import { sendPushNotificationToUser } from "@/lib/push-notifications";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +20,12 @@ export async function GET(req: NextRequest) {
     const events = await prisma.event.findMany({
       where: {
         status: "ACTIVE",
-        endDateTime: { gt: new Date() },
+        OR: [
+          // Events active within the last 24 hours or upcoming
+          { endDateTime: { gt: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
+          // OR if current user created the event, they always see it
+          { organizerId: user.id },
+        ],
         ...(category && category !== "ALL" ? { category } : {}),
       },
       include: {
@@ -113,6 +120,7 @@ export async function GET(req: NextRequest) {
         endDateTime: event.endDateTime,
         venue: event.venue,
         address: displayAddress,
+        googleMapsUrl: event.googleMapsUrl || null,
         latitude: displayLatitude,
         longitude: displayLongitude,
         isResidential: event.isResidential,
@@ -220,6 +228,7 @@ export async function POST(req: NextRequest) {
         endDateTime: data.endDateTime,
         venue: data.venue,
         address: data.address,
+        googleMapsUrl: data.googleMapsUrl || body.googleMapsUrl || null,
         latitude: data.latitude || 23.2599, // default Bhopal coordinates if none
         longitude: data.longitude || 77.4126,
         isResidential: data.isResidential,
@@ -254,6 +263,44 @@ export async function POST(req: NextRequest) {
         },
       },
     });
+
+    // Send email confirmation if user has an email or logged in via Gmail
+    const userEmail =
+      user.email ||
+      (await prisma.authIdentity
+        .findFirst({
+          where: { userId: user.id, provider: "EMAIL_OTP" },
+          select: { identifier: true },
+        })
+        .then((id) => id?.identifier)) ||
+      null;
+
+    const organizerName = user.profile?.name || "Host";
+
+    if (userEmail) {
+      sendEventCreatedEmail(userEmail, organizerName, {
+        title: event.title,
+        category: event.category,
+        venue: event.venue,
+        googleMapsUrl: event.googleMapsUrl,
+        startDateTime: event.startDateTime,
+        isPaid: event.isPaid,
+        malePassPrice: event.malePassPrice,
+        femalePassPrice: event.femalePassPrice,
+        couplePassPrice: event.couplePassPrice,
+        generalPassPrice: event.generalPassPrice,
+      }).catch((err) => {
+        console.error("Failed to send event created email:", err);
+      });
+    }
+
+    // Send push notification to user
+    sendPushNotificationToUser(user.id, {
+      title: "🎉 Event Published!",
+      body: `Your event "${event.title}" is live on the TMD Map!`,
+      url: "/map",
+      tag: `event-${event.id}`,
+    }).catch(() => {});
 
     return NextResponse.json({
       success: true,

@@ -485,6 +485,7 @@ model Event {
   endDateTime    DateTime
   venue          String
   address        String
+  googleMapsUrl  String?
   latitude       Float?
   longitude      Float?
   isResidential  Boolean        @default(false)
