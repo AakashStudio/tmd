@@ -82,7 +82,7 @@ export const EventTicketBookingModal: React.FC<EventTicketBookingModalProps> = (
   const [utrNumber, setUtrNumber] = useState<string>("");
   const [copiedVpa, setCopiedVpa] = useState<boolean>(false);
 
-  const MERCHANT_VPA = "thematchdate@okaxis";
+  const MERCHANT_VPA = process.env.NEXT_PUBLIC_MERCHANT_UPI_ID || "8817958002@ybl";
   const MERCHANT_NAME = "The Match Date";
 
   const isMobile = () => {

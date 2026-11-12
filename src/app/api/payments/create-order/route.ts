@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
       paymentId = payment.id;
     }
 
-    const merchantVpa = process.env.MERCHANT_UPI_ID || "thematchdate@okaxis";
+    const merchantVpa = process.env.MERCHANT_UPI_ID || "8817958002@ybl";
     const merchantName = process.env.MERCHANT_NAME || "The Match Date";
     const amountInRupees = (targetAmountInPaise / 100).toFixed(2);
     const txnNote = `TMD ${targetPlan?.name || "VIP"} Plan`;
