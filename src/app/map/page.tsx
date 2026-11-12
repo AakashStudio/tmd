@@ -366,28 +366,28 @@ export default function MapPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start py-4 sm:py-8 px-3 sm:px-4 w-full box-border overflow-x-hidden">
-      <div className="w-full max-w-md bg-[#0c0c10] text-white rounded-3xl border border-white/[0.08] shadow-2xl relative box-border overflow-hidden flex flex-col pb-24">
-      {/* Top Header */}
-      <header className="px-5 py-3 border-b border-white/[0.08] flex items-center justify-between sticky top-0 bg-[#0a0a0c]/95 backdrop-blur-md z-30">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#FFC629]/20 to-[#F59E0B]/20 border border-[#FFC629]/30 flex items-center justify-center text-[#FFC629] shadow-sm">
-            <MapPin className="w-4 h-4 stroke-[2.2]" />
+    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start py-0 sm:py-6 px-0 sm:px-4 w-full box-border">
+      <div className="w-full max-w-md bg-[#0c0c10] text-white sm:rounded-3xl border-x-0 sm:border border-white/[0.08] shadow-2xl relative box-border flex flex-col pb-24">
+        {/* Top Header — Stuck/Sticky at Top */}
+        <header className="px-5 py-3 border-b border-white/[0.08] flex items-center justify-between sticky top-0 bg-[#0c0c10]/95 backdrop-blur-md z-40 sm:rounded-t-3xl shadow-md shadow-black/40">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#FFC629]/20 to-[#F59E0B]/20 border border-[#FFC629]/30 flex items-center justify-center text-[#FFC629] shadow-sm">
+              <MapPin className="w-4 h-4 stroke-[2.2]" />
+            </div>
+            <div>
+              <h1 className="font-extrabold text-sm tracking-tight text-white">Events Map</h1>
+              <span className="text-[10px] text-zinc-400">Curated Singles Dates</span>
+            </div>
           </div>
-          <div>
-            <h1 className="font-extrabold text-sm tracking-tight text-white">Events Map</h1>
-            <span className="text-[10px] text-zinc-400">Curated Singles Dates</span>
-          </div>
-        </div>
 
-        <button
-          type="button"
-          onClick={() => setShowCreateModal(true)}
-          className="py-1.5 px-3.5 rounded-full bg-gradient-to-r from-[#FFC629] to-[#F59E0B] hover:brightness-110 active:scale-95 text-black text-xs font-extrabold flex items-center gap-1.5 shadow-md shadow-[#FFC629]/20 transition"
-        >
-          <Plus className="w-3.5 h-3.5 stroke-[2.5]" /> Host Event
-        </button>
-      </header>
+          <button
+            type="button"
+            onClick={() => setShowCreateModal(true)}
+            className="py-1.5 px-3.5 rounded-full bg-gradient-to-r from-[#FFC629] to-[#F59E0B] hover:brightness-110 active:scale-95 text-black text-xs font-extrabold flex items-center gap-1.5 shadow-md shadow-[#FFC629]/20 transition cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5 stroke-[2.5]" /> Host Event
+          </button>
+        </header>
 
       {/* Category Filter Chips */}
       <div className="px-5 py-2.5 flex gap-2 overflow-x-auto scrollbar-none border-b border-white/[0.06] bg-[#0c0c10]">

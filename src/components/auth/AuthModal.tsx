@@ -231,16 +231,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   />
                 </div>
 
-                {/* Quick Test Helper for Instant Demo Testing */}
-                <div className="mt-2.5 flex items-center justify-between">
+                <div className="mt-2.5">
                   <span className="text-[11px] text-zinc-500">Enter 10-digit mobile number</span>
-                  <button
-                    type="button"
-                    onClick={() => setPhoneNumber("7566548512")}
-                    className="text-[11px] font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 underline underline-offset-2 transition"
-                  >
-                    <Sparkles className="w-3 h-3" /> Fill 7566548512
-                  </button>
                 </div>
               </div>
 
@@ -315,26 +307,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 </div>
               </div>
 
-              {/* Dev OTP Quick One-Tap Banner */}
-              {devOtpHint && (
-                <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 block">
-                      Developer OTP (Demo Mode)
-                    </span>
-                    <span className="font-mono text-base font-black text-white tracking-widest">
-                      {devOtpHint}
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => autoFillDevOtp(devOtpHint)}
-                    className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-black text-xs font-black transition active:scale-95 shadow"
-                  >
-                    Auto-fill
-                  </button>
-                </div>
-              )}
+
 
               {/* Error Message */}
               {error && (
