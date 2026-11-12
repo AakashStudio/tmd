@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { sendPushNotificationToUser } from "@/lib/push-notifications";
+import { createNotification } from "@/lib/notifications";
+import { sendEmail } from "@/lib/email";
 import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
@@ -146,23 +148,101 @@ export async function POST(
       return newTicket;
     });
 
-    // Notify event host about new booking
+    const readablePassType = ticketType.replace("_", " ").toLowerCase();
+
+    // 1. Notify event host immediately about new ticket purchase
     if (event.organizerId && event.organizerId !== user.id) {
+      // In-app notification for host
+      createNotification({
+        userId: event.organizerId,
+        type: "SYSTEM",
+        title: "🎟️ New Pass Booked!",
+        body: `${attendeeName} booked ${quantity}x ${readablePassType} for "${event.title}".`,
+        linkUrl: "/map",
+      }).catch(() => {});
+
+      // Push notification for host
       sendPushNotificationToUser(event.organizerId, {
         title: "🎟️ New Pass Booked!",
-        body: `${attendeeName} booked ${quantity}x ${ticketType} for "${event.title}".`,
+        body: `${attendeeName} booked ${quantity}x ${readablePassType} for "${event.title}".`,
         url: "/map",
         tag: `event-${event.id}`,
       }).catch(() => {});
+
+      // Email alert for host if email is available
+      prisma.user
+        .findUnique({
+          where: { id: event.organizerId },
+          select: {
+            email: true,
+            profile: { select: { name: true } },
+          },
+        })
+        .then((hostUser) => {
+          if (hostUser?.email) {
+            const hostName = hostUser.profile?.name || "Host";
+            sendEmail({
+              to: hostUser.email,
+              subject: `🎟️ New Pass Booked for "${event.title}"!`,
+              html: `
+                <div style="font-family: sans-serif; background-color: #0c0c10; color: #fff; padding: 25px; border-radius: 12px; border: 1px solid rgba(255,198,41,0.3);">
+                  <h2 style="color: #FFC629; margin-top: 0;">New Ticket Booked! 🎟️</h2>
+                  <p>Hi <strong>${hostName}</strong>,</p>
+                  <p><strong>${attendeeName}</strong> has just booked <strong>${quantity}x ${readablePassType}</strong> for your event <strong>"${event.title}"</strong>.</p>
+                  <div style="background: #14141c; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <p style="margin: 5px 0;"><strong>Event:</strong> ${event.title}</p>
+                    <p style="margin: 5px 0;"><strong>Venue:</strong> ${event.venue}</p>
+                    <p style="margin: 5px 0;"><strong>Ticket Code:</strong> ${ticket.ticketCode}</p>
+                    <p style="margin: 5px 0;"><strong>Amount Paid:</strong> ₹${Math.round(ticket.totalAmountInPaise / 100)}</p>
+                    <p style="margin: 5px 0; color: #10b981;"><strong>Host Share (93%):</strong> ₹${Math.round(ticket.organizerPayoutInPaise / 100)}</p>
+                  </div>
+                  <p style="color: #a1a1aa; font-size: 12px;">TMD settles host payouts post-event directly. Manage your guest list on the TMD Map dashboard.</p>
+                  <a href="https://tmd.dizitio.com/map" style="display: inline-block; padding: 10px 20px; background: #FFC629; color: #000; font-weight: bold; border-radius: 8px; text-decoration: none; margin-top: 10px;">View Guest List</a>
+                </div>
+              `,
+            }).catch(() => {});
+          }
+        })
+        .catch(() => {});
     }
 
-    // Notify booking attendee
+    // 2. Notify booking attendee
+    createNotification({
+      userId: user.id,
+      type: "SYSTEM",
+      title: "🎟️ Pass Confirmed!",
+      body: `Your ticket for "${event.title}" is confirmed! Show QR code at entry.`,
+      linkUrl: "/map",
+    }).catch(() => {});
+
     sendPushNotificationToUser(user.id, {
       title: "🎟️ Pass Confirmed!",
       body: `Your ticket for "${event.title}" is confirmed! Show QR code at entry.`,
       url: "/map",
       tag: `ticket-${ticket.id}`,
     }).catch(() => {});
+
+    // Email ticket to attendee if they have email
+    if (user.email) {
+      sendEmail({
+        to: user.email,
+        subject: `🎟️ Your TMD Pass for "${event.title}"!`,
+        html: `
+          <div style="font-family: sans-serif; background-color: #0c0c10; color: #fff; padding: 25px; border-radius: 12px; border: 1px solid rgba(255,198,41,0.3);">
+            <h2 style="color: #FFC629; margin-top: 0;">You're Confirmed! 🎉</h2>
+            <p>Hi <strong>${attendeeName}</strong>, your ticket for <strong>"${event.title}"</strong> has been successfully booked.</p>
+            <div style="background: #14141c; padding: 15px; border-radius: 8px; margin: 15px 0;">
+              <p style="margin: 5px 0;"><strong>Ticket Code:</strong> <span style="color: #FFC629; font-size: 18px; font-weight: bold;">${ticket.ticketCode}</span></p>
+              <p style="margin: 5px 0;"><strong>Pass Type:</strong> ${readablePassType} (${quantity} pass)</p>
+              <p style="margin: 5px 0;"><strong>Venue:</strong> ${event.venue}</p>
+              <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date(event.startDateTime).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</p>
+            </div>
+            <p style="color: #a1a1aa; font-size: 12px;">Show the QR pass on your TMD app at the cafe door for direct entry.</p>
+            <a href="https://tmd.dizitio.com/map" style="display: inline-block; padding: 10px 20px; background: #FFC629; color: #000; font-weight: bold; border-radius: 8px; text-decoration: none; margin-top: 10px;">View My Pass</a>
+          </div>
+        `,
+      }).catch(() => {});
+    }
 
     return NextResponse.json({
       success: true,

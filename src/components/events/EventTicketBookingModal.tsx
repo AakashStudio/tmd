@@ -18,6 +18,9 @@ import {
   Share2,
   Loader2,
   AlertCircle,
+  Copy,
+  ExternalLink,
+  ArrowLeft,
 } from "lucide-react";
 
 export interface EventBookingItem {
@@ -74,6 +77,19 @@ export const EventTicketBookingModal: React.FC<EventTicketBookingModalProps> = (
   const [confirmedTicket, setConfirmedTicket] = useState<any | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // AstroTalk-style Direct UPI Overlay
+  const [showUpiModal, setShowUpiModal] = useState<boolean>(false);
+  const [utrNumber, setUtrNumber] = useState<string>("");
+  const [copiedVpa, setCopiedVpa] = useState<boolean>(false);
+
+  const MERCHANT_VPA = "thematchdate@okaxis";
+  const MERCHANT_NAME = "The Match Date";
+
+  const isMobile = () => {
+    if (typeof window === "undefined") return false;
+    return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+  };
+
   useEffect(() => {
     if (event?.myTicket) {
       setConfirmedTicket({
@@ -129,8 +145,34 @@ export const EventTicketBookingModal: React.FC<EventTicketBookingModalProps> = (
   const convenienceFee = event.convenienceFee || 39;
   const totalPayable = baseTicketAmount + convenienceFee;
 
-  // Handle Book & Pay
-  const handleProceedToPayment = async () => {
+  // 1. Trigger UPI App Intent & Open Confirmation Modal
+  const handleProceedToPayment = () => {
+    const txnRef = `tmd_tkt_${Date.now()}`;
+    const txnNote = `TMD Pass: ${event.title.slice(0, 25)}`;
+    const baseUpiParams = `pa=${encodeURIComponent(MERCHANT_VPA)}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${totalPayable}&cu=INR&tn=${encodeURIComponent(txnNote)}&tr=${encodeURIComponent(txnRef)}`;
+
+    if (isMobile()) {
+      let appUrl = `upi://pay?${baseUpiParams}`;
+      if (selectedUpiApp === "gpay") {
+        appUrl = `tez://upi/pay?${baseUpiParams}`;
+      } else if (selectedUpiApp === "phonepe") {
+        appUrl = `phonepe://pay?${baseUpiParams}`;
+      } else if (selectedUpiApp === "paytm") {
+        appUrl = `paytmmp://pay?${baseUpiParams}`;
+      }
+
+      try {
+        window.location.href = appUrl;
+      } catch (e) {
+        // Continue to overlay
+      }
+    }
+
+    setShowUpiModal(true);
+  };
+
+  // 2. Finalize Booking & Generate Digital Ticket
+  const executeBooking = async (utr?: string) => {
     try {
       setIsProcessing(true);
       setErrorMessage(null);
@@ -144,6 +186,7 @@ export const EventTicketBookingModal: React.FC<EventTicketBookingModalProps> = (
           attendeeName: userProfile?.name || "Guest",
           attendeePhone: userProfile?.phone || "",
           paymentMethod: selectedUpiApp.toUpperCase(),
+          utrNumber: utr || undefined,
         }),
       });
 
@@ -152,6 +195,7 @@ export const EventTicketBookingModal: React.FC<EventTicketBookingModalProps> = (
         throw new Error(data.error || "Failed to book ticket");
       }
 
+      setShowUpiModal(false);
       setConfirmedTicket(data.ticket);
       if (onBookingComplete) onBookingComplete();
     } catch (err: any) {
@@ -507,6 +551,107 @@ export const EventTicketBookingModal: React.FC<EventTicketBookingModalProps> = (
                 </span>
               )}
             </button>
+          </div>
+        )}
+
+        {/* AstroTalk-Style Direct UPI Payment Overlay */}
+        {showUpiModal && (
+          <div className="absolute inset-0 z-30 bg-[#0c0c10] flex flex-col p-5 overflow-y-auto animate-in slide-in-from-bottom duration-200">
+            <div className="flex items-center justify-between pb-3 border-b border-white/10 shrink-0">
+              <button
+                type="button"
+                onClick={() => setShowUpiModal(false)}
+                className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back
+              </button>
+              <div className="text-right">
+                <span className="text-[10px] text-zinc-400 block">Total Amount</span>
+                <span className="font-mono text-base font-black text-[#FFC629]">₹{totalPayable}</span>
+              </div>
+            </div>
+
+            <div className="py-4 space-y-4 flex-1">
+              <div className="text-center space-y-1">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FFC629]/15 text-[#FFC629] border border-[#FFC629]/30">
+                  TMD Official Merchant UPI
+                </span>
+                <h3 className="text-sm font-extrabold text-white">Complete Payment to Confirm Passes</h3>
+                <p className="text-[11px] text-zinc-400">{quantity}x {currentPass.name} • {event.title}</p>
+              </div>
+
+              {/* Dynamic QR Code */}
+              <div className="flex flex-col items-center justify-center p-3 bg-white rounded-2xl shadow-xl max-w-[200px] mx-auto">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
+                    `upi://pay?pa=${MERCHANT_VPA}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${totalPayable}&cu=INR&tn=${encodeURIComponent(`TMD Pass: ${event.title.slice(0, 20)}`)}`
+                  )}`}
+                  alt="TMD Event Pass UPI QR"
+                  className="w-40 h-40 object-contain"
+                />
+                <span className="text-[10px] font-black text-black pt-1">Scan with Any UPI App</span>
+              </div>
+
+              {/* Payee UPI ID with Copy button */}
+              <div className="p-3 rounded-xl bg-[#161622] border border-white/10 flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] text-zinc-400 block">Payee UPI ID (TMD)</span>
+                  <span className="font-mono text-xs font-bold text-white">{MERCHANT_VPA}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(MERCHANT_VPA);
+                    setCopiedVpa(true);
+                    setTimeout(() => setCopiedVpa(false), 2500);
+                  }}
+                  className="px-2.5 py-1.5 rounded-lg bg-[#FFC629]/15 text-[#FFC629] hover:bg-[#FFC629]/25 text-xs font-bold flex items-center gap-1 transition"
+                >
+                  <Copy className="w-3 h-3" />
+                  <span>{copiedVpa ? "Copied!" : "Copy"}</span>
+                </button>
+              </div>
+
+              {/* Optional 12-digit UTR Input */}
+              <div>
+                <label className="text-[11px] text-zinc-400 block mb-1 font-medium">
+                  UPI Ref / UTR Number <span className="text-zinc-500">(Optional)</span>
+                </label>
+                <input
+                  type="text"
+                  maxLength={12}
+                  value={utrNumber}
+                  onChange={(e) => setUtrNumber(e.target.value.replace(/\D/g, ""))}
+                  placeholder="e.g. 4312XXXXXXXX (12 digits)"
+                  className="w-full px-3 py-2 rounded-xl bg-[#161622] border border-white/10 text-white font-mono text-xs placeholder-zinc-500 focus:outline-none focus:border-[#FFC629]"
+                />
+              </div>
+
+              {errorMessage && (
+                <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+                  {errorMessage}
+                </div>
+              )}
+            </div>
+
+            <div className="pt-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => executeBooking(utrNumber)}
+                disabled={isProcessing}
+                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#FFC629] to-[#F59E0B] text-black font-black text-sm transition shadow-lg shadow-[#FFC629]/25 flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-black" />
+                    <span>Verifying &amp; Generating Pass...</span>
+                  </>
+                ) : (
+                  <span>✓ I Have Paid • Confirm Booking</span>
+                )}
+              </button>
+            </div>
           </div>
         )}
       </div>
