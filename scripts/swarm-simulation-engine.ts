@@ -365,11 +365,7 @@ class EventTicketingBot {
         title: "🎟️ New Pass Purchased!",
         body: `${booking.user.profile.name} booked a ${booking.passType} for ${event.title}! Payout: ₹${hostPayoutShare}`,
         type: "SYSTEM",
-        data: {
-          eventId: event.id,
-          ticketCode,
-          payout: hostPayoutShare,
-        },
+        linkUrl: `/map`,
       });
 
       REPORT.ticketsBooked++;

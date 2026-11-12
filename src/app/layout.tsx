@@ -7,11 +7,22 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
+  themeColor: "#0a0a0c",
 };
 
 export const metadata: Metadata = {
   title: "TMD — The Match Date",
   description: "Mobile-first dating application with real-world events.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "TMD",
+  },
+  icons: {
+    icon: "/images/splash-logo.png",
+    apple: "/images/splash-logo.png",
+  },
 };
 
 export default function RootLayout({

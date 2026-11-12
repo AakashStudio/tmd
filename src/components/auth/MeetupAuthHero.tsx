@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { AuthModal } from "./AuthModal";
 
 interface MeetupAuthHeroProps {
@@ -108,13 +109,13 @@ export const MeetupAuthHero: React.FC<MeetupAuthHeroProps> = ({ onSuccess }) => 
           <div className="text-center pt-2">
             <p className="text-[11px] text-zinc-500 leading-relaxed">
               By continuing, you agree to TMD&apos;s{" "}
-              <span className="underline cursor-pointer hover:text-zinc-400">
+              <Link href="/terms" className="underline hover:text-amber-300 transition">
                 Terms
-              </span>{" "}
+              </Link>{" "}
               and{" "}
-              <span className="underline cursor-pointer hover:text-zinc-400">
+              <Link href="/privacy" className="underline hover:text-amber-300 transition">
                 Privacy Policy
-              </span>
+              </Link>
               .
             </p>
           </div>

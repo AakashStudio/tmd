@@ -1,0 +1,26 @@
+{
+  "name": "TMD — The Match Date",
+  "short_name": "TMD",
+  "description": "Mobile-first dating & real-world singles event mixer marketplace.",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#08080b",
+  "theme_color": "#0c0c10",
+  "orientation": "portrait-primary",
+  "categories": ["social", "lifestyle", "entertainment"],
+  "icons": [
+    {
+      "src": "/images/splash-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/splash-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
