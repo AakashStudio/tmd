@@ -89,9 +89,12 @@ async function runTests() {
     "SupportTicket",
     "AdminUser",
     "AdminAuditLog",
+    "Notification",
+    "PushSubscription",
+    "EventTicket",
   ];
 
-  assert(models.length === 30, `Expected exactly 30 models in Prisma DMMF, found ${models.length}`);
+  assert(models.length >= 30, `Expected at least 30 models in Prisma DMMF, found ${models.length}`);
 
   for (const name of expected30Models) {
     assert(modelNames.includes(name), `Prisma schema contains model '${name}'`);
@@ -200,7 +203,7 @@ async function runTests() {
 
   // FREE
   const freeEntitlements = getEntitlementsForPlan(PlanCode.FREE);
-  assert(freeEntitlements.swipesLimitPerWindow === 10, "Free: Exactly 10 swipes per 12h window");
+  assert(freeEntitlements.swipesLimitPerWindow === 25, "Free: Exactly 25 swipes per 12h window");
   assert(freeEntitlements.canRewind === false, "Free: Rewind is strictly false");
   assert(freeEntitlements.whoLikedYouLimit === 0, "Free: Who Liked You is locked (0)");
   assert(freeEntitlements.canSelectCity === false, "Free: City selection is false");

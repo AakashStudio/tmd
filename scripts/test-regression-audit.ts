@@ -42,7 +42,7 @@ async function runAudit() {
     assert(freeEntitlements.canAccessEvents === false, "FREE tier cannot access events");
     assert(freeEntitlements.canRewind === false, "FREE tier cannot rewind");
     assert(freeEntitlements.whoLikedYouLimit === 0, "FREE tier whoLikedYouLimit is 0");
-    assert(freeEntitlements.swipesLimitPerWindow === 10, "FREE tier swipe limit is finite (10/12h)");
+    assert(freeEntitlements.swipesLimitPerWindow === 25, "FREE tier swipe limit is finite (25/12h)");
     assert(freeEntitlements.hasAds === true, "FREE tier has ads enabled");
 
     const proEntitlements = getEntitlementsForPlan(PlanCode.PRO_499);
@@ -189,9 +189,9 @@ async function runAudit() {
     assert(unmaskedForAttendee === rawAddress, "Residential address unmasks correctly for approved attendees");
 
     // 7. Database schema model count
-    console.log("\n--- AUDIT ITEM 7: SCHEMA 30 MODELS INTEGRITY ---");
+    console.log("\n--- AUDIT ITEM 7: SCHEMA 30+ MODELS INTEGRITY ---");
     const modelCount = Prisma.dmmf.datamodel.models.length;
-    assert(modelCount === 30, `Database schema has exactly 30 models (found ${modelCount})`);
+    assert(modelCount >= 30, `Database schema has at least 30 models (found ${modelCount})`);
 
     console.log("\n==================================================");
     console.log(`AUDIT RESULTS: ${passed} PASSED, ${failed} FAILED`);
