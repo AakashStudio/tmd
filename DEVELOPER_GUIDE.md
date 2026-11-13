@@ -86,6 +86,15 @@ d:\MPPSC\
   - 📲 Mobile/Web Push Alert via Service Worker
   - ✉️ Transactional Email with breakdown receipt
 
+### E. Google OAuth 2.0 Integration
+- **Routes**: `/api/auth/google` (initiation) & `/api/auth/google/callback` (token exchange & user upsert).
+- **Required Env Variables**:
+  - `GOOGLE_CLIENT_ID`: OAuth 2.0 Client ID from Google Cloud Console.
+  - `GOOGLE_CLIENT_SECRET`: OAuth 2.0 Client Secret from Google Cloud Console.
+- **Authorized Redirect URI in Google Cloud Console**:
+  - `https://tmd.dizitio.com/api/auth/google/callback` (Production)
+  - `http://localhost:3000/api/auth/google/callback` (Local Development)
+
 ---
 
 ## 🛠️ 4. Quick Developer Commands
