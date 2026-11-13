@@ -24,6 +24,7 @@ import {
   UserX,
   Mic,
   Edit3,
+  Sparkles,
 } from "lucide-react";
 
 interface ProfileDetailSheetProps {
@@ -360,6 +361,29 @@ export function ProfileDetailSheet({
             </div>
           )}
         </div>
+
+        {/* Interests & Passions (Tags) Card */}
+        {candidate.interests && candidate.interests.length > 0 && (
+          <div className="p-4 rounded-2xl bg-[#121216] border border-zinc-800/80 space-y-3">
+            <div className="flex items-center justify-between text-zinc-400">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-300">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <span>Interests & Passions</span>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2 pt-0.5">
+              {candidate.interests.map((interest) => (
+                <span
+                  key={interest.id}
+                  className="px-3 py-1.5 rounded-xl bg-zinc-800/90 border border-zinc-700/70 text-xs font-semibold text-zinc-200 shadow-sm flex items-center gap-1.5"
+                >
+                  {interest.icon ? <span>{interest.icon}</span> : <span>✨</span>}
+                  <span>{interest.name}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* 5. Prompt Card */}
         <div className="p-4 rounded-2xl bg-[#121216] border border-zinc-800/80 space-y-2.5">
