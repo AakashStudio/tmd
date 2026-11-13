@@ -27,6 +27,9 @@ export const VoiceNotePlayer: React.FC<VoiceNotePlayerProps> = ({
     const audio = audioRef.current;
     if (!audio) return;
 
+    setIsPlaying(false);
+    setCurrentTime(0);
+
     const handleTimeUpdate = () => {
       setCurrentTime(audio.currentTime);
     };
@@ -42,14 +45,21 @@ export const VoiceNotePlayer: React.FC<VoiceNotePlayerProps> = ({
       setCurrentTime(0);
     };
 
+    const handleError = () => {
+      console.warn("Audio element error on URL:", url);
+      setIsPlaying(false);
+    };
+
     audio.addEventListener("timeupdate", handleTimeUpdate);
     audio.addEventListener("loadedmetadata", handleLoadedMetadata);
     audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("error", handleError);
 
     return () => {
       audio.removeEventListener("timeupdate", handleTimeUpdate);
       audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
       audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("error", handleError);
     };
   }, [url]);
 
@@ -62,9 +72,18 @@ export const VoiceNotePlayer: React.FC<VoiceNotePlayerProps> = ({
       audio.pause();
       setIsPlaying(false);
     } else {
-      audio.play().then(() => setIsPlaying(true)).catch((err) => {
-        console.warn("Audio play prevented:", err);
-      });
+      if (audio.ended || (audio.duration && Math.abs(audio.currentTime - audio.duration) < 0.2)) {
+        audio.currentTime = 0;
+      }
+      audio
+        .play()
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch((err) => {
+          console.warn("Audio play prevented:", err);
+          setIsPlaying(false);
+        });
     }
   };
 
