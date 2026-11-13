@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { DiscoveryCandidate } from "@/hooks/useDiscovery";
 import { ReplyModal } from "./ReplyModal";
 import { VoiceNotePlayer } from "@/components/profile/VoiceNotePlayer";
@@ -22,6 +23,7 @@ import {
   Flag,
   UserX,
   Mic,
+  Edit3,
 } from "lucide-react";
 
 interface ProfileDetailSheetProps {
@@ -55,6 +57,17 @@ export function ProfileDetailSheet({
   const [isSendingReply, setIsSendingReply] = useState(false);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
 
+  // Lock background scroll when open so bottom nav and page don't scroll
+  useEffect(() => {
+    if (isOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isOpen]);
+
   if (!isOpen || !candidate) return null;
 
   const photos =
@@ -75,6 +88,7 @@ export function ProfileDetailSheet({
     replyType: "PHOTO" | "BIO" | "ESSENTIALS" | "PROMPT" | "ANTHEM",
     replyContext?: string
   ) => {
+    if (isOwnProfile) return;
     setReplyConfig({
       isOpen: true,
       replyType,
@@ -126,7 +140,7 @@ export function ProfileDetailSheet({
   const anthemCover = candidate.anthemCoverUrl || "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200";
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black text-white animate-in fade-in slide-in-from-bottom-6 duration-200">
+    <div className="fixed inset-0 z-[70] overflow-y-auto bg-black text-white animate-in fade-in slide-in-from-bottom-6 duration-200">
       {/* Action Notification Toast */}
       {actionNotice && (
         <div className="fixed top-5 inset-x-4 z-50 max-w-sm mx-auto p-3.5 rounded-xl bg-zinc-900 border border-zinc-700 text-center text-xs font-semibold text-rose-300 shadow-2xl animate-in fade-in">
@@ -136,19 +150,24 @@ export function ProfileDetailSheet({
 
       {/* Top Floating App Bar */}
       <div className="sticky top-0 inset-x-0 z-40 bg-black/85 backdrop-blur-md px-5 py-3.5 flex items-center justify-between border-b border-zinc-900">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <h1 className="text-2xl font-black tracking-tight">{candidate.name}</h1>
           <span className="text-2xl font-normal text-zinc-300">{candidate.age}</span>
           {candidate.isVerified && (
             <ShieldCheck className="w-5 h-5 text-blue-400 shrink-0" />
           )}
+          {isOwnProfile && (
+            <span className="text-[10px] font-black text-black bg-gradient-to-r from-amber-400 to-[#FFC629] px-2.5 py-0.5 rounded-full uppercase tracking-wider ml-1 shadow-sm">
+              Preview Mode
+            </span>
+          )}
         </div>
 
-        {/* Down Collapse Button matching screenshot */}
+        {/* Down Collapse Button */}
         <button
           type="button"
           onClick={onClose}
-          className="w-9 h-9 rounded-full bg-white text-black hover:bg-zinc-200 flex items-center justify-center shadow-lg transition active:scale-95"
+          className="w-9 h-9 rounded-full bg-white text-black hover:bg-zinc-200 flex items-center justify-center shadow-lg transition active:scale-95 cursor-pointer shrink-0"
           title="Close Profile"
         >
           <ArrowDown className="w-5 h-5 stroke-[2.5]" />
@@ -162,35 +181,38 @@ export function ProfileDetailSheet({
           <img
             src={currentPhoto.url}
             alt={candidate.name}
-            className="w-full h-full object-cover select-none"
-            onError={(e) => {
-              e.currentTarget.src =
-                "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800";
-            }}
+            className="w-full h-full object-cover"
           />
 
-          {/* Photo Navigation tap zones */}
-          {photos.length > 1 && (
-            <div className="absolute inset-0 flex">
-              <div
-                className="w-1/2 h-full cursor-pointer"
-                onClick={() => setPhotoIndex((p) => Math.max(0, p - 1))}
-              />
-              <div
-                className="w-1/2 h-full cursor-pointer"
-                onClick={() => setPhotoIndex((p) => Math.min(photos.length - 1, p + 1))}
-              />
-            </div>
-          )}
+          {/* Photo Tap Zones for Next/Prev */}
+          <div className="absolute inset-0 flex">
+            <div
+              className="w-1/2 h-full cursor-pointer"
+              onClick={() =>
+                setPhotoIndex((prev) => (prev > 0 ? prev - 1 : photos.length - 1))
+              }
+            />
+            <div
+              className="w-1/2 h-full cursor-pointer"
+              onClick={() =>
+                setPhotoIndex((prev) => (prev < photos.length - 1 ? prev + 1 : 0))
+              }
+            />
+          </div>
 
-          {/* Top Indicators */}
+          {/* Gradient Overlay for bottom text clarity */}
+          <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none" />
+
+          {/* Story-style Photo Pagination Indicators */}
           {photos.length > 1 && (
-            <div className="absolute top-3 inset-x-0 flex gap-1.5 px-4 z-10 pointer-events-none">
-              {photos.map((_, i) => (
+            <div className="absolute top-3 inset-x-3 flex gap-1 z-20 pointer-events-none">
+              {photos.map((_, idx) => (
                 <div
-                  key={i}
+                  key={idx}
                   className={`h-1 flex-1 rounded-full transition-all ${
-                    i === photoIndex ? "bg-white" : "bg-white/30"
+                    idx === photoIndex
+                      ? "bg-white shadow-sm"
+                      : "bg-white/30 backdrop-blur-sm"
                   }`}
                 />
               ))}
@@ -260,9 +282,11 @@ export function ProfileDetailSheet({
               <span className="text-sm font-serif">❝</span>
               <span>About me</span>
             </div>
-            <button type="button" className="text-zinc-500 hover:text-zinc-300">
-              <MoreHorizontal className="w-4 h-4" />
-            </button>
+            {!isOwnProfile && (
+              <button type="button" className="text-zinc-500 hover:text-zinc-300">
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+            )}
           </div>
 
           <p className="text-sm text-zinc-200 leading-relaxed font-normal">
@@ -270,16 +294,18 @@ export function ProfileDetailSheet({
               "I'm at a stage in life where effort, honesty, and emotional availability matter more than games or mixed signals. I want a relationship where we support each other, grow together, and still find little reasons to fall for each other every day. ❤️"}
           </p>
 
-          <div className="flex justify-end pt-1">
-            <button
-              type="button"
-              onClick={() => openReply("BIO", candidate.bio || "About me")}
-              className="px-3.5 py-1.5 rounded-full bg-zinc-800/90 text-white hover:bg-zinc-700 shadow-md flex items-center gap-1.5 text-xs font-bold transition active:scale-95 border border-zinc-700/60"
-            >
-              <Send className="w-3.5 h-3.5 text-sky-400 fill-sky-400 rotate-[-25deg]" />
-              <span>Reply</span>
-            </button>
-          </div>
+          {!isOwnProfile && (
+            <div className="flex justify-end pt-1">
+              <button
+                type="button"
+                onClick={() => openReply("BIO", candidate.bio || "About me")}
+                className="px-3.5 py-1.5 rounded-full bg-zinc-800/90 text-white hover:bg-zinc-700 shadow-md flex items-center gap-1.5 text-xs font-bold transition active:scale-95 border border-zinc-700/60"
+              >
+                <Send className="w-3.5 h-3.5 text-sky-400 fill-sky-400 rotate-[-25deg]" />
+                <span>Reply</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* 4. Essentials Card */}
@@ -289,9 +315,11 @@ export function ProfileDetailSheet({
               <MessageSquare className="w-3.5 h-3.5 text-zinc-400" />
               <span>Essentials</span>
             </div>
-            <button type="button" className="text-zinc-500 hover:text-zinc-300">
-              <MoreHorizontal className="w-4 h-4" />
-            </button>
+            {!isOwnProfile && (
+              <button type="button" className="text-zinc-500 hover:text-zinc-300">
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+            )}
           </div>
 
           <div className="space-y-2 text-sm text-zinc-200">
@@ -319,16 +347,18 @@ export function ProfileDetailSheet({
             )}
           </div>
 
-          <div className="flex justify-end pt-1">
-            <button
-              type="button"
-              onClick={() => openReply("ESSENTIALS", `11 kilometers away in ${candidate.city}`)}
-              className="px-3.5 py-1.5 rounded-full bg-zinc-800/90 text-white hover:bg-zinc-700 shadow-md flex items-center gap-1.5 text-xs font-bold transition active:scale-95 border border-zinc-700/60"
-            >
-              <Send className="w-3.5 h-3.5 text-sky-400 fill-sky-400 rotate-[-25deg]" />
-              <span>Reply</span>
-            </button>
-          </div>
+          {!isOwnProfile && (
+            <div className="flex justify-end pt-1">
+              <button
+                type="button"
+                onClick={() => openReply("ESSENTIALS", `11 kilometers away in ${candidate.city}`)}
+                className="px-3.5 py-1.5 rounded-full bg-zinc-800/90 text-white hover:bg-zinc-700 shadow-md flex items-center gap-1.5 text-xs font-bold transition active:scale-95 border border-zinc-700/60"
+              >
+                <Send className="w-3.5 h-3.5 text-sky-400 fill-sky-400 rotate-[-25deg]" />
+                <span>Reply</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* 5. Prompt Card */}
@@ -338,25 +368,29 @@ export function ProfileDetailSheet({
               <span className="text-sm font-serif">❝</span>
               <span>{promptQ}</span>
             </div>
-            <button type="button" className="text-zinc-500 hover:text-zinc-300">
-              <MoreHorizontal className="w-4 h-4" />
-            </button>
+            {!isOwnProfile && (
+              <button type="button" className="text-zinc-500 hover:text-zinc-300">
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+            )}
           </div>
 
           <p className="text-xl font-extrabold text-white leading-tight">
             {promptA}
           </p>
 
-          <div className="flex justify-end pt-1">
-            <button
-              type="button"
-              onClick={() => openReply("PROMPT", `${promptQ} ${promptA}`)}
-              className="px-3.5 py-1.5 rounded-full bg-zinc-800/90 text-white hover:bg-zinc-700 shadow-md flex items-center gap-1.5 text-xs font-bold transition active:scale-95 border border-zinc-700/60"
-            >
-              <Send className="w-3.5 h-3.5 text-sky-400 fill-sky-400 rotate-[-25deg]" />
-              <span>Reply</span>
-            </button>
-          </div>
+          {!isOwnProfile && (
+            <div className="flex justify-end pt-1">
+              <button
+                type="button"
+                onClick={() => openReply("PROMPT", `${promptQ} ${promptA}`)}
+                className="px-3.5 py-1.5 rounded-full bg-zinc-800/90 text-white hover:bg-zinc-700 shadow-md flex items-center gap-1.5 text-xs font-bold transition active:scale-95 border border-zinc-700/60"
+              >
+                <Send className="w-3.5 h-3.5 text-sky-400 fill-sky-400 rotate-[-25deg]" />
+                <span>Reply</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* 6. My Anthem Card */}
@@ -396,49 +430,75 @@ export function ProfileDetailSheet({
             </div>
           </div>
 
-          <div className="flex justify-end pt-1">
-            <button
-              type="button"
-              onClick={() => openReply("ANTHEM", anthemTitle)}
-              className="px-3.5 py-1.5 rounded-full bg-zinc-800/90 text-white hover:bg-zinc-700 shadow-md flex items-center gap-1.5 text-xs font-bold transition active:scale-95 border border-zinc-700/60"
-            >
-              <Send className="w-3.5 h-3.5 text-sky-400 fill-sky-400 rotate-[-25deg]" />
-              <span>Reply</span>
-            </button>
-          </div>
+          {!isOwnProfile && (
+            <div className="flex justify-end pt-1">
+              <button
+                type="button"
+                onClick={() => openReply("ANTHEM", anthemTitle)}
+                className="px-3.5 py-1.5 rounded-full bg-zinc-800/90 text-white hover:bg-zinc-700 shadow-md flex items-center gap-1.5 text-xs font-bold transition active:scale-95 border border-zinc-700/60"
+              >
+                <Send className="w-3.5 h-3.5 text-sky-400 fill-sky-400 rotate-[-25deg]" />
+                <span>Reply</span>
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* 7. Block Button */}
-        <button
-          type="button"
-          onClick={handleBlock}
-          className="w-full py-3.5 rounded-2xl bg-[#1a1a22] hover:bg-zinc-800 text-zinc-200 text-sm font-semibold transition flex items-center justify-center gap-2 border border-zinc-800/80 active:scale-[0.99]"
-        >
-          <UserX className="w-4 h-4 text-zinc-400" />
-          <span>Block {candidate.name}</span>
-        </button>
+        {/* 7. Block & Report Buttons (Only when viewing other users) */}
+        {!isOwnProfile && (
+          <>
+            <button
+              type="button"
+              onClick={handleBlock}
+              className="w-full py-3.5 rounded-2xl bg-[#1a1a22] hover:bg-zinc-800 text-zinc-200 text-sm font-semibold transition flex items-center justify-center gap-2 border border-zinc-800/80 active:scale-[0.99] cursor-pointer"
+            >
+              <UserX className="w-4 h-4 text-zinc-400" />
+              <span>Block {candidate.name}</span>
+            </button>
 
-        {/* 8. Report Button */}
-        <button
-          type="button"
-          onClick={handleReport}
-          className="w-full py-3.5 rounded-2xl bg-[#1a1a22] hover:bg-zinc-800 text-rose-400 text-sm font-semibold transition flex items-center justify-center gap-2 border border-zinc-800/80 active:scale-[0.99]"
-        >
-          <Flag className="w-4 h-4 text-rose-500" />
-          <span>Report {candidate.name}</span>
-        </button>
+            <button
+              type="button"
+              onClick={handleReport}
+              className="w-full py-3.5 rounded-2xl bg-[#1a1a22] hover:bg-zinc-800 text-rose-400 text-sm font-semibold transition flex items-center justify-center gap-2 border border-zinc-800/80 active:scale-[0.99] cursor-pointer"
+            >
+              <Flag className="w-4 h-4 text-rose-500" />
+              <span>Report {candidate.name}</span>
+            </button>
+          </>
+        )}
+
+        {/* 8. Own Profile Preview Actions (Close & Edit) */}
+        {isOwnProfile && (
+          <div className="pt-2 pb-8 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 py-3.5 rounded-2xl bg-[#1a1a22] hover:bg-zinc-800 text-zinc-200 text-sm font-bold transition flex items-center justify-center gap-2 border border-zinc-800/80 active:scale-[0.99] cursor-pointer shadow-md"
+            >
+              <X className="w-4 h-4" />
+              <span>Close Preview</span>
+            </button>
+            <Link
+              href="/settings/edit-profile"
+              className="flex-1 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-[#FFC629] hover:brightness-105 text-black text-sm font-black transition flex items-center justify-center gap-2 shadow-lg shadow-amber-500/25 active:scale-[0.99]"
+            >
+              <Edit3 className="w-4 h-4" />
+              <span>Edit Profile</span>
+            </Link>
+          </div>
+        )}
       </div>
 
-      {/* 9. Floating Bottom Pass & Like Bar (Hidden on own profile preview) */}
+      {/* 9. Floating Bottom Pass & Like Bar (Only when viewing other users on Discovery) */}
       {!isOwnProfile && (
-        <div className="fixed bottom-4 inset-x-0 z-40 flex items-center justify-center gap-8 pointer-events-none">
+        <div className="fixed bottom-6 inset-x-0 z-[80] flex items-center justify-center gap-8 pointer-events-none">
           <button
             type="button"
             onClick={() => {
               onPass();
               onClose();
             }}
-            className="w-14 h-14 rounded-full bg-[#181820]/95 hover:bg-zinc-800 border border-zinc-700/80 text-white shadow-2xl flex items-center justify-center pointer-events-auto transition active:scale-90"
+            className="w-14 h-14 rounded-full bg-[#181820]/95 hover:bg-zinc-800 border border-zinc-700/80 text-white shadow-2xl flex items-center justify-center pointer-events-auto transition active:scale-90 cursor-pointer"
             title="Pass"
           >
             <X className="w-6 h-6 stroke-[2.5]" />
@@ -450,7 +510,7 @@ export function ProfileDetailSheet({
               onLike();
               onClose();
             }}
-            className="w-14 h-14 rounded-full bg-[#181820]/95 hover:bg-zinc-800 border border-zinc-700/80 text-rose-500 shadow-2xl flex items-center justify-center pointer-events-auto transition active:scale-90"
+            className="w-14 h-14 rounded-full bg-[#181820]/95 hover:bg-zinc-800 border border-zinc-700/80 text-rose-500 shadow-2xl flex items-center justify-center pointer-events-auto transition active:scale-90 cursor-pointer"
             title="Like"
           >
             <Heart className="w-7 h-7 fill-rose-500 text-rose-500" />
