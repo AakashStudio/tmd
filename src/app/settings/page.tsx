@@ -539,6 +539,28 @@ export default function ProfileHubPage() {
 
       {/* ================= 3. PROFILE CONTENT ================= */}
       <div className="px-5 space-y-4">
+        {/* Voice Note Missing Incomplete Notification Banner */}
+        {!profile.voicePromptUrl && (
+          <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-3 animate-in fade-in duration-300">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-full bg-amber-400/20 text-amber-400 flex items-center justify-center shrink-0">
+                <Mic className="w-4 h-4 animate-pulse" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-white truncate">Voice Note Incomplete</p>
+                <p className="text-[11px] text-zinc-400 truncate">Aapne voice note complete nahi kiya — Tap to record</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsVoiceModalOpen(true)}
+              className="py-1.5 px-3 rounded-full bg-gradient-to-r from-amber-400 to-[#FFC629] text-black text-xs font-black shrink-0 hover:brightness-105 active:scale-95 transition shadow-sm cursor-pointer"
+            >
+              + Record
+            </button>
+          </div>
+        )}
+
         {/* ================= MY BASICS ================= */}
         <div className="space-y-1.5 pt-1">
           <div className="flex items-center justify-between">
@@ -1233,6 +1255,11 @@ export default function ProfileHubPage() {
         onClose={() => setIsPreviewOpen(false)}
         onLike={() => setIsPreviewOpen(false)}
         onPass={() => setIsPreviewOpen(false)}
+        isOwnProfile={true}
+        onRecordVoice={() => {
+          setIsPreviewOpen(false);
+          setIsVoiceModalOpen(true);
+        }}
       />
 
       <BottomNav />

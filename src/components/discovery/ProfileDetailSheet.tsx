@@ -30,6 +30,8 @@ interface ProfileDetailSheetProps {
   onClose: () => void;
   onLike: (options?: { comment?: string; replyType?: string; replyContext?: string }) => void;
   onPass: () => void;
+  isOwnProfile?: boolean;
+  onRecordVoice?: () => void;
 }
 
 export function ProfileDetailSheet({
@@ -38,6 +40,8 @@ export function ProfileDetailSheet({
   onClose,
   onLike,
   onPass,
+  isOwnProfile = false,
+  onRecordVoice,
 }: ProfileDetailSheetProps) {
   const [photoIndex, setPhotoIndex] = useState(0);
   const [replyConfig, setReplyConfig] = useState<{
@@ -193,33 +197,46 @@ export function ProfileDetailSheet({
             </div>
           )}
 
-          {/* Bottom Overlay: Voice Note Player (Left) + Reply Button (Right) */}
+          {/* Bottom Overlay: Voice Note Player / Record Prompt (Left) + Reply Button (Right) */}
           <div className="absolute bottom-4 inset-x-3.5 z-20 flex items-center justify-between gap-2 pointer-events-none">
-            {/* Left: Voice Note Player directly ON the Photo (where arrow points) */}
-            <div className="pointer-events-auto flex-1 min-w-0 max-w-[calc(100%-80px)]">
-              <VoiceNotePlayer
-                url={
-                  candidate.voicePromptUrl ||
-                  (candidate.gender === "MALE" || candidate.gender === "MAN"
-                    ? "/uploads/audio/aarav_voice.wav"
-                    : "/uploads/audio/lisa_voice.wav")
-                }
-                durationSeconds={candidate.voicePromptDuration || 10}
-                candidateName={candidate.name}
-                compact={true}
-                className="w-full shadow-2xl backdrop-blur-xl bg-black/85 border-amber-400/50"
-              />
-            </div>
+            {/* Left: Voice Note Player or Record Button if user's own profile */}
+            {candidate.voicePromptUrl ? (
+              <div className="pointer-events-auto flex-1 min-w-0 max-w-[calc(100%-80px)]">
+                <VoiceNotePlayer
+                  url={candidate.voicePromptUrl}
+                  durationSeconds={candidate.voicePromptDuration || 10}
+                  candidateName={candidate.name}
+                  compact={true}
+                  className="w-full shadow-2xl backdrop-blur-xl bg-black/85 border-amber-400/50"
+                />
+              </div>
+            ) : isOwnProfile ? (
+              <div className="pointer-events-auto flex-1 min-w-0">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRecordVoice?.();
+                  }}
+                  className="inline-flex items-center gap-2 py-2 px-4 rounded-full bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] hover:brightness-105 text-black font-black text-xs shadow-2xl active:scale-95 transition cursor-pointer"
+                >
+                  <Mic className="w-3.5 h-3.5 text-black animate-pulse" />
+                  <span>+ Record Voice Note</span>
+                </button>
+              </div>
+            ) : null}
 
-            {/* Right: Reply button */}
-            <button
-              type="button"
-              onClick={() => openReply("PHOTO", `${candidate.name}'s photo`)}
-              className="pointer-events-auto shrink-0 px-3.5 py-1.5 rounded-full bg-white/95 text-zinc-900 hover:bg-white shadow-xl flex items-center gap-1.5 text-xs font-bold transition active:scale-95 cursor-pointer"
-            >
-              <Send className="w-3.5 h-3.5 text-sky-500 fill-sky-500 rotate-[-25deg]" />
-              <span>Reply</span>
-            </button>
+            {/* Right: Reply button (Only for other profiles) */}
+            {!isOwnProfile && (
+              <button
+                type="button"
+                onClick={() => openReply("PHOTO", `${candidate.name}'s photo`)}
+                className="pointer-events-auto ml-auto shrink-0 px-3.5 py-1.5 rounded-full bg-white/95 text-zinc-900 hover:bg-white shadow-xl flex items-center gap-1.5 text-xs font-bold transition active:scale-95 cursor-pointer"
+              >
+                <Send className="w-3.5 h-3.5 text-sky-500 fill-sky-500 rotate-[-25deg]" />
+                <span>Reply</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -412,32 +429,34 @@ export function ProfileDetailSheet({
         </button>
       </div>
 
-      {/* 9. Floating Bottom Pass & Like Bar matching screenshot */}
-      <div className="fixed bottom-4 inset-x-0 z-40 flex items-center justify-center gap-8 pointer-events-none">
-        <button
-          type="button"
-          onClick={() => {
-            onPass();
-            onClose();
-          }}
-          className="w-14 h-14 rounded-full bg-[#181820]/95 hover:bg-zinc-800 border border-zinc-700/80 text-white shadow-2xl flex items-center justify-center pointer-events-auto transition active:scale-90"
-          title="Pass"
-        >
-          <X className="w-6 h-6 stroke-[2.5]" />
-        </button>
+      {/* 9. Floating Bottom Pass & Like Bar (Hidden on own profile preview) */}
+      {!isOwnProfile && (
+        <div className="fixed bottom-4 inset-x-0 z-40 flex items-center justify-center gap-8 pointer-events-none">
+          <button
+            type="button"
+            onClick={() => {
+              onPass();
+              onClose();
+            }}
+            className="w-14 h-14 rounded-full bg-[#181820]/95 hover:bg-zinc-800 border border-zinc-700/80 text-white shadow-2xl flex items-center justify-center pointer-events-auto transition active:scale-90"
+            title="Pass"
+          >
+            <X className="w-6 h-6 stroke-[2.5]" />
+          </button>
 
-        <button
-          type="button"
-          onClick={() => {
-            onLike();
-            onClose();
-          }}
-          className="w-14 h-14 rounded-full bg-[#181820]/95 hover:bg-zinc-800 border border-zinc-700/80 text-rose-500 shadow-2xl flex items-center justify-center pointer-events-auto transition active:scale-90"
-          title="Like"
-        >
-          <Heart className="w-7 h-7 fill-rose-500 text-rose-500" />
-        </button>
-      </div>
+          <button
+            type="button"
+            onClick={() => {
+              onLike();
+              onClose();
+            }}
+            className="w-14 h-14 rounded-full bg-[#181820]/95 hover:bg-zinc-800 border border-zinc-700/80 text-rose-500 shadow-2xl flex items-center justify-center pointer-events-auto transition active:scale-90"
+            title="Like"
+          >
+            <Heart className="w-7 h-7 fill-rose-500 text-rose-500" />
+          </button>
+        </div>
+      )}
 
       {/* Reply Modal */}
       <ReplyModal

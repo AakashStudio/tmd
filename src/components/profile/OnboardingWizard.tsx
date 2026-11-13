@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { LocationPickerModal } from "@/components/profile/LocationPickerModal";
 import { VoiceNoteRecorder } from "@/components/profile/VoiceNoteRecorder";
 import { calculateAge } from "@/lib/validation";
-import { Camera, Image as ImageIcon, Plus, Trash2, Loader2, MapPin, ChevronDown, ChevronUp, ChevronLeft, Mic } from "lucide-react";
+import { Camera, Image as ImageIcon, Plus, Trash2, Loader2, MapPin, ChevronDown, ChevronUp, ChevronLeft, Mic, AlertCircle } from "lucide-react";
 
 interface OnboardingWizardProps {
   onCompleted: () => void;
@@ -61,6 +61,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
   // Voice Note (Step 5)
   const [voicePromptUrl, setVoicePromptUrl] = useState<string | null>(null);
   const [voicePromptDuration, setVoicePromptDuration] = useState<number | null>(null);
+  const [showVoiceWarning, setShowVoiceWarning] = useState<boolean>(false);
 
   // Live calculated age
   const calculatedAge = dobString ? calculateAge(new Date(dobString)) : 0;
@@ -954,14 +955,47 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
               onSave={(url, durationSec) => {
                 setVoicePromptUrl(url);
                 setVoicePromptDuration(durationSec);
+                setShowVoiceWarning(false);
                 handleSubmit(url, durationSec);
               }}
               onSkip={() => {
-                setVoicePromptUrl(null);
-                setVoicePromptDuration(null);
-                handleSubmit(null, null);
+                setShowVoiceWarning(true);
               }}
             />
+
+            {/* Incomplete Voice Note Warning Alert */}
+            {showVoiceWarning && (
+              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/40 space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="flex items-center gap-2 text-amber-400 font-bold text-xs">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" />
+                  <span>Voice Note Complete Nahi Hua Hai!</span>
+                </div>
+                <p className="text-[11px] text-zinc-300 leading-relaxed">
+                  Aapne voice note record nahi kiya hai. TMD par authentic voice intro wali profiles ko 3x zyada matches aur date requests milti hain. Kya aap abhi record karna chahte hain?
+                </p>
+                <div className="flex gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setShowVoiceWarning(false)}
+                    className="flex-1 py-2 px-3 rounded-full bg-gradient-to-r from-amber-400 to-[#FFC629] text-black text-xs font-black hover:brightness-105 active:scale-95 transition shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <Mic className="w-3.5 h-3.5" />
+                    <span>Record Voice Now</span>
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isLoading}
+                    onClick={() => {
+                      setShowVoiceWarning(false);
+                      handleSubmit(null, null);
+                    }}
+                    className="py-2 px-3.5 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white text-xs font-bold active:scale-95 transition whitespace-nowrap cursor-pointer"
+                  >
+                    Skip For Now
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-3 pt-3">
@@ -972,7 +1006,13 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onCompleted 
               variant="primary"
               className="flex-1 whitespace-nowrap"
               isLoading={isLoading}
-              onClick={() => handleSubmit()}
+              onClick={() => {
+                if (!voicePromptUrl) {
+                  setShowVoiceWarning(true);
+                } else {
+                  handleSubmit();
+                }
+              }}
             >
               {voicePromptUrl ? "Complete Profile with Voice ✓" : "Complete Profile"}
             </Button>
