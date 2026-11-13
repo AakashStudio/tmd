@@ -70,80 +70,83 @@ export function DiscoveryCard({ candidate, onOpenProfile }: DiscoveryCardProps) 
       {/* Content Area */}
       <div
         onClick={onOpenProfile}
-        className="relative z-20 p-5 text-white space-y-2.5 cursor-pointer"
+        className="relative z-20 p-5 text-white space-y-2 cursor-pointer"
       >
-        {/* Top Header: Left (Name, Age, Verified) + Right (Show Profile Icon Button) */}
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <h2 className="text-3xl font-extrabold tracking-tight drop-shadow-md">
-              {candidate.name}
-            </h2>
-            <span className="text-2xl font-light text-zinc-300 drop-shadow-md">
-              {candidate.age}
+        {/* Name, Age, Verified (Top Left) */}
+        <div className="flex items-center gap-2">
+          <h2 className="text-3xl font-extrabold tracking-tight drop-shadow-md">
+            {candidate.name}
+          </h2>
+          <span className="text-2xl font-light text-zinc-300 drop-shadow-md">
+            {candidate.age}
+          </span>
+          {candidate.isVerified && (
+            <span
+              title="Verified Profile"
+              className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-500 text-white shadow-md text-xs font-bold shrink-0"
+            >
+              ✓
             </span>
-            {candidate.isVerified && (
-              <span
-                title="Verified Profile"
-                className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-500 text-white shadow-md text-xs font-bold shrink-0"
-              >
-                ✓
-              </span>
+          )}
+        </div>
+
+        {/* Middle Row: Left (Long Term + Essentials + Bio) & Right (Arrow Button moved down) */}
+        <div className="flex items-center justify-between gap-3">
+          {/* Left: Box details under name */}
+          <div className="space-y-1.5 flex-1 min-w-0">
+            {/* Relationship Intention Pill */}
+            {candidate.relationshipIntention && (
+              <div>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-500/85 text-white border border-rose-400/40 backdrop-blur-md shadow-md">
+                  <span>💍</span>
+                  <span className="uppercase tracking-wider text-[11px]">
+                    {candidate.relationshipIntention.replace(/_/g, " ")}
+                  </span>
+                </span>
+              </div>
+            )}
+
+            {/* Location, Profession, Height (Left-aligned under name) */}
+            <div className="flex flex-wrap items-center gap-x-2 text-xs font-semibold text-zinc-200 drop-shadow">
+              {candidate.city && (
+                <span className="flex items-center gap-1">📍 {candidate.city}</span>
+              )}
+              {candidate.profession && (
+                <>
+                  <span className="text-zinc-400">•</span>
+                  <span className="flex items-center gap-1">💼 {candidate.profession}</span>
+                </>
+              )}
+              {candidate.height && (
+                <>
+                  <span className="text-zinc-400">•</span>
+                  <span className="flex items-center gap-1">📏 {candidate.height} cm</span>
+                </>
+              )}
+            </div>
+
+            {/* Bio */}
+            {candidate.bio && (
+              <p className="text-sm text-zinc-100 font-medium leading-relaxed drop-shadow line-clamp-2 pt-0.5">
+                "{candidate.bio}"
+              </p>
             )}
           </div>
 
-          {/* Show Profile Icon Button */}
+          {/* Right: Circular Arrow Button moved down */}
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
               onOpenProfile?.();
             }}
-            className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/35 active:scale-90 backdrop-blur-md border border-white/25 flex items-center justify-center transition text-white shadow-lg shrink-0 cursor-pointer"
+            className="w-11 h-11 rounded-full bg-white/20 hover:bg-white/35 active:scale-90 backdrop-blur-md border border-white/25 flex items-center justify-center transition text-white shadow-xl shrink-0 self-center cursor-pointer"
             title="Open Full Profile"
             aria-label="Open Full Profile"
           >
-            <ChevronUp className="w-5 h-5 stroke-[2.5]" />
+            <ChevronUp className="w-6 h-6 stroke-[2.5]" />
           </button>
         </div>
-
-        {/* Right-aligned Meta Info: Long Term + Location, Profession, Height */}
-        <div className="flex flex-col items-end gap-1.5 text-right w-full">
-          {/* Relationship Intention Pill (Right Side) */}
-          {candidate.relationshipIntention && (
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-500/85 text-white border border-rose-400/40 backdrop-blur-md shadow-md">
-              <span>💍</span>
-              <span className="uppercase tracking-wider text-[11px]">
-                {candidate.relationshipIntention.replace(/_/g, " ")}
-              </span>
-            </div>
-          )}
-
-          {/* Location, Profession, Height (Right Side) */}
-          <div className="flex flex-wrap items-center justify-end gap-x-2 text-xs font-semibold text-zinc-200 drop-shadow">
-            {candidate.city && (
-              <span className="flex items-center gap-1">📍 {candidate.city}</span>
-            )}
-            {candidate.profession && (
-              <>
-                <span className="text-zinc-400">•</span>
-                <span className="flex items-center gap-1">💼 {candidate.profession}</span>
-              </>
-            )}
-            {candidate.height && (
-              <>
-                <span className="text-zinc-400">•</span>
-                <span className="flex items-center gap-1">📏 {candidate.height} cm</span>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Bio (Left Aligned) */}
-        {candidate.bio && (
-          <p className="text-sm text-zinc-100 font-medium leading-relaxed drop-shadow line-clamp-2">
-            "{candidate.bio}"
-          </p>
-        )}
 
         {/* Voice Note Bar - Placed at the very bottom where tags used to be */}
         {candidate.voicePromptUrl ? (
