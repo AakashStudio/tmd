@@ -24,10 +24,11 @@ export default function AdminPage() {
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  const [activeTab, setActiveTab] = useState<"VERIFICATIONS" | "REPORTS" | "LOGS">("VERIFICATIONS");
+  const [activeTab, setActiveTab] = useState<"VERIFICATIONS" | "REPORTS" | "PAYMENTS" | "LOGS">("VERIFICATIONS");
   const [stats, setStats] = useState<any>(null);
   const [verifications, setVerifications] = useState<any[]>([]);
   const [reports, setReports] = useState<any[]>([]);
+  const [payments, setPayments] = useState<any[]>([]);
   const [logs, setLogs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -53,6 +54,13 @@ export default function AdminPage() {
         if (rRes.ok) {
           const rData = await rRes.json();
           setReports(rData.reports || []);
+        }
+
+        // Fetch Payments
+        const pRes = await fetch("/api/admin/payments");
+        if (pRes.ok) {
+          const pData = await pRes.json();
+          setPayments(pData.payments || []);
         }
 
         // Fetch Logs
@@ -138,6 +146,26 @@ export default function AdminPage() {
       await loadDashboard();
     } catch (err: any) {
       alert(err.message || "Error actioning report");
+    }
+  };
+
+  const handlePaymentAction = async (paymentId: string, action: "APPROVE" | "REJECT") => {
+    try {
+      const res = await fetch("/api/admin/payments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paymentId, action }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to process payment");
+      }
+
+      alert(data.message || `Payment ${action === "APPROVE" ? "Approved" : "Rejected"} successfully!`);
+      await loadDashboard();
+    } catch (err: any) {
+      alert(err.message || "Error processing payment");
     }
   };
 
@@ -288,6 +316,17 @@ export default function AdminPage() {
         </button>
 
         <button
+          onClick={() => setActiveTab("PAYMENTS")}
+          className={`pb-3 transition ${
+            activeTab === "PAYMENTS"
+              ? "text-rose-500 border-b-2 border-rose-500"
+              : "text-zinc-500 hover:text-zinc-300"
+          }`}
+        >
+          Payments Queue ({payments.filter((p) => p.status === "PENDING").length})
+        </button>
+
+        <button
           onClick={() => setActiveTab("LOGS")}
           className={`pb-3 transition ${
             activeTab === "LOGS"
@@ -402,6 +441,86 @@ export default function AdminPage() {
                         className="py-1.5 px-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium text-xs"
                       >
                         Dismiss
+                      </button>
+                    </div>
+                  )}
+                </Card>
+              ))
+            )}
+          </div>
+        )}
+
+        {/* TAB 3: PAYMENTS QUEUE */}
+        {activeTab === "PAYMENTS" && (
+          <div className="space-y-3">
+            {payments.length === 0 ? (
+              <div className="text-center py-12 text-zinc-500 text-xs">
+                No payment transactions recorded yet.
+              </div>
+            ) : (
+              payments.map((p) => (
+                <Card key={p.id} className="p-4 bg-zinc-950 border-zinc-900 space-y-3">
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-white">
+                        {p.user?.profile?.name || "User"}
+                      </span>
+                      <span className="text-zinc-500">• {p.user?.phone || p.user?.email || p.userId.slice(0, 8)}</span>
+                      {p.user?.profile?.city && (
+                        <span className="text-zinc-500">• {p.user.profile.city}</span>
+                      )}
+                    </div>
+                    <Badge
+                      variant={
+                        p.status === "SUCCESS"
+                          ? "verified"
+                          : p.status === "PENDING"
+                          ? "pro"
+                          : "neutral"
+                      }
+                    >
+                      {p.status}
+                    </Badge>
+                  </div>
+
+                  <div className="text-xs text-zinc-300 bg-zinc-900/60 p-3 rounded-xl border border-zinc-800 space-y-1.5">
+                    <div className="flex justify-between">
+                      <span className="text-zinc-400">Plan:</span>
+                      <span className="font-bold text-amber-400">{p.plan?.name || "VIP Plan"}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-zinc-400">Amount:</span>
+                      <span className="font-bold text-emerald-400 font-mono">₹{p.amount / 100}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-zinc-400">Submitted UTR / Ref:</span>
+                      <span className="font-mono font-bold text-white bg-zinc-800 px-2 py-0.5 rounded">
+                        {p.razorpayPaymentId || "None"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-[11px] text-zinc-500">
+                      <span>Order ID:</span>
+                      <span className="font-mono">{p.razorpayOrderId}</span>
+                    </div>
+                    <div className="flex justify-between text-[11px] text-zinc-500">
+                      <span>Date:</span>
+                      <span>{new Date(p.createdAt).toLocaleString()}</span>
+                    </div>
+                  </div>
+
+                  {p.status === "PENDING" && (
+                    <div className="flex gap-2 pt-1">
+                      <button
+                        onClick={() => handlePaymentAction(p.id, "APPROVE")}
+                        className="py-1.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs"
+                      >
+                        ✓ Approve & Activate PRO
+                      </button>
+                      <button
+                        onClick={() => handlePaymentAction(p.id, "REJECT")}
+                        className="py-1.5 px-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium text-xs"
+                      >
+                        Reject
                       </button>
                     </div>
                   )}
