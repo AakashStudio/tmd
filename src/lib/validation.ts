@@ -96,7 +96,7 @@ export const dobCorrectionRequestSchema = z.object({
   }, {
     message: "Requested date of birth cannot be in the future.",
   }),
-  documentUrl: z.string().url("Valid proof document URL is required"),
+  documentUrl: z.string().optional().nullable().or(z.literal("")),
   notes: z.string().max(300).optional(),
 });
 

@@ -179,6 +179,7 @@ model Preference {
   maxDistanceKm    Int      @default(50)
   targetCity       String?
   preferredGenders String   @default("[]") // JSON serialized array of gender preferences
+  readReceiptsEnabled Boolean @default(true)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 

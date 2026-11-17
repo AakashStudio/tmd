@@ -40,62 +40,82 @@ export async function POST(req: NextRequest) {
     }
 
     const senderId = targetLike.fromUserId;
+    const { user1Id, user2Id } = getCanonicalMatchPair(user.id, senderId);
 
-    // 1. Mark like as ACCEPTED
-    await prisma.like.update({
-      where: { id: targetLike.id },
-      data: { status: "ACCEPTED" },
-    });
+    // Atomic transaction: Resolve all pending requests, update reciprocal likes, and establish connection
+    const { match, conversation } = await prisma.$transaction(async (tx) => {
+      // 1. Mark ALL likes between both users as ACCEPTED
+      await tx.like.updateMany({
+        where: {
+          OR: [
+            { fromUserId: senderId, toUserId: user.id },
+            { fromUserId: user.id, toUserId: senderId },
+          ],
+        },
+        data: { status: "ACCEPTED" },
+      });
 
-    // 2. Create reciprocal like from user to sender
-    await prisma.like.upsert({
-      where: {
-        fromUserId_toUserId: {
+      // 2. Ensure reciprocal like exists and is ACCEPTED
+      await tx.like.upsert({
+        where: {
+          fromUserId_toUserId: {
+            fromUserId: user.id,
+            toUserId: senderId,
+          },
+        },
+        update: {
+          status: "ACCEPTED",
+        },
+        create: {
           fromUserId: user.id,
           toUserId: senderId,
+          status: "ACCEPTED",
         },
-      },
-      update: {
-        status: "ACCEPTED",
-      },
-      create: {
-        fromUserId: user.id,
-        toUserId: senderId,
-        status: "ACCEPTED",
-      },
-    });
+      });
 
-    // 3. Create canonical Match
-    const { user1Id, user2Id } = getCanonicalMatchPair(user.id, senderId);
-    const match = await prisma.match.upsert({
-      where: {
-        user1Id_user2Id: {
+      // 3. Clear any existing passes between them
+      await tx.pass.deleteMany({
+        where: {
+          OR: [
+            { fromUserId: user.id, toUserId: senderId },
+            { fromUserId: senderId, toUserId: user.id },
+          ],
+        },
+      });
+
+      // 4. Create or update canonical Match
+      const m = await tx.match.upsert({
+        where: {
+          user1Id_user2Id: {
+            user1Id,
+            user2Id,
+          },
+        },
+        update: {
+          status: "ACTIVE",
+        },
+        create: {
           user1Id,
           user2Id,
+          status: "ACTIVE",
         },
-      },
-      update: {
-        status: "ACTIVE",
-      },
-      create: {
-        user1Id,
-        user2Id,
-        status: "ACTIVE",
-      },
+      });
+
+      // 5. Create Conversation
+      const c = await tx.conversation.upsert({
+        where: {
+          matchId: m.id,
+        },
+        update: {},
+        create: {
+          matchId: m.id,
+        },
+      });
+
+      return { match: m, conversation: c };
     });
 
-    // 4. Create Conversation
-    const conversation = await prisma.conversation.upsert({
-      where: {
-        matchId: match.id,
-      },
-      update: {},
-      create: {
-        matchId: match.id,
-      },
-    });
-
-    // 5. If pre-match comment was attached, make it the first message
+    // 6. If pre-match comment was attached, make it the first message
     if (targetLike.comment) {
       await prisma.message.create({
         data: {

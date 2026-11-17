@@ -78,12 +78,88 @@ export async function getDiscoveryFeed(
   // Inactivity threshold: Users inactive for > 7 days are excluded
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-  // Gender preferences
+  // Gender preferences: robust matching supporting Boys/Girls, Men/Women, Male/Female in all cases
   let targetGenders: string[] = [];
-  if (user.profile.interestedIn === "MEN") {
-    targetGenders = ["MALE", "MAN"];
-  } else if (user.profile.interestedIn === "WOMEN") {
-    targetGenders = ["FEMALE", "WOMAN"];
+  const interestedInRaw = (user.profile.interestedIn || "").trim().toUpperCase();
+
+  if (
+    interestedInRaw === "WOMEN" ||
+    interestedInRaw === "WOMAN" ||
+    interestedInRaw === "FEMALE" ||
+    interestedInRaw === "GIRLS" ||
+    interestedInRaw === "GIRL"
+  ) {
+    targetGenders = [
+      "FEMALE",
+      "Female",
+      "female",
+      "WOMAN",
+      "Woman",
+      "woman",
+      "GIRL",
+      "Girl",
+      "girl",
+      "GIRLS",
+      "Girls",
+      "girls",
+    ];
+  } else if (
+    interestedInRaw === "MEN" ||
+    interestedInRaw === "MAN" ||
+    interestedInRaw === "MALE" ||
+    interestedInRaw === "BOYS" ||
+    interestedInRaw === "BOY"
+  ) {
+    targetGenders = [
+      "MALE",
+      "Male",
+      "male",
+      "MAN",
+      "Man",
+      "man",
+      "BOY",
+      "Boy",
+      "boy",
+      "BOYS",
+      "Boys",
+      "boys",
+    ];
+  }
+
+  // Preference overrides if user has customized preferredGenders
+  const userPref = await prisma.preference.findUnique({
+    where: { userId: user.id },
+    select: { preferredGenders: true },
+  });
+
+  if (userPref?.preferredGenders && userPref.preferredGenders !== "[]") {
+    try {
+      const parsed = JSON.parse(userPref.preferredGenders);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const prefList: string[] = [];
+        parsed.forEach((g: string) => {
+          const upper = String(g).trim().toUpperCase();
+          if (["WOMEN", "WOMAN", "FEMALE", "GIRLS", "GIRL"].includes(upper)) {
+            prefList.push(
+              "FEMALE", "Female", "female",
+              "WOMAN", "Woman", "woman",
+              "GIRL", "Girl", "girl"
+            );
+          } else if (["MEN", "MAN", "MALE", "BOYS", "BOY"].includes(upper)) {
+            prefList.push(
+              "MALE", "Male", "male",
+              "MAN", "Man", "man",
+              "BOY", "Boy", "boy"
+            );
+          } else {
+            prefList.push(g, g.toUpperCase(), g.toLowerCase());
+          }
+        });
+        if (prefList.length > 0) {
+          targetGenders = Array.from(new Set(prefList));
+        }
+      }
+    } catch {}
   }
 
   // Build high-efficiency where clause using direct relational filters

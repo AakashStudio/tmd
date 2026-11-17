@@ -144,17 +144,46 @@ export async function getConversationMessages(
   const { partnerId, conversation } = validation;
   const realConversationId = conversation.id;
 
-  // Auto-mark incoming unread messages as READ
-  await prisma.message.updateMany({
-    where: {
-      conversationId: realConversationId,
-      senderId: partnerId,
-      status: { not: "READ" },
-    },
-    data: {
-      status: "READ",
-    },
-  });
+  // Retrieve read receipts settings for both participants
+  const [userPref, partnerPref] = await Promise.all([
+    prisma.preference.findUnique({
+      where: { userId: user.id },
+      select: { readReceiptsEnabled: true },
+    }),
+    prisma.preference.findUnique({
+      where: { userId: partnerId },
+      select: { readReceiptsEnabled: true },
+    }),
+  ]);
+
+  const userReadReceipts = userPref?.readReceiptsEnabled ?? true;
+  const partnerReadReceipts = partnerPref?.readReceiptsEnabled ?? true;
+
+  // If user has read receipts ON, mark incoming partner messages as READ.
+  // If user has read receipts OFF (PRO privacy), mark as DELIVERED without exposing READ status!
+  if (userReadReceipts) {
+    await prisma.message.updateMany({
+      where: {
+        conversationId: realConversationId,
+        senderId: partnerId,
+        status: { not: "READ" },
+      },
+      data: {
+        status: "READ",
+      },
+    });
+  } else {
+    await prisma.message.updateMany({
+      where: {
+        conversationId: realConversationId,
+        senderId: partnerId,
+        status: "SENT",
+      },
+      data: {
+        status: "DELIVERED",
+      },
+    });
+  }
 
   const takeAmount = Math.min(Math.max(1, limit), 100);
 
@@ -215,6 +244,12 @@ export async function getConversationMessages(
       };
     }
 
+    // If sent by me and the partner disabled read receipts, show DELIVERED instead of READ
+    let displayStatus = m.status;
+    if (isFromMe && !partnerReadReceipts && displayStatus === "READ") {
+      displayStatus = "DELIVERED";
+    }
+
     return {
       id: m.id,
       conversationId: m.conversationId,
@@ -222,7 +257,7 @@ export async function getConversationMessages(
       isFromMe,
       content: m.content,
       type: m.type as "TEXT" | "VIEW_ONCE_PHOTO",
-      status: m.status as "SENT" | "DELIVERED" | "READ",
+      status: displayStatus as "SENT" | "DELIVERED" | "READ",
       createdAt: m.createdAt,
       media: mediaInfo,
     };

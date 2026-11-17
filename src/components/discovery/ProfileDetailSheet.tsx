@@ -324,6 +324,20 @@ export function ProfileDetailSheet({
           </div>
 
           <div className="space-y-2 text-sm text-zinc-200">
+            {candidate.gender && (
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 text-center text-amber-400 font-bold leading-none">
+                  {["female", "woman", "girl"].includes(candidate.gender.toLowerCase()) ? "♀" : "♂"}
+                </span>
+                <span>Gender: <strong className="text-white">{candidate.gender}</strong></span>
+              </div>
+            )}
+            {isOwnProfile && (candidate as any).interestedIn && (
+              <div className="flex items-center gap-2">
+                <Heart className="w-4 h-4 text-rose-400" />
+                <span>Interested In: <strong className="text-white">{(candidate as any).interestedIn}</strong></span>
+              </div>
+            )}
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-zinc-400" />
               <span>11 kilometers away • {candidate.city}</span>

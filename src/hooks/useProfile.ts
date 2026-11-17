@@ -155,7 +155,7 @@ export function useProfile() {
 
   const submitDobCorrection = async (payload: {
     requestedDob: string;
-    documentUrl: string;
+    documentUrl?: string | null;
     notes?: string;
   }) => {
     const res = await fetch("/api/profile/dob-correction", {

@@ -56,8 +56,9 @@ export async function POST(req: NextRequest) {
         payload: JSON.stringify({
           currentDob: user.profile.dob.toISOString(),
           requestedDob: requestedDob.toISOString(),
-          documentUrl,
+          documentUrl: documentUrl || null,
           notes: notes || null,
+          isProMember: Boolean(user.entitlements.isPro || user.entitlements.isPaid),
         }),
         status: VerificationStatus.PENDING,
       },

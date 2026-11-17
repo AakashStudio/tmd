@@ -47,6 +47,7 @@ export default function ConversationPage() {
   const [showMenu, setShowMenu] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textInputRef = useRef<HTMLInputElement>(null);
 
   // Auto-scroll to latest message
   useEffect(() => {
@@ -55,9 +56,15 @@ export default function ConversationPage() {
 
   const handleSend = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!inputText.trim()) return;
-    sendMessage(inputText.trim());
+    const text = inputText.trim();
+    if (!text) return;
+    sendMessage(text);
     setInputText("");
+    // Keep cursor active in input box without losing focus (mobile + web)
+    textInputRef.current?.focus();
+    setTimeout(() => {
+      textInputRef.current?.focus();
+    }, 20);
   };
 
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -246,13 +253,13 @@ export default function ConversationPage() {
                       })}
                     </span>
                     {m.isFromMe && (
-                      <span>
+                      <span className="inline-flex items-center ml-0.5" title={m.status}>
                         {m.status === "READ" ? (
-                          <CheckCheck className="w-3 h-3 text-emerald-950 font-bold" />
+                          <CheckCheck className="w-3.5 h-3.5 text-emerald-800 font-black stroke-[3]" />
                         ) : m.status === "DELIVERED" ? (
-                          <CheckCheck className="w-3 h-3 text-black/60" />
+                          <CheckCheck className="w-3.5 h-3.5 text-black/60 stroke-[2.5]" />
                         ) : (
-                          <Check className="w-3 h-3 text-black/50" />
+                          <Check className="w-3.5 h-3.5 text-black/50 stroke-[2]" />
                         )}
                       </span>
                     )}
@@ -290,19 +297,20 @@ export default function ConversationPage() {
 
           {/* Text Input */}
           <input
+            ref={textInputRef}
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             placeholder="Type a message..."
-            disabled={isSending}
             className="flex-1 px-4 py-2 rounded-full bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFC629]"
           />
 
           {/* Send Button */}
           <button
             type="submit"
-            disabled={!inputText.trim() || isSending}
-            className="p-2.5 rounded-full bg-gradient-to-tr from-[#F59E0B] via-[#FFC629] to-[#F59E0B] text-black hover:brightness-105 transition active:scale-95 disabled:opacity-40 shadow-lg shadow-amber-500/20"
+            onMouseDown={(e) => e.preventDefault()}
+            disabled={!inputText.trim()}
+            className="p-2.5 rounded-full bg-gradient-to-tr from-[#F59E0B] via-[#FFC629] to-[#F59E0B] text-black hover:brightness-105 transition active:scale-95 disabled:opacity-40 shadow-lg shadow-amber-500/20 cursor-pointer"
           >
             <Send className="w-4 h-4 fill-current" />
           </button>

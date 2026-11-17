@@ -25,6 +25,8 @@ import {
   X,
   Eye,
   Check,
+  CheckCheck,
+  Heart,
   Mic,
   Lock,
 } from "lucide-react";
@@ -95,8 +97,47 @@ export default function ProfileHubPage() {
     Array<{ id: string; name: string; icon?: string | null; category?: string | null }>
   >([]);
   const [selectedMusicList, setSelectedMusicList] = useState<string[]>([]);
+  const [readReceipts, setReadReceipts] = useState<boolean>(true);
+  const [isTogglingReadReceipts, setIsTogglingReadReceipts] = useState<boolean>(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch Read Receipts setting on mount
+  useEffect(() => {
+    fetch("/api/user/read-receipts")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setReadReceipts(data.readReceiptsEnabled);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleToggleReadReceipts = async () => {
+    if (!entitlements?.isPro && !entitlements?.isPaid) {
+      alert("Read Receipts control is exclusive to TMD PRO members. Upgrade to PRO to toggle read receipts.");
+      return;
+    }
+    try {
+      setIsTogglingReadReceipts(true);
+      const nextVal = !readReceipts;
+      const res = await fetch("/api/user/read-receipts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enabled: nextVal }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update read receipts");
+      setReadReceipts(nextVal);
+      setUploadToast(data.message);
+      setTimeout(() => setUploadToast(null), 3000);
+    } catch (e: any) {
+      alert(e.message || "Failed to update read receipts");
+    } finally {
+      setIsTogglingReadReceipts(false);
+    }
+  };
 
   // Fetch all catalog interests once on mount
   useEffect(() => {
@@ -305,6 +346,7 @@ export default function ProfileHubPage() {
     name: profile.name,
     age: profile.age,
     gender: profile.gender,
+    interestedIn: profile.interestedIn,
     city: profile.city,
     bio: profile.bio,
     profession: profile.profession,
@@ -514,6 +556,21 @@ export default function ProfileHubPage() {
               ✓
             </Link>
           )}
+        </div>
+
+        {/* Gender & Interested In Badges */}
+        <div className="mt-1 flex items-center justify-center gap-2 text-xs font-semibold text-zinc-400">
+          <span className="px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 flex items-center gap-1">
+            <span className="text-amber-400 font-bold">
+              {["female", "woman", "girl"].includes((profile.gender || "").toLowerCase()) ? "♀" : "♂"}
+            </span>
+            <span>{profile.gender || "Gender not set"}</span>
+          </span>
+          <span className="text-zinc-600">•</span>
+          <span className="px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 flex items-center gap-1">
+            <Heart className="w-3 h-3 text-rose-400 fill-rose-400" />
+            <span>Seeking: {profile.interestedIn || "Everyone"}</span>
+          </span>
         </div>
 
         {/* Bumble Pill Action Buttons: Complete Profile & Preview */}
@@ -1198,6 +1255,40 @@ export default function ProfileHubPage() {
                 </div>
                 <ChevronRight className="w-4 h-4 text-zinc-500" />
               </Link>
+
+              {/* Read Receipts Setting (Pro Exclusive) */}
+              <div className="p-3.5 rounded-xl bg-zinc-900 flex items-center justify-between text-xs font-semibold text-white">
+                <div className="flex items-center gap-3">
+                  <CheckCheck className="w-4 h-4 text-emerald-400" />
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <span>Read Receipts</span>
+                      <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-400 text-[9px] font-black uppercase">
+                        PRO
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-zinc-400 font-normal block">
+                      {readReceipts
+                        ? "Matches see green ticks when you read"
+                        : "Hidden: matches only see delivered grey ticks"}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleToggleReadReceipts}
+                  disabled={isTogglingReadReceipts}
+                  className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
+                    readReceipts ? "bg-emerald-600" : "bg-zinc-700"
+                  }`}
+                >
+                  <span
+                    className={`block w-4 h-4 rounded-full bg-white transition-transform ${
+                      readReceipts ? "translate-x-6" : "translate-x-1"
+                    }`}
+                  />
+                </button>
+              </div>
             </div>
 
             <button

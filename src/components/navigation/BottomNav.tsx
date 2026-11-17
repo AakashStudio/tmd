@@ -12,15 +12,15 @@ export const BottomNav: React.FC = () => {
   React.useEffect(() => {
     async function checkUnread() {
       try {
-        const res = await fetch("/api/notifications");
+        const res = await fetch("/api/chat/unread-count");
         if (res.ok) {
           const data = await res.json();
-          setUnreadCount(data.unreadCount || 0);
+          setUnreadCount(typeof data.unreadCount === "number" ? data.unreadCount : 0);
         }
       } catch (e) {}
     }
     checkUnread();
-    const interval = setInterval(checkUnread, 15000);
+    const interval = setInterval(checkUnread, 8000);
     return () => clearInterval(interval);
   }, [pathname]);
 

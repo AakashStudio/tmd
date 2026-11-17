@@ -31,13 +31,13 @@ export default function VerificationPage() {
 
   const handleDobSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!requestedDob || !docUrl.trim()) return;
+    if (!requestedDob) return;
     try {
       setIsSubmittingDob(true);
       setDobError(null);
       const res = await submitDobCorrection({
         requestedDob: new Date(requestedDob).toISOString(),
-        documentUrl: docUrl.trim(),
+        documentUrl: docUrl.trim() || undefined,
         notes: dobNotes.trim() || undefined,
       });
       setDobSuccess(res.message);
@@ -153,12 +153,12 @@ export default function VerificationPage() {
           )}
         </Card>
 
-        {/* SECTION 2: Request DOB Correction */}
+        {/* SECTION 2: Correct DOB */}
         <Card id="dob" className="space-y-3 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-[#FFC629]" />
-              <h2 className="text-sm font-bold">Request DOB Correction</h2>
+              <h2 className="text-sm font-bold">Correct DOB</h2>
             </div>
             <Badge variant={isPro ? "pro" : "neutral"}>
               {isPro ? "PRO Feature" : "PRO Plan Required"}
@@ -214,13 +214,20 @@ export default function VerificationPage() {
                     />
                   </div>
 
-                  <Input
-                    label="Government ID / Document Proof URL"
-                    placeholder="https://example.com/id_proof.jpg"
-                    value={docUrl}
-                    onChange={(e) => setDocUrl(e.target.value)}
-                    required
-                  />
+                  {!isPro ? (
+                    <Input
+                      label="Government ID / Document Proof URL"
+                      placeholder="https://example.com/id_proof.jpg"
+                      value={docUrl}
+                      onChange={(e) => setDocUrl(e.target.value)}
+                      required
+                    />
+                  ) : (
+                    <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-[11px] text-emerald-400 flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 shrink-0 text-emerald-400" />
+                      <span>PRO Membership: Identity proof upload is waived for your account.</span>
+                    </div>
+                  )}
 
                   <div>
                     <label className="text-xs font-semibold text-[#9e9ea8] uppercase tracking-wider block mb-1">
@@ -235,8 +242,8 @@ export default function VerificationPage() {
                     />
                   </div>
 
-                  <Button type="submit" variant="primary" className="w-full text-xs" isLoading={isSubmittingDob}>
-                    Submit DOB Correction Request
+                  <Button type="submit" variant="primary" className="w-full text-xs font-bold" isLoading={isSubmittingDob}>
+                    Correct DOB
                   </Button>
                 </form>
               )}

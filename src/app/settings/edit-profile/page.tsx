@@ -41,6 +41,8 @@ export default function EditProfilePage() {
   const [longitude, setLongitude] = useState<number | null>(null);
   const [isDetectingGps, setIsDetectingGps] = useState<boolean>(false);
   const [bio, setBio] = useState("");
+  const [gender, setGender] = useState("Male");
+  const [interestedIn, setInterestedIn] = useState("Female");
   const [profession, setProfession] = useState("");
   const [education, setEducation] = useState("");
   const [height, setHeight] = useState("");
@@ -96,6 +98,8 @@ export default function EditProfilePage() {
       setProfession(profile.profession || "");
       setEducation(profile.education || "");
       setHeight(profile.height ? String(profile.height) : "");
+      setGender(profile.gender || "Male");
+      setInterestedIn(profile.interestedIn || "Female");
       setRelationshipIntention(profile.relationshipIntention || "LONG_TERM");
     }
   }, [profile]);
@@ -156,6 +160,8 @@ export default function EditProfilePage() {
         city: city.trim(),
         state: stateName.trim() || null,
         country: countryName.trim() || "India",
+        gender,
+        interestedIn,
         bio: bio.trim() || null,
         profession: profession.trim() || null,
         education: education.trim() || null,
@@ -286,9 +292,58 @@ export default function EditProfilePage() {
             <p className="text-[11px] text-zinc-500 leading-relaxed">
               Age and DOB cannot be directly changed. ₹499 PRO users can{" "}
               <Link href="/settings/verification#dob" className="text-[#FFC629] hover:underline font-bold">
-                request a DOB correction
+                correct your DOB
               </Link>{" "}
               with administrative verification.
+            </p>
+          </div>
+
+          {/* 2.5 Gender & Interested In Preferences */}
+          <div className="p-4 rounded-2xl bg-[#14141a] border border-zinc-800/90 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-extrabold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+                <Heart className="w-3.5 h-3.5 text-[#FFC629]" />
+                <span>Gender & Matching Preference</span>
+              </span>
+              <span className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-[#FFC629] text-[10px] font-bold">
+                Discovery Filter
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-[11px] font-semibold text-zinc-400 block mb-1">
+                  My Gender
+                </label>
+                <select
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-700/80 text-white text-xs focus:outline-none focus:border-[#FFC629] cursor-pointer"
+                >
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Non-Binary">Non-Binary</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-semibold text-zinc-400 block mb-1">
+                  Interested In
+                </label>
+                <select
+                  value={interestedIn}
+                  onChange={(e) => setInterestedIn(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-700/80 text-white text-xs focus:outline-none focus:border-[#FFC629] cursor-pointer"
+                >
+                  <option value="Female">Girls / Women</option>
+                  <option value="Male">Boys / Men</option>
+                  <option value="Everyone">Everyone</option>
+                </select>
+              </div>
+            </div>
+            <p className="text-[10px] text-zinc-500">
+              Your feed will only show profiles that match your selected preferences.
             </p>
           </div>
 

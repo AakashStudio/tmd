@@ -169,35 +169,61 @@ export async function POST(req: NextRequest) {
     });
 
     if (reciprocalLike) {
-      // Reciprocal like detected: Create canonical Match
+      // Reciprocal like detected: Atomically create canonical Match and resolve both likes
       const { user1Id, user2Id } = getCanonicalMatchPair(user.id, targetUserId);
 
-      const match = await prisma.match.upsert({
-        where: {
-          user1Id_user2Id: {
+      const { match, conversation } = await prisma.$transaction(async (tx) => {
+        // 1. Mark both likes as ACCEPTED
+        await tx.like.updateMany({
+          where: {
+            OR: [
+              { fromUserId: user.id, toUserId: targetUserId },
+              { fromUserId: targetUserId, toUserId: user.id },
+            ],
+          },
+          data: { status: "ACCEPTED" },
+        });
+
+        // 2. Clear any passes between the users
+        await tx.pass.deleteMany({
+          where: {
+            OR: [
+              { fromUserId: user.id, toUserId: targetUserId },
+              { fromUserId: targetUserId, toUserId: user.id },
+            ],
+          },
+        });
+
+        // 3. Upsert canonical Match
+        const m = await tx.match.upsert({
+          where: {
+            user1Id_user2Id: {
+              user1Id,
+              user2Id,
+            },
+          },
+          update: {
+            status: "ACTIVE",
+          },
+          create: {
             user1Id,
             user2Id,
+            status: "ACTIVE",
           },
-        },
-        update: {
-          status: "ACTIVE",
-        },
-        create: {
-          user1Id,
-          user2Id,
-          status: "ACTIVE",
-        },
-      });
+        });
 
-      // Ensure conversation exists
-      const conversation = await prisma.conversation.upsert({
-        where: {
-          matchId: match.id,
-        },
-        update: {},
-        create: {
-          matchId: match.id,
-        },
+        // 4. Ensure conversation exists
+        const c = await tx.conversation.upsert({
+          where: {
+            matchId: m.id,
+          },
+          update: {},
+          create: {
+            matchId: m.id,
+          },
+        });
+
+        return { match: m, conversation: c };
       });
 
       // If either user sent a pre-match comment, insert into conversation

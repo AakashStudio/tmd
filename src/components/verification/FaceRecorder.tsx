@@ -191,7 +191,8 @@ export const FaceRecorder: React.FC<FaceRecorderProps> = ({ onSuccess, onError }
     setCapturedBlob(null);
     setCapturedPreviewUrl(null);
     setErrorMessage(null);
-    setState("idle");
+    // Directly re-open camera and restart recording session
+    handleStartProcess();
   };
 
   const handleSubmit = async () => {

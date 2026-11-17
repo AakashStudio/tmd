@@ -14,11 +14,20 @@ export async function GET(req: NextRequest) {
     // Determine if recipient is paid / has plan
     const isPaid = user.activeSubscription?.status === "ACTIVE" || user.role === "ADMIN";
 
-    // Fetch incoming likes where recipient is current user and status is PENDING
+    // Fetch incoming likes where recipient is current user and status is PENDING,
+    // excluding any user where an active connection / match already exists
     const incomingLikes = await prisma.like.findMany({
       where: {
         toUserId: user.id,
         status: "PENDING",
+        fromUser: {
+          NOT: {
+            OR: [
+              { matchesAsUser1: { some: { user2Id: user.id, status: "ACTIVE" } } },
+              { matchesAsUser2: { some: { user1Id: user.id, status: "ACTIVE" } } },
+            ],
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
       include: {

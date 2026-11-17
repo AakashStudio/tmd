@@ -7,6 +7,7 @@ export interface DiscoveryCandidate {
   name: string;
   age: number;
   gender: string;
+  interestedIn?: string;
   city: string;
   bio: string | null;
   profession: string | null;

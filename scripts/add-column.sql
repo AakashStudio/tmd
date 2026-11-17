@@ -1,0 +1,1 @@
+ALTER TABLE preferences ADD COLUMN IF NOT EXISTS "readReceiptsEnabled" BOOLEAN NOT NULL DEFAULT true;

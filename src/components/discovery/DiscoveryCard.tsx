@@ -106,10 +106,21 @@ export function DiscoveryCard({ candidate, onOpenProfile }: DiscoveryCardProps) 
               </div>
             )}
 
-            {/* Location, Profession, Height (Left-aligned under name) */}
+            {/* Gender, Location, Profession, Height (Left-aligned under name) */}
             <div className="flex flex-wrap items-center gap-x-2 text-xs font-semibold text-zinc-200 drop-shadow">
+              {candidate.gender && (
+                <span className="flex items-center gap-1">
+                  <span className="text-amber-300 font-bold">
+                    {["female", "woman", "girl"].includes(candidate.gender.toLowerCase()) ? "♀" : "♂"}
+                  </span>
+                  <span>{candidate.gender}</span>
+                </span>
+              )}
               {candidate.city && (
-                <span className="flex items-center gap-1">📍 {candidate.city}</span>
+                <>
+                  {candidate.gender && <span className="text-zinc-400">•</span>}
+                  <span className="flex items-center gap-1">📍 {candidate.city}</span>
+                </>
               )}
               {candidate.profession && (
                 <>
