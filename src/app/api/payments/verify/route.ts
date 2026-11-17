@@ -16,18 +16,25 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json().catch(() => ({}));
     const orderId = body.orderId || body.order_id || body.razorpay_order_id;
-    const paymentId = body.paymentId || body.payment_id || body.razorpay_payment_id || `pay_upi_${Date.now()}`;
-    const signature = body.signature || body.razorpay_signature || "upi_direct_verified";
+    const paymentId = body.paymentId || body.payment_id || body.razorpay_payment_id;
+    const signature = body.signature || body.razorpay_signature;
     const { planCode } = body;
 
-    if (!orderId) {
+    if (!orderId || !paymentId || !signature) {
       return NextResponse.json(
-        { error: "Order ID is required." },
+        { error: "orderId, paymentId, and signature are strictly required." },
         { status: 400 }
       );
     }
 
-    // Verify HMAC signature
+    if (!config.payments.razorpayKeySecret) {
+      return NextResponse.json(
+        { error: "Payment gateway secret is not configured on server." },
+        { status: 500 }
+      );
+    }
+
+    // Verify HMAC-SHA256 signature using secret key
     const text = `${orderId}|${paymentId}`;
     const generatedSignature = crypto
       .createHmac("sha256", config.payments.razorpayKeySecret)
@@ -40,17 +47,16 @@ export async function POST(req: NextRequest) {
         signature === "mock_signature" ||
         signature === "test_signature");
 
-    const isDirectUpi =
-      signature === "upi_direct_verified" ||
-      signature === "upi_intent_verified" ||
-      signature === "upi_utr_verified" ||
-      (typeof paymentId === "string" &&
-        (paymentId.startsWith("pay_upi_") ||
-          paymentId.startsWith("utr_") ||
-          paymentId.startsWith("upi_") ||
-          /^\d{12}$/.test(paymentId)));
-
-    const isSignatureValid = signature === generatedSignature || isDevMock || isDirectUpi;
+    let isSignatureValid = false;
+    if (isDevMock) {
+      isSignatureValid = true;
+    } else {
+      const expectedBuf = Buffer.from(generatedSignature, "utf-8");
+      const receivedBuf = Buffer.from(signature, "utf-8");
+      isSignatureValid =
+        expectedBuf.length === receivedBuf.length &&
+        crypto.timingSafeEqual(expectedBuf, receivedBuf);
+    }
 
     if (!isSignatureValid) {
       // Mark payment as FAILED
@@ -60,7 +66,7 @@ export async function POST(req: NextRequest) {
       });
 
       return NextResponse.json(
-        { error: "Payment verification signature mismatch." },
+        { error: "Payment verification signature mismatch. Tampered or unpaid transaction." },
         { status: 400 }
       );
     }

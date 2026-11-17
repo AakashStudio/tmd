@@ -55,6 +55,24 @@ const VALID_COUPONS: Record<string, { discountPercent?: number; discountFlat?: n
   STARTER: { discountPercent: 30, label: "30% Starter Off Applied!" },
 };
 
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window === "undefined") return resolve(false);
+    if ((window as any).Razorpay) return resolve(true);
+    const existing = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve(true));
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
 export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = ({
   isOpen,
   onClose,
@@ -69,16 +87,9 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
 
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [launchingAppMessage, setLaunchingAppMessage] = useState<string | null>(null);
-  const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
-  const [upiDetails, setUpiDetails] = useState<any | null>(null);
-
-  // QR Modal for Desktop or explicit QR selection
-  const [showQrModal, setShowQrModal] = useState<boolean>(false);
-  const [copiedVpa, setCopiedVpa] = useState<boolean>(false);
 
   // Success Celebration State
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState<boolean>(false);
-  const pollingTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Calculate pricing & GST
   const baseOriginal = plan.priceInRupees || 149;
@@ -90,12 +101,6 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
   const gstAmount = finalPayable - rechargeAmount;
 
   const billingState = userProfile?.state || "Maharashtra";
-
-  // Check if device is mobile
-  const isMobile = () => {
-    if (typeof window === "undefined") return false;
-    return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
-  };
 
   // Handle Coupon Apply
   const handleApplyCoupon = () => {
@@ -128,84 +133,21 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
     setCouponError(null);
   };
 
-  // Auto-verify helper
-  const triggerAutoVerification = async (orderId: string) => {
-    try {
-      const res = await fetch("/api/payments/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId,
-          paymentId: `pay_upi_${Date.now()}`,
-          signature: "upi_direct_verified",
-          planCode: plan.code,
-        }),
-      });
-
-      if (res.ok) {
-        if (pollingTimerRef.current) clearInterval(pollingTimerRef.current);
-        setShowQrModal(false);
-        setIsProcessing(false);
-        setLaunchingAppMessage(null);
-        setIsSuccessModalOpen(true);
-        onPaymentSuccess(plan.code);
-        return true;
-      }
-    } catch (err) {
-      // Continue polling silently
-    }
-    return false;
-  };
-
-  // Automated background polling for payment completion
-  useEffect(() => {
-    if (!activeOrderId) return;
-
-    let isSubscribed = true;
-    pollingTimerRef.current = setInterval(async () => {
-      if (!isSubscribed) return;
-      await triggerAutoVerification(activeOrderId);
-    }, 2500);
-
-    // Also check immediately when user switches tab or app back to TMD
-    const handleVisibilityOrFocus = async () => {
-      if (document.visibilityState === "visible" && activeOrderId && isSubscribed) {
-        await triggerAutoVerification(activeOrderId);
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityOrFocus);
-    window.addEventListener("focus", handleVisibilityOrFocus);
-
-    return () => {
-      isSubscribed = false;
-      if (pollingTimerRef.current) clearInterval(pollingTimerRef.current);
-      document.removeEventListener("visibilitychange", handleVisibilityOrFocus);
-      window.removeEventListener("focus", handleVisibilityOrFocus);
-    };
-  }, [activeOrderId]);
-
-  // Main payment execution: directly launches app
+  // Main payment execution: Launches secure Razorpay gateway with UPI QR / Apps / Cards
   const executePayment = async (methodOverride?: PaymentMethodType) => {
     const methodToUse = methodOverride || selectedMethod;
     setSelectedMethod(methodToUse);
 
     try {
       setIsProcessing(true);
-      const appName =
-        methodToUse === "gpay"
-          ? "Google Pay"
-          : methodToUse === "phonepe"
-          ? "PhonePe"
-          : methodToUse === "paytm"
-          ? "Paytm"
-          : methodToUse === "cred"
-          ? "CRED"
-          : "UPI App";
+      setLaunchingAppMessage("Connecting to payment gateway...");
 
-      setLaunchingAppMessage(`Opening ${appName}...`);
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) {
+        throw new Error("Unable to load secure Razorpay gateway. Please check your internet connection.");
+      }
 
-      // 1. Create order
+      // 1. Create verified order on server via official Razorpay API
       const orderRes = await fetch("/api/payments/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -217,68 +159,82 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
 
       if (!orderRes.ok) {
         const err = await orderRes.json().catch(() => ({}));
-        throw new Error(err.error || "Failed to initialize payment");
+        throw new Error(err.error || "Failed to initialize payment order");
       }
 
       const orderData = await orderRes.json();
-      setActiveOrderId(orderData.orderId);
-      setUpiDetails(orderData.upiDetails);
 
-      const upi = orderData.upiDetails;
+      setLaunchingAppMessage("Opening secure checkout...");
 
-      // If user is on Desktop / Laptop, mobile apps cannot be opened, show QR Code directly
-      if (!isMobile() || methodToUse === "upi_qr") {
-        setShowQrModal(true);
+      // 2. Configure official Razorpay Standard Checkout
+      const options: any = {
+        key: orderData.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_TsEClVNy3FvpRk",
+        amount: orderData.amount,
+        currency: "INR",
+        name: "The Match Date",
+        description: `${plan.name} (₹${finalPayable})`,
+        order_id: orderData.orderId,
+        prefill: {
+          name: userProfile?.name || "",
+          contact: userProfile?.phone || "",
+        },
+        theme: {
+          color: "#F5D020",
+        },
+        modal: {
+          ondismiss: () => {
+            setIsProcessing(false);
+            setLaunchingAppMessage(null);
+          },
+        },
+        handler: async (response: any) => {
+          try {
+            setIsProcessing(true);
+            setLaunchingAppMessage("Verifying payment with bank...");
+
+            const verifyRes = await fetch("/api/payments/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                orderId: response.razorpay_order_id,
+                paymentId: response.razorpay_payment_id,
+                signature: response.razorpay_signature,
+                planCode: plan.code,
+              }),
+            });
+
+            if (!verifyRes.ok) {
+              const verifyErr = await verifyRes.json().catch(() => ({}));
+              throw new Error(verifyErr.error || "Payment verification failed. Please contact support.");
+            }
+
+            setIsProcessing(false);
+            setLaunchingAppMessage(null);
+            setIsSuccessModalOpen(true);
+            onPaymentSuccess(plan.code);
+          } catch (err: any) {
+            alert(err.message || "Failed to verify transaction with bank.");
+            setIsProcessing(false);
+            setLaunchingAppMessage(null);
+          }
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.on("payment.failed", (response: any) => {
         setIsProcessing(false);
         setLaunchingAppMessage(null);
-        return;
-      }
+        alert(`Payment failed: ${response.error?.description || "Transaction was declined by bank."}`);
+      });
 
-      // 2. Select intent URL
-      let intentUrl = upi?.upiIntentUrl;
-      if (methodToUse === "gpay" && upi?.gpayUrl) {
-        intentUrl = upi.gpayUrl;
-      } else if (methodToUse === "phonepe" && upi?.phonepeUrl) {
-        intentUrl = upi.phonepeUrl;
-      } else if (methodToUse === "paytm" && upi?.paytmUrl) {
-        intentUrl = upi.paytmUrl;
-      } else if (methodToUse === "cred" && upi?.credUrl) {
-        intentUrl = upi.credUrl;
-      } else if (methodToUse === "other_upi") {
-        intentUrl = upi?.upiIntentUrl;
-      }
-
-      if (intentUrl) {
-        // Direct launch into the user's UPI app! No extra modal!
-        const anchor = document.createElement("a");
-        anchor.href = intentUrl;
-        anchor.target = "_self";
-        document.body.appendChild(anchor);
-        anchor.click();
-        document.body.removeChild(anchor);
-
-        // Keep a non-intrusive status pill active
-        setTimeout(() => {
-          setIsProcessing(false);
-          setLaunchingAppMessage("Waiting for UPI payment confirmation...");
-        }, 1500);
-      } else {
-        setShowQrModal(true);
-        setIsProcessing(false);
-        setLaunchingAppMessage(null);
-      }
+      setIsProcessing(false);
+      setLaunchingAppMessage(null);
+      rzp.open();
     } catch (err: any) {
       alert(err.message || "Could not proceed to payment");
       setIsProcessing(false);
       setLaunchingAppMessage(null);
     }
-  };
-
-  // Copy VPA helper
-  const handleCopyVpa = (vpa: string) => {
-    navigator.clipboard?.writeText(vpa);
-    setCopiedVpa(true);
-    setTimeout(() => setCopiedVpa(false), 2500);
   };
 
   if (!isOpen) return null;
@@ -308,22 +264,11 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
           </button>
         </div>
 
-        {/* Status banner when returning from UPI app */}
+        {/* Status banner when processing payment */}
         {launchingAppMessage && (
-          <div className="px-4 py-2.5 bg-gradient-to-r from-amber-500/10 via-amber-500/20 to-amber-500/10 border-b border-amber-500/30 text-amber-900 text-xs font-bold flex items-center justify-between animate-pulse shrink-0">
-            <div className="flex items-center gap-2">
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-700" />
-              <span>{launchingAppMessage}</span>
-            </div>
-            {activeOrderId && (
-              <button
-                type="button"
-                onClick={() => triggerAutoVerification(activeOrderId)}
-                className="text-[11px] underline font-black text-amber-900 hover:text-black cursor-pointer"
-              >
-                I have paid
-              </button>
-            )}
+          <div className="px-4 py-2.5 bg-gradient-to-r from-amber-500/10 via-amber-500/20 to-amber-500/10 border-b border-amber-500/30 text-amber-900 text-xs font-bold flex items-center gap-2 animate-pulse shrink-0">
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-700" />
+            <span>{launchingAppMessage}</span>
           </div>
         )}
 
@@ -680,64 +625,6 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
           </button>
         </div>
       </div>
-
-      {/* ================= MODAL: SCAN & PAY QR (Used on Desktop or explicit QR) ================= */}
-      {showQrModal && upiDetails && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/85 p-4 animate-in fade-in">
-          <div className="w-full max-w-sm bg-white rounded-3xl p-6 text-zinc-900 shadow-2xl relative text-center">
-            <button
-              type="button"
-              onClick={() => setShowQrModal(false)}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center hover:bg-zinc-200"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            <h3 className="text-base font-black text-zinc-900">Scan & Pay via any UPI App</h3>
-            <p className="text-xs text-zinc-500 mt-1">
-              Open GPay, PhonePe, Paytm or CRED on your phone and scan:
-            </p>
-
-            {/* Dynamic QR Display */}
-            <div className="my-5 p-4 rounded-2xl bg-zinc-50 border border-zinc-200 flex flex-col items-center justify-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
-                  upiDetails.upiIntentUrl
-                )}`}
-                alt="UPI QR Code"
-                className="w-48 h-48 rounded-lg shadow-sm"
-              />
-              <span className="text-base font-black text-zinc-900 mt-3 font-mono">
-                Amount: ₹{finalPayable}
-              </span>
-            </div>
-
-            {/* UPI ID copy */}
-            <div className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-100 text-xs mb-4">
-              <span className="font-mono text-zinc-600 truncate text-[11px]">{upiDetails.payeeVpa}</span>
-              <button
-                type="button"
-                onClick={() => handleCopyVpa(upiDetails.payeeVpa)}
-                className="px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold text-[11px] flex items-center gap-1 active:scale-95"
-              >
-                {copiedVpa ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
-                <span>{copiedVpa ? "Copied" : "Copy VPA"}</span>
-              </button>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                if (activeOrderId) triggerAutoVerification(activeOrderId);
-              }}
-              className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs transition active:scale-95 cursor-pointer shadow-md shadow-emerald-600/20"
-            >
-              I Have Completed Payment
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* ================= CELEBRATION SUCCESS MODAL ================= */}
       {isSuccessModalOpen && (
