@@ -173,6 +173,14 @@ export const EventTicketBookingModal: React.FC<EventTicketBookingModalProps> = (
 
   // 2. Finalize Booking & Generate Digital Ticket
   const executeBooking = async (utr?: string) => {
+    if (totalPayable > 0) {
+      const clean = (utr || "").trim();
+      if (!clean || clean.length < 8) {
+        setErrorMessage("Please enter your 12-digit UPI UTR / Reference Number from your payment app.");
+        return;
+      }
+    }
+
     try {
       setIsProcessing(true);
       setErrorMessage(null);
@@ -252,13 +260,27 @@ export const EventTicketBookingModal: React.FC<EventTicketBookingModalProps> = (
           {confirmedTicket ? (
             <div className="space-y-4 animate-in zoom-in-95">
               <div className="text-center space-y-1">
-                <span className="px-3 py-1 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-widest inline-block">
-                  ✓ Booking Confirmed
-                </span>
-                <h3 className="text-lg font-black text-white">You're on the Guest List! 🎉</h3>
-                <p className="text-xs text-zinc-400">
-                  Show this QR pass at the cafe door for direct check-in.
-                </p>
+                {confirmedTicket.paymentStatus === "PENDING" ? (
+                  <>
+                    <span className="px-3 py-1 rounded-full text-[10px] font-black bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase tracking-widest inline-block">
+                      ⏳ Verification Pending
+                    </span>
+                    <h3 className="text-lg font-black text-white">Payment Queued for Verification! ⏳</h3>
+                    <p className="text-xs text-zinc-400">
+                      Your 12-digit UTR has been submitted. The organizer / TMD team will verify and activate your pass shortly.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <span className="px-3 py-1 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-widest inline-block">
+                      ✓ Booking Confirmed
+                    </span>
+                    <h3 className="text-lg font-black text-white">You're on the Guest List! 🎉</h3>
+                    <p className="text-xs text-zinc-400">
+                      Show this QR pass at the cafe door for direct check-in.
+                    </p>
+                  </>
+                )}
               </div>
 
               {/* Digital Golden Boarding Pass */}
@@ -613,10 +635,15 @@ export const EventTicketBookingModal: React.FC<EventTicketBookingModalProps> = (
                 </button>
               </div>
 
-              {/* Optional 12-digit UTR Input */}
+              {/* 12-digit UTR Input */}
               <div>
-                <label className="text-[11px] text-zinc-400 block mb-1 font-medium">
-                  UPI Ref / UTR Number <span className="text-zinc-500">(Optional)</span>
+                <label className="text-[11px] text-zinc-300 block mb-1 font-semibold">
+                  12-Digit UPI Ref / UTR Number{" "}
+                  {totalPayable > 0 ? (
+                    <span className="text-amber-400 font-bold">*Required</span>
+                  ) : (
+                    <span className="text-zinc-500">(Optional for Free Event)</span>
+                  )}
                 </label>
                 <input
                   type="text"
@@ -626,6 +653,9 @@ export const EventTicketBookingModal: React.FC<EventTicketBookingModalProps> = (
                   placeholder="e.g. 4312XXXXXXXX (12 digits)"
                   className="w-full px-3 py-2 rounded-xl bg-[#161622] border border-white/10 text-white font-mono text-xs placeholder-zinc-500 focus:outline-none focus:border-[#FFC629]"
                 />
+                <p className="text-[10px] text-zinc-400 mt-1">
+                  Found in your GPay / PhonePe / Paytm transaction receipt after paying.
+                </p>
               </div>
 
               {errorMessage && (
@@ -639,16 +669,16 @@ export const EventTicketBookingModal: React.FC<EventTicketBookingModalProps> = (
               <button
                 type="button"
                 onClick={() => executeBooking(utrNumber)}
-                disabled={isProcessing}
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#FFC629] to-[#F59E0B] text-black font-black text-sm transition shadow-lg shadow-[#FFC629]/25 flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                disabled={isProcessing || (totalPayable > 0 && utrNumber.length < 8)}
+                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#FFC629] to-[#F59E0B] text-black font-black text-sm transition shadow-lg shadow-[#FFC629]/25 flex items-center justify-center gap-2 disabled:opacity-40 cursor-pointer"
               >
                 {isProcessing ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin text-black" />
-                    <span>Verifying &amp; Generating Pass...</span>
+                    <span>Submitting Pass...</span>
                   </>
                 ) : (
-                  <span>✓ I Have Paid • Confirm Booking</span>
+                  <span>✓ Submit UTR &amp; Reserve Pass</span>
                 )}
               </button>
             </div>

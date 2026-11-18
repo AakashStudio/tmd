@@ -1274,20 +1274,30 @@ export default function ProfileHubPage() {
                     </span>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleToggleReadReceipts}
-                  disabled={isTogglingReadReceipts}
-                  className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
-                    readReceipts ? "bg-emerald-600" : "bg-zinc-700"
-                  }`}
-                >
-                  <span
-                    className={`block w-4 h-4 rounded-full bg-white transition-transform ${
-                      readReceipts ? "translate-x-6" : "translate-x-1"
+                {entitlements?.isPro ? (
+                  <button
+                    type="button"
+                    onClick={handleToggleReadReceipts}
+                    disabled={isTogglingReadReceipts}
+                    className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
+                      readReceipts ? "bg-emerald-600" : "bg-zinc-700"
                     }`}
-                  />
-                </button>
+                  >
+                    <span
+                      className={`block w-4 h-4 rounded-full bg-white transition-transform ${
+                        readReceipts ? "translate-x-6" : "translate-x-1"
+                      }`}
+                    />
+                  </button>
+                ) : (
+                  <Link
+                    href="/plan"
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/25 text-[11px] font-black hover:bg-amber-500/20 transition"
+                  >
+                    <Lock className="w-3 h-3" />
+                    <span>Unlock PRO</span>
+                  </Link>
+                )}
               </div>
             </div>
 

@@ -74,8 +74,23 @@ export async function POST(
 
     const basePriceInPaise = unitPrice * quantity * 100;
     const convenienceFee = event.convenienceFee || 39;
-    const convenienceFeeInPaise = convenienceFee * 100; // e.g. ₹39 per booking
+    const convenienceFeeInPaise = basePriceInPaise > 0 ? convenienceFee * 100 : 0;
     const totalAmountInPaise = basePriceInPaise + convenienceFeeInPaise;
+
+    // Validate UTR if payment is required
+    const cleanUtr = body.utrNumber ? String(body.utrNumber).trim() : null;
+    if (totalAmountInPaise > 0) {
+      if (!cleanUtr || cleanUtr.length < 8 || cleanUtr.length > 20) {
+        return NextResponse.json(
+          { error: "A valid 12-digit UPI Reference / UTR Number is required to book a paid pass." },
+          { status: 400 }
+        );
+      }
+    }
+
+    const isDirectFree = totalAmountInPaise === 0;
+    const paymentStatus = isDirectFree ? "PAID" : "PENDING";
+    const paymentTxnId = cleanUtr || (isDirectFree ? `free_${Date.now()}` : `utr_sub_${Date.now()}`);
 
     // Platform profit calculation:
     // TMD keeps: 100% of convenienceFee (₹39) + 7% host commission from base ticket!
@@ -92,10 +107,11 @@ export async function POST(
       usr: user.id,
       qty: quantity,
       type: ticketType,
+      status: paymentStatus,
       ts: Date.now(),
     });
 
-    // 4. Atomic Transaction: Create Ticket + Update Seats + Approve Attendee
+    // 4. Atomic Transaction: Create Ticket + Update Seats + Upsert Attendee
     const ticket = await prisma.$transaction(async (tx) => {
       const newTicket = await tx.eventTicket.create({
         data: {
@@ -110,9 +126,9 @@ export async function POST(
           organizerPayoutInPaise,
           ticketCode,
           qrData,
-          paymentStatus: "PAID",
+          paymentStatus,
           paymentMethod: body.paymentMethod || "UPI",
-          paymentTxnId: `txn_upi_${Date.now()}`,
+          paymentTxnId,
           attendeeName,
           attendeePhone,
         },
@@ -126,7 +142,7 @@ export async function POST(
         },
       });
 
-      // Upsert attendee to APPROVED
+      // Upsert attendee to REQUESTED or APPROVED
       await tx.eventAttendee.upsert({
         where: {
           eventId_userId: {
@@ -135,13 +151,13 @@ export async function POST(
           },
         },
         update: {
-          status: "APPROVED",
+          status: isDirectFree ? "APPROVED" : "REQUESTED",
         },
         create: {
           eventId: event.id,
           userId: user.id,
-          status: "APPROVED",
-          note: `Booked ${quantity}x ${ticketType}`,
+          status: isDirectFree ? "APPROVED" : "REQUESTED",
+          note: `Booked ${quantity}x ${ticketType} (UTR: ${paymentTxnId})`,
         },
       });
 

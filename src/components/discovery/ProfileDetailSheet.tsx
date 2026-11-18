@@ -116,22 +116,53 @@ export function ProfileDetailSheet({
     }
   };
 
-  const handleBlock = () => {
-    setActionNotice(`${candidate.name} has been blocked.`);
-    setTimeout(() => {
-      setActionNotice(null);
+  const handleBlock = async () => {
+    if (!confirm(`Are you sure you want to block ${candidate.name}? They will no longer be able to match or message you.`)) {
+      return;
+    }
+    try {
+      await fetch("/api/safety/block", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blockedUserId: candidate.userId }),
+      });
+      setActionNotice(`${candidate.name} has been blocked.`);
+      setTimeout(() => {
+        setActionNotice(null);
+        onPass();
+        onClose();
+      }, 1200);
+    } catch {
       onPass();
       onClose();
-    }, 1200);
+    }
   };
 
-  const handleReport = () => {
-    setActionNotice(`Report submitted for ${candidate.name}. Our safety team will review.`);
-    setTimeout(() => {
-      setActionNotice(null);
+  const handleReport = async () => {
+    const details = prompt(`Why are you reporting ${candidate.name}? (e.g. Inappropriate messages, fake photos, scam)`);
+    if (details === null) return; // User cancelled
+
+    try {
+      await fetch("/api/safety/report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reportedUserId: candidate.userId,
+          reason: "INAPPROPRIATE_BEHAVIOR",
+          details: details.trim() || "Reported from profile preview",
+          autoBlock: true,
+        }),
+      });
+      setActionNotice(`Report submitted for ${candidate.name}. They have been blocked.`);
+      setTimeout(() => {
+        setActionNotice(null);
+        onPass();
+        onClose();
+      }, 1500);
+    } catch {
       onPass();
       onClose();
-    }, 1500);
+    }
   };
 
   const promptQ = candidate.promptQuestion || "I feel happiest when...";
@@ -141,10 +172,10 @@ export function ProfileDetailSheet({
   const anthemCover = candidate.anthemCoverUrl || "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200";
 
   return (
-    <div className="fixed inset-0 z-[70] overflow-y-auto bg-black text-white animate-in fade-in slide-in-from-bottom-6 duration-200">
+    <div className="fixed inset-0 z-[100] overflow-y-auto bg-black text-white animate-in fade-in slide-in-from-bottom-6 duration-200">
       {/* Action Notification Toast */}
       {actionNotice && (
-        <div className="fixed top-5 inset-x-4 z-50 max-w-sm mx-auto p-3.5 rounded-xl bg-zinc-900 border border-zinc-700 text-center text-xs font-semibold text-rose-300 shadow-2xl animate-in fade-in">
+        <div className="fixed top-5 inset-x-4 z-[120] max-w-sm mx-auto p-3.5 rounded-xl bg-zinc-900 border border-zinc-700 text-center text-xs font-semibold text-rose-300 shadow-2xl animate-in fade-in">
           {actionNotice}
         </div>
       )}
@@ -175,7 +206,7 @@ export function ProfileDetailSheet({
         </button>
       </div>
 
-      <div className="max-w-md mx-auto px-4 pt-3 pb-32 space-y-3.5">
+      <div className="max-w-md mx-auto px-4 pt-3 pb-40 space-y-3.5">
         {/* 1. Large Photo View */}
         <div className="relative w-full aspect-[3/4] rounded-3xl overflow-hidden bg-zinc-900 shadow-xl border border-zinc-900">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -529,7 +560,7 @@ export function ProfileDetailSheet({
 
       {/* 9. Floating Bottom Pass & Like Bar (Only when viewing other users on Discovery) */}
       {!isOwnProfile && (
-        <div className="fixed bottom-6 inset-x-0 z-[80] flex items-center justify-center gap-8 pointer-events-none">
+        <div className="fixed bottom-6 inset-x-0 z-[110] flex items-center justify-center gap-8 pointer-events-none">
           <button
             type="button"
             onClick={() => {

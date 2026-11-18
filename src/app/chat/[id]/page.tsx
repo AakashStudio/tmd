@@ -94,9 +94,51 @@ export default function ConversationPage() {
     }
   };
 
+  const handleBlockPartner = async () => {
+    if (!partner) return;
+    if (!confirm(`Are you sure you want to block ${partner.name}? Communication will be severed immediately.`)) {
+      return;
+    }
+    setShowMenu(false);
+    try {
+      await fetch("/api/safety/block", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blockedUserId: partner.userId }),
+      });
+      alert(`${partner.name} has been blocked.`);
+      router.push("/chat");
+    } catch {
+      router.push("/chat");
+    }
+  };
+
+  const handleReportPartner = async () => {
+    if (!partner) return;
+    const reason = prompt(`Why are you reporting ${partner.name}? (e.g. Inappropriate messages, harassment, scam)`);
+    if (reason === null) return;
+    setShowMenu(false);
+    try {
+      await fetch("/api/safety/report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reportedUserId: partner.userId,
+          reason: "INAPPROPRIATE_BEHAVIOR",
+          details: reason.trim() || "Reported from active chat",
+          autoBlock: true,
+        }),
+      });
+      alert(`Report submitted for ${partner.name}. They have been blocked.`);
+      router.push("/chat");
+    } catch {
+      router.push("/chat");
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start py-4 sm:py-8 px-3 sm:px-4 w-full box-border overflow-x-hidden">
-      <div className="w-full max-w-md h-[92vh] max-h-[844px] min-h-[600px] bg-[#0c0c10] text-white rounded-3xl border border-white/[0.08] shadow-2xl relative box-border overflow-hidden flex flex-col justify-between">
+    <div className="min-h-screen bg-[#08080b] flex flex-col items-center justify-start py-0 sm:py-8 px-0 sm:px-4 w-full box-border overflow-x-hidden">
+      <div className="w-full max-w-md h-[100dvh] sm:h-[92vh] sm:max-h-[844px] min-h-[500px] bg-[#0c0c10] text-white rounded-none sm:rounded-3xl border-0 sm:border border-white/[0.08] shadow-2xl relative box-border overflow-hidden flex flex-col justify-between">
         {/* Top Header */}
       <header className="px-3.5 py-3 border-b border-zinc-800/80 flex items-center justify-between sticky top-0 bg-[#0c0c10]/95 backdrop-blur-md z-30">
         <div className="flex items-center gap-2.5">
@@ -149,20 +191,16 @@ export default function ConversationPage() {
           {showMenu && (
             <div className="absolute right-0 top-10 w-44 rounded-xl bg-zinc-900 border border-zinc-800 shadow-xl py-1 z-40 text-xs animate-in fade-in">
               <button
-                onClick={() => {
-                  setShowMenu(false);
-                  alert("To report, use the Safety center in Settings.");
-                }}
-                className="w-full text-left px-4 py-2 hover:bg-zinc-800 text-rose-400"
+                type="button"
+                onClick={handleReportPartner}
+                className="w-full text-left px-4 py-2 hover:bg-zinc-800 text-rose-400 font-medium"
               >
                 Report User
               </button>
               <button
-                onClick={() => {
-                  setShowMenu(false);
-                  alert("To block, use the Safety center in Settings.");
-                }}
-                className="w-full text-left px-4 py-2 hover:bg-zinc-800 text-rose-500"
+                type="button"
+                onClick={handleBlockPartner}
+                className="w-full text-left px-4 py-2 hover:bg-zinc-800 text-rose-500 font-medium"
               >
                 Block User
               </button>

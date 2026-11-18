@@ -376,7 +376,7 @@ export default function ChatPage() {
                         <p className="text-sm text-white font-medium leading-relaxed">
                           "{req.comment || "Sent you a like!"}"
                         </p>
-                      ) : (
+                      ) : req.comment ? (
                         <div className="relative p-2 rounded-lg bg-zinc-950/80 border border-zinc-800 text-center space-y-1.5">
                           <p className="text-xs text-zinc-300 blur-sm select-none">
                             "Hey! Really loved your photo, hope we can connect soon..."
@@ -392,6 +392,10 @@ export default function ChatPage() {
                             Upgrade Plan →
                           </Link>
                         </div>
+                      ) : (
+                        <p className="text-xs text-zinc-300 font-medium">
+                          Sent you a like! Accept to start chatting.
+                        </p>
                       )}
                     </div>
 
@@ -518,15 +522,24 @@ export default function ChatPage() {
             )}
 
             {filteredConversations.length === 0 ? (
-              <div className="text-center py-12 text-zinc-500 text-xs space-y-2">
+              <div className="text-center py-12 text-zinc-500 text-xs space-y-3">
                 <p>No active conversations yet.</p>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("MATCHES")}
-                  className="text-amber-400 font-semibold underline text-xs"
-                >
-                  Pick a match from the MATCHES tab to begin →
-                </button>
+                <div className="flex items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("MATCHES")}
+                    className="text-amber-400 font-semibold underline text-xs cursor-pointer"
+                  >
+                    View Matches ({matches.length})
+                  </button>
+                  <span className="text-zinc-600">•</span>
+                  <Link
+                    href="/"
+                    className="text-amber-400 font-semibold underline text-xs"
+                  >
+                    Explore Profiles 🔥
+                  </Link>
+                </div>
               </div>
             ) : (
               <div className="space-y-1 divide-y divide-zinc-900">

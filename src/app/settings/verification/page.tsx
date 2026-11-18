@@ -170,7 +170,10 @@ export default function VerificationPage() {
             <span className="font-semibold text-white">
               {profile?.dob ? new Date(profile.dob).toLocaleDateString() : "—"} ({profile?.age} yrs)
             </span>
-            . To correct an erroneous DOB, submit a government ID for staff review.
+            .{" "}
+            {isPro
+              ? "PRO Member Benefit: You can update your Date of Birth directly without uploading identity proof."
+              : "To correct an erroneous DOB, upgrade to TMD PRO or submit an ID proof for staff review."}
           </p>
 
           {!isPro ? (
