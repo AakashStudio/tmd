@@ -173,7 +173,15 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
 
       const orderData = await orderRes.json();
 
-      // 2. Configure Razorpay Standard Checkout
+      const upiAppMap: Record<string, string> = {
+        gpay: "google_pay",
+        phonepe: "phonepe",
+        paytm: "paytm",
+        cred: "cred",
+      };
+      const targetApp = upiAppMap[methodToUse];
+
+      // 2. Configure Razorpay Standard Checkout targeting the selected app directly
       const options: any = {
         key:
           orderData.keyId ||
@@ -189,7 +197,39 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
           contact: userProfile?.phone || "",
           email: userProfile?.email || "user@tmd.dizitio.com",
           method: methodToUse === "cards" ? "card" : "upi",
-          vpa: "success@razorpay", // Pre-fills test VPA in Razorpay Test Mode for 1-click test success
+          vpa: "success@razorpay", // Default test VPA for instant simulation
+        },
+        config: {
+          display: {
+            blocks: targetApp
+              ? {
+                  upi: {
+                    name: `Pay via ${appNameMap[methodToUse]}`,
+                    instruments: [
+                      {
+                        method: "upi",
+                        flows: ["intent", "qr"],
+                        apps: [targetApp],
+                      },
+                    ],
+                  },
+                }
+              : {
+                  all: {
+                    name: "Payment Methods",
+                    instruments: [
+                      { method: "card" },
+                      { method: "netbanking" },
+                      { method: "wallet" },
+                      { method: "upi" },
+                    ],
+                  },
+                },
+            sequence: targetApp ? ["block.upi"] : ["block.all"],
+            preferences: {
+              show_default_blocks: !targetApp,
+            },
+          },
         },
         theme: {
           color: "#F5D020",
