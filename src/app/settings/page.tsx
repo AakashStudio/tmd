@@ -29,6 +29,8 @@ import {
   Heart,
   Mic,
   Lock,
+  MapPin,
+  Compass,
 } from "lucide-react";
 
 const POPULAR_MOODS = [
@@ -776,7 +778,118 @@ export default function ProfileHubPage() {
           )}
         </div>
 
-        {/* ================= 5. ABOUT ME & MY MOOD ================= */}
+        {/* ================= MID-SECTION: DATING LOCATION & DISCOVERY RANGE ================= */}
+        <div className="space-y-2.5 pt-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <h3 className="font-extrabold text-sm text-white flex items-center gap-1.5">
+                <MapPin className="w-4 h-4 text-[#FFC629]" />
+                <span>Dating Location & Range</span>
+              </h3>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                Matches Booster
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => openQuickEdit("LIVING_IN")}
+              className="text-xs font-bold text-[#FFC629] hover:underline flex items-center gap-1 cursor-pointer"
+            >
+              Change City 📍
+            </button>
+          </div>
+
+          {/* Big Featured Location Card */}
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-b from-[#181822] via-[#14141b] to-[#101015] border border-amber-500/25 p-4 space-y-3 shadow-xl hover:border-amber-400/40 transition">
+            {/* Top Row: Current City & Status */}
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500/20 via-yellow-500/15 to-transparent border border-amber-400/30 flex items-center justify-center shrink-0 shadow-inner">
+                  <Compass className="w-6 h-6 text-[#FFC629]" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-amber-400/90 block">
+                    Current Active City
+                  </span>
+                  <h4 className="text-lg font-black text-white tracking-tight flex items-center gap-1.5">
+                    <span>{profile.city || "Set Your City"}</span>
+                    {profile.state && (
+                      <span className="text-xs font-semibold text-zinc-400">({profile.state})</span>
+                    )}
+                  </h4>
+                  <p className="text-[11px] text-zinc-400 font-medium">
+                    {profile.country || "India"} • Active Matching Zone
+                  </p>
+                </div>
+              </div>
+
+              {/* Status Pill */}
+              <div className="shrink-0 text-right">
+                {entitlements?.isPro || entitlements?.planCode === "TIER_149" ? (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-gradient-to-r from-amber-500/20 to-yellow-500/20 text-amber-300 border border-amber-400/40 shadow-sm">
+                    ⚡ Unlimited Passport™
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-zinc-800 text-zinc-300 border border-zinc-700">
+                    📍 {entitlements?.locationChangesRemaining ?? 3} Free Left
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Explanation / Range Boost note */}
+            <div className="p-3 rounded-xl bg-black/40 border border-white/5 text-[11px] text-zinc-300 leading-relaxed flex items-start gap-2.5">
+              <span className="text-base shrink-0">🎯</span>
+              <p>
+                Agar aapke shehar me matches khatam ho gaye hain, toh yahan se location change karke naye verified singles unlock karein aur zyada matches paayein!
+              </p>
+            </div>
+
+            {/* Quick Hubs 1-Tap Switch */}
+            <div className="space-y-1.5">
+              <span className="text-[11px] font-bold text-zinc-400 flex items-center gap-1">
+                <span>🔥</span> Popular Cities (1-Tap Switch):
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {[
+                  { city: "Indore", state: "Madhya Pradesh" },
+                  { city: "Bhopal", state: "Madhya Pradesh" },
+                  { city: "Delhi", state: "Delhi" },
+                  { city: "Mumbai", state: "Maharashtra" },
+                  { city: "Pune", state: "Maharashtra" },
+                  { city: "Bangalore", state: "Karnataka" },
+                ].map((item) => (
+                  <button
+                    key={item.city}
+                    type="button"
+                    disabled={isSaving || profile.city?.toLowerCase() === item.city.toLowerCase()}
+                    onClick={() => handleSaveLocation({ city: item.city, state: item.state, country: "India" })}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition active:scale-95 cursor-pointer ${
+                      profile.city?.toLowerCase() === item.city.toLowerCase()
+                        ? "bg-[#FFC629] text-black shadow-md shadow-amber-500/20 cursor-default"
+                        : "bg-zinc-900 border border-zinc-800 text-zinc-300 hover:border-amber-400/40 hover:text-white"
+                    }`}
+                  >
+                    📍 {item.city}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Big Action Button */}
+            <button
+              type="button"
+              onClick={() => openQuickEdit("LIVING_IN")}
+              disabled={isSaving}
+              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#F59E0B] via-[#FFC629] to-[#F59E0B] text-black font-extrabold text-xs tracking-wide shadow-lg shadow-amber-500/20 hover:brightness-105 active:scale-98 transition flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <MapPin className="w-4 h-4 text-black" />
+              <span>{isSaving ? "Saving Location..." : "Change Location / Explore Any City"}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* ================= 6. ABOUT ME & MY MOOD ================= */}
         <div className="space-y-2 pt-1">
           <div className="flex items-center justify-between">
             <h3 className="font-extrabold text-sm text-white">Profile Prompts</h3>
