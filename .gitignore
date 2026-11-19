@@ -36,3 +36,10 @@ next-env.d.ts
 # prisma
 /prisma/*.db
 /prisma/*.db-journal
+
+# uploads
+/public/uploads/photos/*
+!/public/uploads/photos/.gitkeep
+/public/uploads/audio/temp_*
+/storage/private_media/*
+!/storage/private_media/.gitkeep

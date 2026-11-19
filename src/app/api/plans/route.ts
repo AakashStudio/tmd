@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   try {
-    const user = await getCurrentUser();
+    const user = await getCurrentUser(req);
     const plans = await prisma.plan.findMany({
       where: { priceInPaise: { gt: 0 } },
       orderBy: { priceInPaise: "asc" },
