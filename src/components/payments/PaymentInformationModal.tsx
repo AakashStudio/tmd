@@ -287,12 +287,11 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
     }
   };
 
-  // 4. Launch Razorpay Standard Checkout (ONLY FOR CARDS / NET BANKING)
-  const handleCardsOrNetbanking = async () => {
-    setSelectedMethod("cards");
+  // 4. Launch Razorpay Standard Checkout (FOR RAZORPAY GATEWAY & TEST MODE SIMULATOR)
+  const handleRazorpayCheckout = async (prefillMethod: string = "upi") => {
     try {
       setIsProcessing(true);
-      setLaunchingAppMessage("Opening Card & Net Banking checkout...");
+      setLaunchingAppMessage("Opening Razorpay Gateway...");
 
       const isLoaded = await loadRazorpayScript();
       if (!isLoaded) {
@@ -314,8 +313,9 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
         description: `${plan.name} (₹${finalPayable})`,
         order_id: orderData.orderId,
         prefill: {
-          name: userProfile?.name || "",
-          contact: userProfile?.phone || "",
+          name: userProfile?.name || "Test User",
+          contact: userProfile?.phone || "8817958002",
+          method: prefillMethod,
         },
         theme: {
           color: "#F5D020",
@@ -354,6 +354,11 @@ export const PaymentInformationModal: React.FC<PaymentInformationModalProps> = (
       setIsProcessing(false);
       setLaunchingAppMessage(null);
     }
+  };
+
+  const handleCardsOrNetbanking = () => {
+    setSelectedMethod("cards");
+    handleRazorpayCheckout("card");
   };
 
   // 5. Verification & Plan Activation
