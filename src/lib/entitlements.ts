@@ -42,7 +42,7 @@ export const PLAN_ENTITLEMENT_MATRIX: Record<PlanCode, UserEntitlements> = {
   },
   [PlanCode.TIER_49]: {
     planCode: PlanCode.TIER_49,
-    planName: "₹29 / 15 Days",
+    planName: "₹29 Starter / 7 Days",
     isPaid: true,
     isPro: false,
     swipesLimitPerWindow: null, // Unlimited
@@ -61,7 +61,7 @@ export const PLAN_ENTITLEMENT_MATRIX: Record<PlanCode, UserEntitlements> = {
   },
   [PlanCode.TIER_149]: {
     planCode: PlanCode.TIER_149,
-    planName: "₹49 / 15 Days",
+    planName: "₹49 Gold / 15 Days",
     isPaid: true,
     isPro: false,
     swipesLimitPerWindow: null, // Unlimited
@@ -80,7 +80,7 @@ export const PLAN_ENTITLEMENT_MATRIX: Record<PlanCode, UserEntitlements> = {
   },
   [PlanCode.PRO_499]: {
     planCode: PlanCode.PRO_499,
-    planName: "₹99 VIP PRO / 10 Days",
+    planName: "₹99 VIP PRO / 30 Days",
     isPaid: true,
     isPro: true,
     swipesLimitPerWindow: null, // Unlimited

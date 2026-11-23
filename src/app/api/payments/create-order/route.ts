@@ -28,16 +28,17 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Plan not found." }, { status: 404 });
       }
 
-      // Ensure price in paise is synced to latest pricing matrix (₹29, ₹49, ₹99)
-      const expectedPaise: Record<string, number> = {
-        TIER_49: 2900,
-        TIER_149: 4900,
-        PRO_499: 9900,
+      // Ensure price & duration are synced to latest matrix (Starter 7d/₹29, Gold 15d/₹49, VIP PRO 30d/₹99)
+      const expectedMeta: Record<string, { paise: number; days: number; name: string }> = {
+        TIER_49: { paise: 2900, days: 7, name: "₹29 Starter / 7 Days" },
+        TIER_149: { paise: 4900, days: 15, name: "₹49 Gold / 15 Days" },
+        PRO_499: { paise: 9900, days: 30, name: "₹99 VIP PRO / 30 Days" },
       };
-      if (expectedPaise[planCode] && targetPlan.priceInPaise !== expectedPaise[planCode]) {
+      const meta = expectedMeta[planCode];
+      if (meta && (targetPlan.priceInPaise !== meta.paise || targetPlan.durationDays !== meta.days)) {
         targetPlan = await prisma.plan.update({
           where: { code: planCode as PlanCode },
-          data: { priceInPaise: expectedPaise[planCode] },
+          data: { priceInPaise: meta.paise, durationDays: meta.days, name: meta.name },
         });
       }
 

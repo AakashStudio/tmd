@@ -99,7 +99,7 @@ export default function PlansPage() {
     {
       code: "TIER_49",
       badge: "Starter",
-      title: "15 Days Starter",
+      title: "7 Days Starter",
       subtitle: `₹${tier49Price} total`,
       price: tier49Price,
       totalPrice: tier49Price,
@@ -117,7 +117,7 @@ export default function PlansPage() {
     {
       code: "PRO_499",
       badge: "VIP PRO",
-      title: "VIP PRO & Host",
+      title: "30 Days VIP PRO",
       subtitle: `₹${pro499Price} total`,
       price: pro499Price,
       totalPrice: pro499Price,
@@ -178,8 +178,8 @@ export default function PlansPage() {
     }
   > = {
     TIER_49: {
-      headline: "Unlimited Likes & see who liked you with ₹29 Starter.",
-      pillTitle: "Included with ₹29 Starter",
+      headline: "Unlimited Likes & see who liked you with 7 Days Starter (₹29).",
+      pillTitle: "Included with 7 Days Starter",
       features: [
         {
           title: "Unlimited Likes",
@@ -194,8 +194,8 @@ export default function PlansPage() {
           desc: "Browse live singles events and meetups across the city.",
         },
         {
-          title: "15 Days Active Access",
-          desc: "Full 15-day membership with zero recurring charges or hidden fees.",
+          title: "7 Days Active Access",
+          desc: "Full 7-day membership with zero recurring charges or hidden fees.",
         },
       ],
     },
@@ -254,8 +254,8 @@ export default function PlansPage() {
           desc: "Fast-track administrative review for name changes and DOB updates.",
         },
         {
-          title: "10 Days VIP Access",
-          desc: "Exclusive VIP privileges and event organizer tools for 10 days.",
+          title: "30 Days VIP Access",
+          desc: "Exclusive VIP privileges and event organizer tools for 30 days.",
         },
       ],
     },
@@ -477,7 +477,7 @@ export default function PlansPage() {
         <div className="fixed bottom-16 inset-x-0 z-40 bg-gradient-to-t from-black via-[#0d0d12]/95 to-[#0d0d12]/90 backdrop-blur-md max-w-md mx-auto px-5 pt-2 pb-2.5 border-t border-zinc-900/80 space-y-2">
           {/* Fine Print Legal Text */}
           <p className="text-[10px] text-zinc-400 leading-tight">
-            One-time payment for {selectedPlanCode === "PRO_499" ? "10" : "15"} days. No hidden charges or auto-renewals. By tapping Continue, you agree to our{" "}
+            One-time payment for {selectedPlanCode === "PRO_499" ? "30" : selectedPlanCode === "TIER_49" ? "7" : "15"} days. No hidden charges or auto-renewals. By tapping Continue, you agree to our{" "}
             <span className="underline font-semibold text-zinc-300 cursor-pointer">Terms</span>.
           </p>
 
@@ -537,7 +537,7 @@ export default function PlansPage() {
             code: selectedPlanCode,
             name: currentSelectedPkg.title,
             priceInRupees: currentSelectedPkg.totalPrice,
-            durationDays: selectedPlanCode === "PRO_499" ? 10 : 15,
+            durationDays: selectedPlanCode === "PRO_499" ? 30 : selectedPlanCode === "TIER_49" ? 7 : 15,
             isPro: selectedPlanCode === "PRO_499",
           }}
           userProfile={{
