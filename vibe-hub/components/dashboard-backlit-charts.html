@@ -1,0 +1,62 @@
+<!-- BACKLIT UI (BKLIT) DARK-MODE SAAS DASHBOARD COMPONENT -->
+<div class="max-w-5xl mx-auto p-6 rounded-2xl bg-slate-950/90 border border-slate-800 shadow-2xl">
+  <!-- Header -->
+  <div class="flex items-center justify-between pb-6 border-b border-slate-800">
+    <div>
+      <span class="text-xs font-mono text-violet-400">ANALYTICS ENGINE v3.2</span>
+      <h2 class="text-xl font-bold text-white mt-1">Real-time Platform Throughput</h2>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span class="text-xs font-mono text-emerald-400">LIVE SYNC ACTIVE</span>
+    </div>
+  </div>
+
+  <!-- Metric KPI Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800/80">
+      <span class="text-xs text-slate-400">Total API Volume</span>
+      <div class="text-2xl font-bold text-white mt-1">1,482,900</div>
+      <div class="text-[11px] text-emerald-400 mt-1 flex items-center gap-1 font-mono">
+        ↑ +14.8% vs last week
+      </div>
+    </div>
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800/80">
+      <span class="text-xs text-slate-400">Average P99 Latency</span>
+      <div class="text-2xl font-bold text-cyan-400 mt-1">18.4 ms</div>
+      <div class="text-[11px] text-emerald-400 mt-1 flex items-center gap-1 font-mono">
+        ↓ -3.2ms optimization
+      </div>
+    </div>
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800/80">
+      <span class="text-xs text-slate-400">Active Container Pods</span>
+      <div class="text-2xl font-bold text-violet-400 mt-1">142 / 160</div>
+      <div class="text-[11px] text-slate-400 mt-1 font-mono">
+        88.7% cluster capacity
+      </div>
+    </div>
+  </div>
+
+  <!-- Animated Bar Chart Mockup -->
+  <div class="p-5 rounded-xl bg-slate-900/40 border border-slate-800/60">
+    <div class="flex items-center justify-between mb-4">
+      <span class="text-xs font-semibold text-slate-300">Hourly Throughput Load</span>
+      <span class="text-[11px] font-mono text-slate-500">24H TIMEFRAME</span>
+    </div>
+    <div class="flex items-end justify-between gap-2 h-36 pt-4">
+      <!-- Bars with CSS transitions -->
+      <div class="flex-1 bg-violet-600/30 hover:bg-violet-500 rounded-t transition-all duration-500 h-[35%]" title="01:00 - 35%"></div>
+      <div class="flex-1 bg-violet-600/30 hover:bg-violet-500 rounded-t transition-all duration-500 h-[45%]" title="02:00 - 45%"></div>
+      <div class="flex-1 bg-violet-600/30 hover:bg-violet-500 rounded-t transition-all duration-500 h-[60%]" title="03:00 - 60%"></div>
+      <div class="flex-1 bg-violet-600/30 hover:bg-violet-500 rounded-t transition-all duration-500 h-[40%]" title="04:00 - 40%"></div>
+      <div class="flex-1 bg-violet-600/30 hover:bg-violet-500 rounded-t transition-all duration-500 h-[80%]" title="05:00 - 80%"></div>
+      <div class="flex-1 bg-violet-600/50 hover:bg-violet-400 rounded-t transition-all duration-500 h-[95%]" title="06:00 - 95%"></div>
+      <div class="flex-1 bg-gradient-to-t from-violet-600 to-cyan-400 rounded-t shadow-lg shadow-violet-500/30 h-[100%]" title="Peak - 100%"></div>
+      <div class="flex-1 bg-violet-600/50 hover:bg-violet-400 rounded-t transition-all duration-500 h-[85%]" title="08:00 - 85%"></div>
+      <div class="flex-1 bg-violet-600/30 hover:bg-violet-500 rounded-t transition-all duration-500 h-[70%]" title="09:00 - 70%"></div>
+      <div class="flex-1 bg-violet-600/30 hover:bg-violet-500 rounded-t transition-all duration-500 h-[55%]" title="10:00 - 55%"></div>
+      <div class="flex-1 bg-violet-600/30 hover:bg-violet-500 rounded-t transition-all duration-500 h-[65%]" title="11:00 - 65%"></div>
+      <div class="flex-1 bg-violet-600/30 hover:bg-violet-500 rounded-t transition-all duration-500 h-[75%]" title="12:00 - 75%"></div>
+    </div>
+  </div>
+</div>

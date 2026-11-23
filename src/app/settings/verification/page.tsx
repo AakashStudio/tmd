@@ -180,7 +180,7 @@ export default function VerificationPage() {
             <div className="p-3.5 rounded-lg bg-[#1e1e26] border border-[#2a2a38] flex items-start gap-3">
               <Lock className="w-4 h-4 text-[#FFC629] shrink-0 mt-0.5" />
               <div>
-                <span className="text-xs font-bold text-white block">Exclusive to ₹499 PRO Subscribers</span>
+                <span className="text-xs font-bold text-white block">Exclusive to ₹99 PRO Subscribers</span>
                 <span className="text-[11px] text-[#9e9ea8] block mt-0.5">
                   Upgrade to TMD PRO to unlock DOB Correction requests and Name changes.
                 </span>

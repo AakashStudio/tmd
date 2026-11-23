@@ -27,6 +27,20 @@ export async function POST(req: NextRequest) {
       if (!targetPlan) {
         return NextResponse.json({ error: "Plan not found." }, { status: 404 });
       }
+
+      // Ensure price in paise is synced to latest pricing matrix (₹29, ₹49, ₹99)
+      const expectedPaise: Record<string, number> = {
+        TIER_49: 2900,
+        TIER_149: 4900,
+        PRO_499: 9900,
+      };
+      if (expectedPaise[planCode] && targetPlan.priceInPaise !== expectedPaise[planCode]) {
+        targetPlan = await prisma.plan.update({
+          where: { code: planCode as PlanCode },
+          data: { priceInPaise: expectedPaise[planCode] },
+        });
+      }
+
       targetAmountInPaise = customAmountInRupees
         ? Math.round(customAmountInRupees * 100)
         : targetPlan.priceInPaise;

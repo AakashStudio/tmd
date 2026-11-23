@@ -35,8 +35,8 @@ async function main() {
     },
     {
       code: PlanCode.TIER_49,
-      name: "₹49 / 15 Days",
-      priceInPaise: 4900,
+      name: "₹29 Starter / 15 Days",
+      priceInPaise: 2900,
       durationDays: 15,
       isPro: false,
       features: JSON.stringify({
@@ -46,13 +46,13 @@ async function main() {
         citySelection: false,
         distanceFilter: false,
         ads: true,
-        events: false,
+        events: true,
       }),
     },
     {
       code: PlanCode.TIER_149,
-      name: "₹149 / 15 Days",
-      priceInPaise: 14900,
+      name: "₹49 Gold / 15 Days",
+      priceInPaise: 4900,
       durationDays: 15,
       isPro: false,
       features: JSON.stringify({
@@ -62,13 +62,13 @@ async function main() {
         citySelection: true,
         distanceFilter: true,
         ads: false,
-        events: false,
+        events: true,
       }),
     },
     {
       code: PlanCode.PRO_499,
-      name: "₹499 PRO / 10 Days",
-      priceInPaise: 49900,
+      name: "₹99 VIP PRO / 10 Days",
+      priceInPaise: 9900,
       durationDays: 10,
       isPro: true,
       features: JSON.stringify({

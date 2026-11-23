@@ -8,6 +8,22 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   try {
     const user = await getCurrentUser(req);
+    // Ensure database rows match updated pricing matrix (₹29, ₹49, ₹99)
+    await Promise.allSettled([
+      prisma.plan.updateMany({
+        where: { code: "TIER_49", priceInPaise: { not: 2900 } },
+        data: { priceInPaise: 2900, name: "₹29 Starter / 15 Days" },
+      }),
+      prisma.plan.updateMany({
+        where: { code: "TIER_149", priceInPaise: { not: 4900 } },
+        data: { priceInPaise: 4900, name: "₹49 Gold / 15 Days" },
+      }),
+      prisma.plan.updateMany({
+        where: { code: "PRO_499", priceInPaise: { not: 9900 } },
+        data: { priceInPaise: 9900, name: "₹99 VIP PRO / 10 Days" },
+      }),
+    ]);
+
     const plans = await prisma.plan.findMany({
       where: { priceInPaise: { gt: 0 } },
       orderBy: { priceInPaise: "asc" },
@@ -25,14 +41,14 @@ export async function GET(req: NextRequest) {
             "Ads enabled",
             "Current city discovery",
             "No rewind",
-            "Events map locked",
+            "Explore & join singles events",
           ];
           break;
         case "TIER_49":
           featuresList = [
             "Unlimited Likes",
             "See First 10 People Who Liked You",
-            "Local Singles Discovery",
+            "Explore & Join Singles Events",
             "15 days validity",
           ];
           break;
@@ -43,14 +59,14 @@ export async function GET(req: NextRequest) {
             "Unlimited Rewinds",
             "Passport™ City Selection",
             "Hide Ads",
+            "Explore & Join Singles Events",
             "15 days validity",
           ];
           break;
         case "PRO_499":
           featuresList = [
             "Everything in TMD Gold",
-            "Singles Events Map Access",
-            "Host & Join Singles Events",
+            "Host Your Own Singles Events",
             "VIP PRO & Host Verification Badge",
             "Priority Name & DOB Correction",
             "10 days VIP validity",

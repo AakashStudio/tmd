@@ -34,15 +34,15 @@ export const PLAN_ENTITLEMENT_MATRIX: Record<PlanCode, UserEntitlements> = {
     locationChangesRemaining: 3,
     maxFreeLocationChanges: 3,
     hasAds: true,
-    canAccessEvents: false,
-    canJoinEvents: false,
-    canCreateEvents: false,
+    canAccessEvents: true, // Everyone can explore events
+    canJoinEvents: true,   // Everyone (free & paid) can join events
+    canCreateEvents: false, // Only ₹99 VIP PRO can host
     canChangeName: false,
     canRequestDobCorrection: false,
   },
   [PlanCode.TIER_49]: {
     planCode: PlanCode.TIER_49,
-    planName: "₹49 / 15 Days",
+    planName: "₹29 / 15 Days",
     isPaid: true,
     isPro: false,
     swipesLimitPerWindow: null, // Unlimited
@@ -53,15 +53,15 @@ export const PLAN_ENTITLEMENT_MATRIX: Record<PlanCode, UserEntitlements> = {
     locationChangesRemaining: 3,
     maxFreeLocationChanges: 3,
     hasAds: true,
-    canAccessEvents: false,
-    canJoinEvents: false,
+    canAccessEvents: true,
+    canJoinEvents: true,
     canCreateEvents: false,
     canChangeName: false,
     canRequestDobCorrection: false,
   },
   [PlanCode.TIER_149]: {
     planCode: PlanCode.TIER_149,
-    planName: "₹149 / 15 Days",
+    planName: "₹49 / 15 Days",
     isPaid: true,
     isPro: false,
     swipesLimitPerWindow: null, // Unlimited
@@ -72,15 +72,15 @@ export const PLAN_ENTITLEMENT_MATRIX: Record<PlanCode, UserEntitlements> = {
     locationChangesRemaining: Infinity,
     maxFreeLocationChanges: 3,
     hasAds: false,
-    canAccessEvents: false,
-    canJoinEvents: false,
+    canAccessEvents: true,
+    canJoinEvents: true,
     canCreateEvents: false,
     canChangeName: false,
     canRequestDobCorrection: false,
   },
   [PlanCode.PRO_499]: {
     planCode: PlanCode.PRO_499,
-    planName: "₹499 PRO / 10 Days",
+    planName: "₹99 VIP PRO / 10 Days",
     isPaid: true,
     isPro: true,
     swipesLimitPerWindow: null, // Unlimited
@@ -93,7 +93,7 @@ export const PLAN_ENTITLEMENT_MATRIX: Record<PlanCode, UserEntitlements> = {
     hasAds: false,
     canAccessEvents: true,
     canJoinEvents: true,
-    canCreateEvents: true,
+    canCreateEvents: true, // Host krne kliye you need to have 99 plan
     canChangeName: true,
     canRequestDobCorrection: true,
   },

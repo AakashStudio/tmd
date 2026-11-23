@@ -1,0 +1,132 @@
+{
+  "title": "Master Vibe Coding, Web Design & AI UI Tools Database",
+  "lastUpdated": "2026-10-19T08:22:00+05:30",
+  "deduplicated": true,
+  "sources": [
+    {
+      "sourceId": 1,
+      "creator": "Vishnu.ai",
+      "topic": "7 Websites to Make Premium Vibe-Coded Websites",
+      "url": "https://www.facebook.com/reel/1131743592842735/"
+    },
+    {
+      "sourceId": 2,
+      "creator": "Claude Power User",
+      "topic": "Top 5 Websites That Changed My Life as a Claude User",
+      "url": "https://www.facebook.com/reel/932275916560535/"
+    },
+    {
+      "sourceId": 3,
+      "creator": "Textura Agency",
+      "topic": "Build Cinematic 3D Websites in 5 Minutes with Claude",
+      "url": "https://www.facebook.com/reel/2243060106261015/"
+    }
+  ],
+  "totalTools": 13,
+  "tools": [
+    {
+      "id": 1,
+      "name": "GetLayers AI",
+      "url": "https://getlayers.ai",
+      "category": "Cinematic AI Prompts & 3D Web Templates",
+      "description": "Library of cinematic 3D website prompts and layouts for Claude / AI coders. Includes ready-to-use Three.js/React source code and an Obsidian vault to train AI agents.",
+      "bestFor": "Building responsive 3D interactive websites in minutes with Claude."
+    },
+    {
+      "id": 2,
+      "name": "Scrolltide",
+      "url": "https://scrolltide.com",
+      "category": "3D Design Prompts & Source Code",
+      "description": "Provides 600+ 3D design prompts with full source code to give websites a futuristic, interactive 3D feel.",
+      "bestFor": "Hero 3D animations, interactive 3D graphics, and immersive landing pages."
+    },
+    {
+      "id": 3,
+      "name": "Coconut UI",
+      "url": "https://coconutui.com",
+      "category": "Copy-Paste UI Components for LLMs",
+      "description": "100+ ready-to-go animated cards, transitions, and interactive components ready to copy and paste directly into Claude / ChatGPT prompts.",
+      "bestFor": "Rapid UI prototyping with AI without writing CSS/animation code from scratch."
+    },
+    {
+      "id": 4,
+      "name": "Backlit UI (Bklit UI)",
+      "url": "https://bklit.com",
+      "category": "Dashboard UI & Animated Data Visualizations",
+      "description": "UI component library tailored for dark-mode SaaS dashboards, featuring fully animated charts, metrics bars, and status displays.",
+      "bestFor": "Building modern SaaS analytics dashboards with animated charts."
+    },
+    {
+      "id": 5,
+      "name": "Anime.js",
+      "url": "https://animejs.com",
+      "category": "Web Animation Engine",
+      "description": "Lightweight JavaScript animation engine allowing you to pull thousands of complex animations and SVG effects from a single library.",
+      "bestFor": "Micro-interactions, complex SVG morphing, CSS property animations, and timeline sequencing."
+    },
+    {
+      "id": 6,
+      "name": "Motion.dev",
+      "url": "https://motion.dev",
+      "category": "Smooth Transitions & Gesture Library",
+      "description": "Modern animation and transition engine for web & React (successor to Framer Motion for web) packed with buttery-smooth physics-based animations.",
+      "bestFor": "Page transitions, spring physics, scroll animations, layout morphing, and gesture interactions."
+    },
+    {
+      "id": 7,
+      "name": "Navbar Gallery",
+      "url": "https://navbar.gallery",
+      "category": "Navigation & Header Inspiration",
+      "description": "Extensive curated library of navigation bar inspirations (static, dropdown, mega menu, sidebar) so designs don't look like generic templates.",
+      "bestFor": "Designing unique, premium header and navigation components."
+    },
+    {
+      "id": 8,
+      "name": "Superhero",
+      "url": "https://superhero.design",
+      "category": "Hero Section Inspiration",
+      "description": "Comprehensive library of landing page hero sections featuring 3D motion, typography, and layout concepts.",
+      "bestFor": "Building impactful first folds that immediately capture visitor attention."
+    },
+    {
+      "id": 9,
+      "name": "CTA Gallery",
+      "url": "https://cta.gallery",
+      "category": "Call-to-Action & Conversion Optimization",
+      "description": "Curated collection of call-to-action designs (buttons, modals, floating triggers, newsletter signups) crafted to drive user clicks.",
+      "bestFor": "Designing high-converting buttons, lead generation sections, and interactive CTAs."
+    },
+    {
+      "id": 10,
+      "name": "Footer Design",
+      "url": "https://footer.design",
+      "category": "Footer UI & Typography",
+      "description": "Showcase of high-end, aesthetic, and typographic footer layouts.",
+      "bestFor": "Making website footers look clean, premium, and functional rather than an afterthought."
+    },
+    {
+      "id": 11,
+      "name": "Refero Styles",
+      "url": "https://refero.design/styles",
+      "category": "Product UI Design Systems & Aesthetic Benchmarking",
+      "description": "Real design styles, layouts, and typography patterns sourced directly from leading tech products and startups.",
+      "bestFor": "Selecting color schemes, font pairings, and design systems with proven real-world aesthetic value."
+    },
+    {
+      "id": 12,
+      "name": "3D Icons",
+      "url": "https://3dicons.co",
+      "category": "3D Assets & Visual Elements",
+      "description": "Collection of 1,400+ beautifully crafted open-source 3D icons available in multiple angles and colorways (Figma, PNG, GLTF).",
+      "bestFor": "Replacing flat vector icons with modern 3D graphics to give UI a polished, trendy look."
+    },
+    {
+      "id": 13,
+      "name": "Manus AI",
+      "url": "https://manus.im",
+      "category": "Autonomous Agentic AI Design & Web Builder",
+      "description": "General-purpose agentic AI system that autonomously creates professional-grade UI designs, dashboards, and entire websites end-to-end.",
+      "bestFor": "Fully autonomous creation of dashboards, slides, and websites without manual coding."
+    }
+  ]
+}

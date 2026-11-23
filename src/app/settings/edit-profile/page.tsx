@@ -269,7 +269,7 @@ export default function EditProfilePage() {
             />
             <p className="text-[11px] text-zinc-500">
               {!canEditName
-                ? "Name change is exclusive to the ₹499 VIP PRO plan."
+                ? "Name change is exclusive to the ₹99 VIP PRO plan."
                 : "PRO plan allows custom name editing."}
             </p>
           </div>
@@ -290,7 +290,7 @@ export default function EditProfilePage() {
               <span className="text-xs font-normal text-zinc-400">({profile?.age} years old)</span>
             </p>
             <p className="text-[11px] text-zinc-500 leading-relaxed">
-              Age and DOB cannot be directly changed. ₹499 PRO users can{" "}
+              Age and DOB cannot be directly changed. ₹99 PRO users can{" "}
               <Link href="/settings/verification#dob" className="text-[#FFC629] hover:underline font-bold">
                 correct your DOB
               </Link>{" "}

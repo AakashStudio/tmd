@@ -91,15 +91,15 @@ export default function PlansPage() {
     return found ? Math.round(found.priceInRupees) : fallback;
   };
 
-  const tier49Price = getPkgPrice("TIER_49", 49);
-  const tier149Price = getPkgPrice("TIER_149", 149);
-  const pro499Price = getPkgPrice("PRO_499", 499);
+  const tier49Price = getPkgPrice("TIER_49", 29);
+  const tier149Price = getPkgPrice("TIER_149", 49);
+  const pro499Price = getPkgPrice("PRO_499", 99);
 
   const planPackages = [
     {
       code: "TIER_49",
       badge: "Starter",
-      title: "15 Days",
+      title: "15 Days Starter",
       subtitle: `₹${tier49Price} total`,
       price: tier49Price,
       totalPrice: tier49Price,
@@ -117,7 +117,7 @@ export default function PlansPage() {
     {
       code: "PRO_499",
       badge: "VIP PRO",
-      title: "VIP Events",
+      title: "VIP PRO & Host",
       subtitle: `₹${pro499Price} total`,
       price: pro499Price,
       totalPrice: pro499Price,
@@ -178,8 +178,8 @@ export default function PlansPage() {
     }
   > = {
     TIER_49: {
-      headline: "Unlimited Likes & see who liked you with 15 Days Starter.",
-      pillTitle: "Included with 15 Days Starter",
+      headline: "Unlimited Likes & see who liked you with ₹29 Starter.",
+      pillTitle: "Included with ₹29 Starter",
       features: [
         {
           title: "Unlimited Likes",
@@ -190,8 +190,8 @@ export default function PlansPage() {
           desc: "Reveal your first 10 admirers and match with them instantly.",
         },
         {
-          title: "Local Singles Discovery",
-          desc: "Connect with genuine, verified profiles in your city.",
+          title: "Explore & Join Singles Events",
+          desc: "Browse live singles events and meetups across the city.",
         },
         {
           title: "15 Days Active Access",
@@ -200,7 +200,7 @@ export default function PlansPage() {
       ],
     },
     TIER_149: {
-      headline: "See Who Likes You and match with them instantly with TMD Gold™.",
+      headline: "See Who Likes You & Passport City Selection with TMD Gold (₹49).",
       pillTitle: "Included with TMD Gold",
       features: [
         {
@@ -224,13 +224,17 @@ export default function PlansPage() {
           desc: "Enjoy a completely ad-free premium dating experience.",
         },
         {
+          title: "Explore & Join Singles Events",
+          desc: "Browse and RSVP to singles mixers, speed dates & cafe parties.",
+        },
+        {
           title: "15 Days Full Gold Access",
           desc: "Full 15-day premium membership with all Gold perks unlocked.",
         },
       ],
     },
     PRO_499: {
-      headline: "Host & Join Exclusive Singles Events with TMD VIP PRO.",
+      headline: "Host Your Own Singles Events & VIP Perks with TMD VIP PRO (₹99).",
       pillTitle: "Included with TMD VIP PRO",
       features: [
         {
@@ -238,12 +242,8 @@ export default function PlansPage() {
           desc: "Unlimited likes, see who likes you, unlimited rewinds, passport mode & zero ads.",
         },
         {
-          title: "Singles Events Map Access",
-          desc: "Explore and RSVP to live singles meetups and date events nearby.",
-        },
-        {
-          title: "Host Your Own Events",
-          desc: "Create and publish real-world singles events with attendee approval.",
+          title: "Host Your Own Singles Events",
+          desc: "Create and publish real-world singles events with full attendee screening & approval.",
         },
         {
           title: "VIP PRO & Host Verification Badge",

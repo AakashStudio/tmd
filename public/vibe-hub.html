@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VibeHub — Ultimate Vibe Coding & AI Design Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Local JS Libraries with CDN fallback -->
+  <script src="assets/js/lucide.min.js" onerror="this.src='https://unpkg.com/lucide@latest'"></script>
+  <script src="assets/js/three.min.js" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'"></script>
+  <script src="assets/js/anime.min.js" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js'"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #090d16 55%, #05070d 100%);
+      min-height: 100vh;
+      color: #f1f5f9;
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.25s ease;
+    }
+    .glass-card:hover {
+      border-color: rgba(139, 92, 246, 0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px -10px rgba(124, 58, 237, 0.25);
+    }
+    .glow-badge {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(59, 130, 246, 0.15));
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="font-sans antialiased text-slate-200 custom-scrollbar selection:bg-purple-500 selection:text-white">
+
+  <!-- Top Sticky Navigation Bar -->
+  <header class="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 via-indigo-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-violet-500/25">
+          <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <span class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-purple-300">VibeHub</span>
+          <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">AI Toolkit</span>
+        </div>
+      </div>
+
+      <!-- Quick Action Navigation -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <a href="it-company/index.html" target="_blank" class="flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-md shadow-violet-600/30 hover:scale-105 transition">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+          <span>Live Demo: Synapse.IT</span>
+        </a>
+        <a href="#components-vault" class="hidden md:flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-cyan-500/50 hover:bg-slate-800/50 transition text-slate-300">
+          <i data-lucide="layers" class="w-3.5 h-3.5 text-cyan-400"></i>
+          <span>Templates</span>
+        </a>
+        <a href="#icons-vault" class="hidden md:flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-amber-500/50 hover:bg-slate-800/50 transition text-slate-300">
+          <i data-lucide="box" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>3D Icons (36)</span>
+        </a>
+        <a href="#prompt-composer" class="hidden sm:flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-violet-500/50 hover:bg-slate-800/50 transition text-slate-300">
+          <i data-lucide="cpu" class="w-3.5 h-3.5 text-violet-400"></i>
+          <span>Composer</span>
+        </a>
+        <button onclick="toggleFavoritesOnly()" id="fav-toggle-btn" class="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-amber-500/50 hover:bg-slate-800/50 transition text-slate-300">
+          <i data-lucide="star" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>Favorites (<span id="fav-count">0</span>)</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-6 text-center">
+    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glow-badge text-xs font-medium text-violet-300 mb-4">
+      <i data-lucide="zap" class="w-3.5 h-3.5 text-cyan-400"></i>
+      <span>Curated from Top Facebook & AI Engineering Reels</span>
+    </div>
+    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white max-w-3xl mx-auto leading-tight">
+      Build <span class="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-fuchsia-300 to-cyan-400">Ultra-Premium</span> Websites With AI
+    </h1>
+    <p class="mt-3 text-sm sm:text-base text-slate-400 max-w-2xl mx-auto">
+      Ab jab bhi website banani ho, bas yahan aao, tool pick karo, prompt copy karo aur Claude ya Antigravity me paste kardo.
+    </p>
+
+    <!-- Search & Filter Controls -->
+    <div class="mt-8 max-w-3xl mx-auto flex flex-col sm:flex-row gap-3">
+      <div class="relative flex-1">
+        <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
+        <input 
+          type="text" 
+          id="search-input" 
+          placeholder="Search tools, 3D, animations, navbar, dashboard..." 
+          class="w-full pl-11 pr-4 py-3 bg-slate-900/90 border border-slate-800 rounded-xl text-sm placeholder-slate-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition"
+          oninput="handleSearch()"
+        />
+      </div>
+      <div class="flex items-center gap-2">
+        <select id="sort-select" onchange="handleSort()" class="bg-slate-900/90 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-300 focus:outline-none focus:border-violet-500 transition">
+          <option value="featured">Featured First</option>
+          <option value="name">Alphabetical</option>
+          <option value="stars">High Impact</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="mt-6 flex flex-wrap justify-center gap-2 max-w-4xl mx-auto" id="category-pills">
+      <!-- Injected by JavaScript -->
+    </div>
+  </section>
+
+  <!-- Main Tools Grid -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="flex items-center justify-between mb-4">
+      <div class="text-xs font-medium text-slate-400">
+        Showing <span id="visible-count" class="text-violet-400 font-bold">0</span> tools
+      </div>
+      <div class="text-xs text-slate-500">
+        Click <span class="text-violet-400 font-semibold">Copy AI Prompt</span> for instant Claude/Cursor prompts
+      </div>
+    </div>
+  </section>
+
+  <!-- Ready-to-Use Component Vault (Offline Templates) -->
+  <section id="components-vault" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/80">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div>
+        <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-cyan-500/10 border border-cyan-500/20 text-xs font-semibold text-cyan-300 mb-2">
+          <i data-lucide="layers" class="w-3.5 h-3.5"></i> Downloaded Offline Components
+        </div>
+        <h2 class="text-2xl font-bold text-white">Production Component Templates</h2>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1">
+          Ye saare components locally <code class="text-violet-300 font-mono">components/</code> folder me saved hain. Direct preview dekho ya 1-click me code copy karo.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <!-- 1. Floating Navbar -->
+      <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-violet-500/20 text-violet-300 border border-violet-500/30">Navbar.gallery</span>
+            <span class="text-[11px] font-mono text-emerald-400">Offline Ready</span>
+          </div>
+          <h3 class="text-base font-bold text-white">Floating Pill Glassmorphic Navbar</h3>
+          <p class="text-xs text-slate-400 mt-1.5">
+            Blurred backdrop, pill container, responsive menu links, and gradient CTA button.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
+          <a href="components/navbar-floating-pill.html" target="_blank" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition">
+            <i data-lucide="eye" class="w-3.5 h-3.5"></i> Preview
+          </a>
+          <button onclick="copyComponentCode('components/navbar-floating-pill.html', 'Floating Navbar')" class="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-xs font-semibold text-white transition flex items-center gap-1.5">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Code
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. 3D WebGL Hero Canvas -->
+      <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">GetLayers & Three.js</span>
+            <span class="text-[11px] font-mono text-emerald-400">Interactive 3D</span>
+          </div>
+          <h3 class="text-base font-bold text-white">Cinematic 3D WebGL Hero Canvas</h3>
+          <p class="text-xs text-slate-400 mt-1.5">
+            Interactive Three.js 3D Torus knot mesh that dynamically tracks cursor movement with spring inertia.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
+          <a href="components/hero-cinematic-3d.html" target="_blank" class="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition">
+            <i data-lucide="play" class="w-3.5 h-3.5"></i> Launch Live 3D
+          </a>
+          <button onclick="copyComponentCode('components/hero-cinematic-3d.html', '3D Hero Scene')" class="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-xs font-semibold text-white transition flex items-center gap-1.5">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Code
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. Coconut UI Glow Cards -->
+      <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">Coconut UI</span>
+            <span class="text-[11px] font-mono text-emerald-400">Mouse Tracking</span>
+          </div>
+          <h3 class="text-base font-bold text-white">Radial Mouse-Tracking Glow Cards</h3>
+          <p class="text-xs text-slate-400 mt-1.5">
+            Dynamic radial gradient border shine that follows mouse coordinates across the grid.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
+          <a href="components/card-coconut-glow.html" target="_blank" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition">
+            <i data-lucide="eye" class="w-3.5 h-3.5"></i> Preview
+          </a>
+          <button onclick="copyComponentCode('components/card-coconut-glow.html', 'Coconut UI Glow Cards')" class="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-xs font-semibold text-white transition flex items-center gap-1.5">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Code
+          </button>
+        </div>
+      </div>
+
+      <!-- 4. Backlit UI SaaS Dashboard -->
+      <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Backlit UI</span>
+            <span class="text-[11px] font-mono text-emerald-400">Dark SaaS UI</span>
+          </div>
+          <h3 class="text-base font-bold text-white">Animated SaaS Metrics & Bar Chart</h3>
+          <p class="text-xs text-slate-400 mt-1.5">
+            Dark-mode analytics dashboard with live status pills, KPI counters, and animated hourly throughput bars.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
+          <a href="components/dashboard-backlit-charts.html" target="_blank" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition">
+            <i data-lucide="eye" class="w-3.5 h-3.5"></i> Preview
+          </a>
+          <button onclick="copyComponentCode('components/dashboard-backlit-charts.html', 'Backlit UI Dashboard')" class="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-xs font-semibold text-white transition flex items-center gap-1.5">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Code
+          </button>
+        </div>
+      </div>
+
+      <!-- 5. High-Converting CTA Banner -->
+      <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">CTA Gallery</span>
+            <span class="text-[11px] font-mono text-emerald-400">High CTR</span>
+          </div>
+          <h3 class="text-base font-bold text-white">High-Converting Call-To-Action Banner</h3>
+          <p class="text-xs text-slate-400 mt-1.5">
+            Radial background light, inline email capture, and glowing gradient action trigger.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
+          <a href="components/cta-high-converting.html" target="_blank" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition">
+            <i data-lucide="eye" class="w-3.5 h-3.5"></i> Preview
+          </a>
+          <button onclick="copyComponentCode('components/cta-high-converting.html', 'CTA Section')" class="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-xs font-semibold text-white transition flex items-center gap-1.5">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Code
+          </button>
+        </div>
+      </div>
+
+      <!-- 6. Typographic Footer -->
+      <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-500/20 text-slate-300 border border-slate-500/30">Footer.design</span>
+            <span class="text-[11px] font-mono text-emerald-400">Clean Layout</span>
+          </div>
+          <h3 class="text-base font-bold text-white">Premium Typographic Footer</h3>
+          <p class="text-xs text-slate-400 mt-1.5">
+            Multi-column links, live system status badge, and oversized brand watermark.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
+          <a href="components/footer-premium-typographic.html" target="_blank" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition">
+            <i data-lucide="eye" class="w-3.5 h-3.5"></i> Preview
+          </a>
+          <button onclick="copyComponentCode('components/footer-premium-typographic.html', 'Typographic Footer')" class="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-xs font-semibold text-white transition flex items-center gap-1.5">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Code
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Downloaded 3D Icons Asset Vault -->
+  <section id="icons-vault" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/80">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div>
+        <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-300 mb-2">
+          <i data-lucide="box" class="w-3.5 h-3.5"></i> 36 Local 3D Icons (Saved in assets/3dicons)
+        </div>
+        <h2 class="text-2xl font-bold text-white">3D Icon Asset Vault</h2>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1">
+          Kisi bhi icon par click karo — direct <code class="text-amber-300 font-mono">&lt;img&gt;</code> tag ya relative path copy ho jayega.
+        </p>
+      </div>
+    </div>
+
+    <!-- 3D Icons Grid -->
+    <div id="icons-grid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-3">
+      <!-- Injected by JavaScript -->
+    </div>
+  </section>
+
+  <!-- Interactive Master Prompt Composer -->
+  <section id="prompt-composer" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/80">
+    <div class="glass-card rounded-2xl p-6 sm:p-8">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div>
+          <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-violet-500/10 border border-violet-500/20 text-xs font-semibold text-violet-300 mb-2">
+            <i data-lucide="wand-2" class="w-3.5 h-3.5"></i> 1-Click Master Prompt Builder
+          </div>
+          <h2 class="text-2xl font-bold text-white">Full Website Prompt Generator</h2>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">
+            Apni website ke hisaab se components choose karo, ye AI ke liye ek single comprehensive prompt create kar dega.
+          </p>
+        </div>
+        <button onclick="copyMasterPrompt()" class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-medium text-xs sm:text-sm shadow-lg shadow-violet-600/30 transition">
+          <i data-lucide="copy" class="w-4 h-4"></i>
+          <span>Copy Complete Prompt</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Project Type</label>
+          <select id="p-type" onchange="generateMasterPrompt()" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-200">
+            <option value="Modern Dark-Mode SaaS Landing Page">SaaS Landing Page (Dark Mode)</option>
+            <option value="Modern AI Startup Portal">AI Startup Product Portal</option>
+            <option value="Creative Agency & Portfolio Website">Agency / Portfolio Website</option>
+            <option value="Next.js E-Commerce Showcase">Modern E-Commerce Showcase</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Navbar Style</label>
+          <select id="p-navbar" onchange="generateMasterPrompt()" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-200">
+            <option value="Floating pill glassmorphic navbar (Navbar.gallery style)">Floating Pill Glassmorphic Navbar</option>
+            <option value="Minimalist sticky top header with dropdowns">Minimalist Sticky Header</option>
+            <option value="Full-width modern mega-menu">Full-Width Mega-Menu</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Hero & 3D Style</label>
+          <select id="p-hero" onchange="generateMasterPrompt()" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-200">
+            <option value="Cinematic interactive 3D WebGL hero scene (GetLayers AI & Scrolltide style)">GetLayers.ai Cinematic 3D Scene</option>
+            <option value="Bold typographic hero with 3D floating badges (Superhero.design)">Superhero Bold Typographic Layout</option>
+            <option value="Split-screen dashboard preview with animated metrics (Backlit UI)">Split-Screen Animated Dashboard</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Animations Engine</label>
+          <select id="p-animation" onchange="generateMasterPrompt()" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-200">
+            <option value="Motion.dev with spring physics and scroll-linked reveals">Motion.dev (Spring Physics & Scroll Reveals)</option>
+            <option value="Anime.js for micro-interactions & SVG morphing">Anime.js (SVG Morphing & Text Typing)</option>
+            <option value="Coconut UI mouse-tracking hover cards">Coconut UI (Mouse-Track Glowing Cards)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="relative">
+        <textarea id="master-prompt-output" readonly rows="5" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs font-mono text-violet-300 focus:outline-none custom-scrollbar"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-2.5 px-4 py-3 rounded-xl bg-slate-900 border border-violet-500/40 text-xs font-medium text-white shadow-2xl">
+    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+    <span id="toast-message">Copied to clipboard!</span>
+  </div>
+
+  <script>
+    // Complete Dataset of All Tools Curated from All Reels
+    const TOOLS_DATA = [
+      {
+        id: "getlayers",
+        name: "GetLayers AI",
+        url: "https://getlayers.ai",
+        category: "3D & Cinematic",
+        badge: "Hot 🔥",
+        source: "Textura Agency Reel",
+        description: "Cinematic 3D website prompts, Three.js source code, and ready-made Obsidian vault to train Claude agents to build responsive 3D sites in 5 minutes.",
+        useCase: "Building jaw-dropping 3D interactive hero sections with cursor reaction & scroll motion.",
+        prompt: "Create a cinematic 3D web experience in Next.js using Three.js and React Three Fiber inspired by GetLayers.ai. Include interactive lighting that tracks mouse cursor, smooth camera transitions on scroll, and a dark aesthetic theme.",
+        stars: "Trending"
+      },
+      {
+        id: "scrolltide",
+        name: "Scrolltide",
+        url: "https://scrolltide.com",
+        category: "3D & Cinematic",
+        badge: "600+ Prompts",
+        source: "Vishnu.ai Reel",
+        description: "Provides 600+ 3D design prompts with full source code. Gives any web app a futuristic, interactive spatial experience.",
+        useCase: "Ready-to-use 3D graphics, particle systems, and interactive 3D landing elements.",
+        prompt: "Implement a 3D animated landing page hero following the Scrolltide pattern. Provide clean Three.js canvas setup with floating 3D geometry, responsive viewport sizing, and performant requestAnimationFrame loop.",
+        stars: "Popular"
+      },
+      {
+        id: "coconutui",
+        name: "Coconut UI",
+        url: "https://coconutui.com",
+        category: "UI Components",
+        badge: "LLM Friendly",
+        source: "Claude Power User Reel",
+        description: "Over 100+ ready-to-go animated cards, transitions, and mouse-effect components you can copy-paste straight into Claude / ChatGPT prompts.",
+        useCase: "Fast UI prototyping with glow borders, mouse-follow highlights, and animated feature cards.",
+        prompt: "Build an interactive feature card grid in Tailwind CSS with Coconut UI style mouse-tracking radial gradient glow, smooth hover expansion, and border shine effect.",
+        stars: "100+ Cards"
+      },
+      {
+        id: "backlit",
+        name: "Backlit UI (Bklit)",
+        url: "https://bklit.com",
+        category: "Dashboards",
+        badge: "Dark Mode SaaS",
+        source: "Claude Power User Reel",
+        description: "Component library designed specifically for dark-mode SaaS dashboards, featuring fully animated charts, progress bars, and stats displays.",
+        useCase: "Building high-converting analytics dashboards, metrics counters, and fintech UI.",
+        prompt: "Design a dark-mode SaaS analytics dashboard like Backlit UI (Bklit) with animated KPI counters, progress circles, and sleek charts using Tailwind CSS and Lucide icons.",
+        stars: "Pro Grade"
+      },
+      {
+        id: "motiondev",
+        name: "Motion.dev",
+        url: "https://motion.dev",
+        category: "Animations",
+        badge: "Framer Successor",
+        source: "Claude Power User Reel",
+        description: "Next-generation animation engine for web and React. Buttery-smooth physics-based animations, layout transitions, and gesture controls.",
+        useCase: "Adding physics spring animations to buttons, page transitions, and scroll reveals.",
+        prompt: "Integrate motion.dev in this component: add spring physics on hover, staggered entrance animations on child elements when entering viewport, and scroll-linked progress indicator.",
+        stars: "Essential"
+      },
+      {
+        id: "animejs",
+        name: "Anime.js",
+        url: "https://animejs.com",
+        category: "Animations",
+        badge: "Lightweight Engine",
+        source: "Claude Power User Reel",
+        description: "Flexible, ultra-fast JavaScript animation engine that handles complex SVG morphing, CSS properties, and timeline chaining effortlessly.",
+        useCase: "Micro-interactions, complex path drawing, morphing logos, and background particle effects.",
+        prompt: "Use Anime.js to create a complex SVG path drawing and morphing animation for our brand logo, followed by a staggered text reveal effect on page load.",
+        stars: "45K+ Stars"
+      },
+      {
+        id: "navbar",
+        name: "Navbar Gallery",
+        url: "https://navbar.gallery",
+        category: "Header & Nav",
+        badge: "Inspiration",
+        source: "Vishnu.ai Reel",
+        description: "Curated collection of navbar design inspirations (floating pill, mega menu, sidebar, drawer, search) so your header never looks generic.",
+        useCase: "Creating standout, brand-tailored headers that set the tone for the entire site.",
+        prompt: "Design a modern floating glassmorphism navbar inspired by navbar.gallery. Include logo, nav links with active state pill highlight, search trigger modal, and a gradient CTA button.",
+        stars: "Curated"
+      },
+      {
+        id: "superhero",
+        name: "Superhero",
+        url: "https://superhero.design",
+        category: "Hero Sections",
+        badge: "First Impressions",
+        source: "Vishnu.ai Reel",
+        description: "Specialized directory of the best landing page hero sections with 3D motion, bold typography, and conversion-optimized layouts.",
+        useCase: "Crafting bold, captivating first folds that grab user attention within 3 seconds.",
+        prompt: "Build an impactful hero section inspired by superhero.design: bold typography headline with gradient text, social proof avatars badge, dual CTA buttons, and an interactive product mockup preview below.",
+        stars: "Top Tier"
+      },
+      {
+        id: "cta",
+        name: "CTA Gallery",
+        url: "https://cta.gallery",
+        category: "Conversion & CTA",
+        badge: "High Conversion",
+        source: "Vishnu.ai Reel",
+        description: "Library of call-to-action designs (buttons, newsletter banners, floating triggers, modal popups) engineered to maximize click-through rates.",
+        useCase: "Designing buttons and conversion modules that compel users to click.",
+        prompt: "Create a high-converting CTA section inspired by cta.gallery: dark gradient backdrop, compelling value prop, inline email input with instant validation, and interactive button hover sheen.",
+        stars: "Essential"
+      },
+      {
+        id: "footer",
+        name: "Footer Design",
+        url: "https://footer.design",
+        category: "Footer UI",
+        badge: "Typography",
+        source: "Vishnu.ai Reel",
+        description: "Showcase of premium, typographic, and clean website footers that make the bottom of the page feel intentional and complete.",
+        useCase: "Finishing web apps with high-end footers with multi-column links, newsletter signups, and brandmarks.",
+        prompt: "Design a clean, premium footer layout based on footer.design: bold oversized brand watermark, categorized navigation columns, newsletter subscribe box, and system status indicator.",
+        stars: "Clean"
+      },
+      {
+        id: "refero",
+        name: "Refero Styles",
+        url: "https://refero.design/styles",
+        category: "Design Taste",
+        badge: "Real Products",
+        source: "Vishnu.ai Reel",
+        description: "Real design systems, color palettes, and typographic scales pulled from the world's most successful tech products.",
+        useCase: "Benchmarking design aesthetic against Linear, Stripe, Apple, and Figma standards.",
+        prompt: "Provide a color palette and typographic design system inspired by refero.design for a high-end AI developer tool: specify hex colors for background, surfaces, borders, text tiers, and primary accents.",
+        stars: "Aesthetic"
+      },
+      {
+        id: "3dicons",
+        name: "3D Icons",
+        url: "https://3dicons.co",
+        category: "3D & Assets",
+        badge: "1,400+ Free Assets",
+        source: "Vishnu.ai Reel",
+        description: "Collection of 1,400+ beautifully rendered 3D icons available in multiple camera angles, colors, and formats (Figma, PNG, GLTF).",
+        useCase: "Replacing flat 2D icons with rich 3D graphics to give web interfaces instant dimension.",
+        prompt: "How can I integrate 3dicons.co PNG/GLTF renders into a feature grid cards in Tailwind CSS with optimized loading and subtle floating animation?",
+        stars: "1.4K Icons"
+      },
+      {
+        id: "manus",
+        name: "Manus AI",
+        url: "https://manus.im",
+        category: "AI Builders",
+        badge: "Autonomous Agent",
+        source: "Claude Power User Reel",
+        description: "Autonomous agentic AI that designs, codes, and launches dashboards and full websites end-to-end without requiring manual coding.",
+        useCase: "Hands-off creation of complete functional websites and complex dashboards.",
+        prompt: "Outline the full specifications and requirements prompt to provide to Manus AI to autonomously build an end-to-end responsive web application.",
+        stars: "Autonomous"
+      },
+      // 3 Open Source AI Repos from Second Video
+      {
+        id: "openhands",
+        name: "OpenHands (OpenDevin)",
+        url: "https://github.com/All-Hands-AI/OpenHands",
+        category: "AI Software Eng",
+        badge: "Replaces Devin ($500/mo)",
+        source: "GitHub AI Repos Reel",
+        description: "Autonomous AI software engineer with 72,000+ stars. Writes code, debugs, runs tests, and manages git commits and PRs. Used by Netflix, Amazon, TikTok.",
+        useCase: "Autonomous coding tasks, bug fixing, and codebase maintenance for free.",
+        prompt: "How to self-host and run OpenHands using Docker to autonomously develop features and review pull requests in our Next.js repository?",
+        stars: "72K ⭐"
+      },
+      {
+        id: "dify",
+        name: "Dify",
+        url: "https://github.com/langgenius/dify",
+        category: "AI Platform",
+        badge: "Replaces Langflow & Pinecone",
+        source: "GitHub AI Repos Reel",
+        description: "Full AI application development platform with 139,000+ stars. Visual workflow builder, built-in RAG pipeline, 50+ tools, supports all models.",
+        useCase: "Building LLM agents, chatbots, knowledge-base search, and visual workflows with zero subscriptions.",
+        prompt: "How to deploy Dify with Docker Compose to create a RAG-powered customer assistant that connects to our PostgreSQL database?",
+        stars: "139K ⭐"
+      },
+      {
+        id: "librechat",
+        name: "LibreChat",
+        url: "https://github.com/danny-avila/LibreChat",
+        category: "AI Platform",
+        badge: "Replaces ChatGPT Plus & Claude Pro",
+        source: "GitHub AI Repos Reel",
+        description: "All-in-one chat UI with 36,000+ stars supporting Claude, GPT-4o, Gemini, and Ollama. Includes Code Interpreter, image gen, web search, 100% private.",
+        useCase: "Consolidating all LLM subscriptions into a single self-hosted private portal.",
+        prompt: "Guide to self-hosting LibreChat with Docker, configuring Claude 3.5 Sonnet and Gemini API keys, and enabling web search & Code Interpreter.",
+        stars: "36K ⭐"
+      }
+    ];
+
+    let currentCategory = "All";
+    let searchQuery = "";
+    let favorites = JSON.parse(localStorage.getItem("vibehub_favorites") || "[]");
+    let showFavoritesOnly = false;
+
+    const CATEGORIES = [
+      "All",
+      "3D & Cinematic",
+      "UI Components",
+      "Dashboards",
+      "Animations",
+      "Header & Nav",
+      "Hero Sections",
+      "AI Software Eng",
+      "AI Platform"
+    ];
+
+    function init() {
+      renderCategoryPills();
+      renderTools();
+      generateMasterPrompt();
+      updateFavCount();
+      lucide.createIcons();
+    }
+
+    function renderCategoryPills() {
+      const container = document.getElementById("category-pills");
+      container.innerHTML = CATEGORIES.map(cat => `
+        <button 
+          onclick="setCategory('${cat}')" 
+          class="px-3.5 py-1.5 rounded-full text-xs font-medium transition ${
+            currentCategory === cat 
+              ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/30' 
+              : 'bg-slate-900/80 text-slate-400 hover:text-white border border-slate-800'
+          }"
+        >
+          ${cat}
+        </button>
+      `).join("");
+    }
+
+    function setCategory(cat) {
+      currentCategory = cat;
+      showFavoritesOnly = false;
+      renderCategoryPills();
+      renderTools();
+    }
+
+    function toggleFavoritesOnly() {
+      showFavoritesOnly = !showFavoritesOnly;
+      const btn = document.getElementById("fav-toggle-btn");
+      if (showFavoritesOnly) {
+        btn.classList.add("border-amber-500", "bg-amber-500/10");
+      } else {
+        btn.classList.remove("border-amber-500", "bg-amber-500/10");
+      }
+      renderTools();
+    }
+
+    function toggleFav(id, event) {
+      event.stopPropagation();
+      if (favorites.includes(id)) {
+        favorites = favorites.filter(f => f !== id);
+      } else {
+        favorites.push(id);
+      }
+      localStorage.setItem("vibehub_favorites", JSON.stringify(favorites));
+      updateFavCount();
+      renderTools();
+    }
+
+    function updateFavCount() {
+      document.getElementById("fav-count").innerText = favorites.length;
+    }
+
+    function handleSearch() {
+      searchQuery = document.getElementById("search-input").value.toLowerCase().trim();
+      renderTools();
+    }
+
+    function handleSort() {
+      renderTools();
+    }
+
+    function getFilteredTools() {
+      let list = TOOLS_DATA.filter(tool => {
+        if (showFavoritesOnly && !favorites.includes(tool.id)) return false;
+        if (currentCategory !== "All" && tool.category !== currentCategory) return false;
+        if (searchQuery) {
+          const matchName = tool.name.toLowerCase().includes(searchQuery);
+          const matchDesc = tool.description.toLowerCase().includes(searchQuery);
+          const matchCat = tool.category.toLowerCase().includes(searchQuery);
+          const matchUse = tool.useCase.toLowerCase().includes(searchQuery);
+          if (!matchName && !matchDesc && !matchCat && !matchUse) return false;
+        }
+        return true;
+      });
+
+      const sortVal = document.getElementById("sort-select").value;
+      if (sortVal === "name") {
+        list.sort((a, b) => a.name.localeCompare(b.name));
+      }
+      return list;
+    }
+
+    function renderTools() {
+      const grid = document.getElementById("tools-grid");
+      const noResults = document.getElementById("no-results");
+      const filtered = getFilteredTools();
+
+      document.getElementById("visible-count").innerText = filtered.length;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = "";
+        noResults.classList.remove("hidden");
+        return;
+      }
+
+      noResults.classList.add("hidden");
+      grid.innerHTML = filtered.map(tool => {
+        const isFav = favorites.includes(tool.id);
+        return `
+          <div class="glass-card rounded-2xl p-5 flex flex-col justify-between group">
+            <div>
+              <div class="flex items-start justify-between gap-3 mb-2.5">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700/60">
+                    ${tool.category}
+                  </span>
+                  ${tool.badge ? `
+                    <span class="text-xs font-medium px-2 py-0.5 rounded-md bg-violet-500/20 text-violet-300 border border-violet-500/30">
+                      ${tool.badge}
+                    </span>
+                  ` : ''}
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button onclick="toggleFav('${tool.id}', event)" class="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition" title="Favorite">
+                    <i data-lucide="star" class="w-4 h-4 ${isFav ? 'fill-amber-400 text-amber-400' : ''}"></i>
+                  </button>
+                  <a href="${tool.url}" target="_blank" rel="noopener" class="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition" title="Open Link">
+                    <i data-lucide="external-link" class="w-4 h-4"></i>
+                  </a>
+                </div>
+              </div>
+
+              <h3 class="text-lg font-bold text-white group-hover:text-violet-300 transition flex items-center gap-2">
+                ${tool.name}
+              </h3>
+              <p class="text-xs text-slate-400 mt-1.5 line-clamp-2 leading-relaxed">
+                ${tool.description}
+              </p>
+
+              <div class="mt-3.5 p-2.5 rounded-xl bg-slate-950/70 border border-slate-800/80 text-[11px] text-slate-300 flex items-start gap-2">
+                <i data-lucide="compass" class="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5"></i>
+                <span><strong class="text-slate-200">Best for:</strong> ${tool.useCase}</span>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3.5 border-t border-slate-800/70 flex items-center justify-between gap-2">
+              <span class="text-[11px] font-mono text-slate-500">${tool.stars || ''}</span>
+              <div class="flex items-center gap-2">
+                <button 
+                  onclick="copyToolPrompt('${tool.id}')"
+                  class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-600/20 hover:bg-violet-600 border border-violet-500/40 hover:border-violet-600 text-violet-300 hover:text-white text-xs font-semibold transition"
+                >
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                  <span>Copy AI Prompt</span>
+                </button>
+                <a 
+                  href="${tool.url}" 
+                  target="_blank" 
+                  rel="noopener"
+                  class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium transition"
+                >
+                  <span>Visit</span>
+                  <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      lucide.createIcons();
+    }
+
+    function copyToolPrompt(id) {
+      const tool = TOOLS_DATA.find(t => t.id === id);
+      if (!tool) return;
+      navigator.clipboard.writeText(tool.prompt);
+      showToast(`Prompt copied for ${tool.name}! Paste it in Claude/Cursor.`);
+    }
+
+    function generateMasterPrompt() {
+      const pType = document.getElementById("p-type").value;
+      const pNavbar = document.getElementById("p-navbar").value;
+      const pHero = document.getElementById("pHero" ? "pHero" : "p-hero").value;
+      const pAnim = document.getElementById("p-animation").value;
+
+      const prompt = `Act as an elite frontend engineer and UI/UX designer. Build a production-ready ${pType} using Next.js 14, React, Tailwind CSS, and TypeScript.
+
+Key Architectural & Design Requirements:
+1. Header / Navigation: Implement a ${pNavbar}.
+2. Hero Section: Design a ${pHero}. Make it visually striking with high contrast and sleek typography.
+3. Feature Cards: Use Coconut UI style interactive cards with mouse-tracking radial gradient glow borders.
+4. Animation & Physics: Implement ${pAnim}. Ensure smooth viewport entrance and button hover feedback.
+5. Conversion & CTA: Include a high-converting CTA section with email input and glowing action button (CTA Gallery style).
+6. Footer: Clean, minimalist multi-column footer with brand watermark (Footer.design style).
+
+Ensure dark mode aesthetic, full mobile responsiveness, accessible ARIA attributes, and production-clean component code.`;
+
+      document.getElementById("master-prompt-output").value = prompt;
+    }
+
+    function copyMasterPrompt() {
+      const text = document.getElementById("master-prompt-output").value;
+      navigator.clipboard.writeText(text);
+      showToast("Full Master Prompt copied! Paste into Claude or Cursor.");
+    }
+
+    const ICONS_LIST = [
+      'rocket', 'shield', 'fire', 'target', 'trophy', 'chart', 'lock', 'clock', 
+      'setting', 'calendar', 'bulb', 'thumb-up', 'tick', 'zoom', 'notebook', 
+      'file-text', 'potion', 'candy', 'cauldron', 'candle', 'pumpkin', 'skull', 
+      'skull-candle', 'ghost', 'bat', 'spider', 'vamp', 'witch-hat', 'broom', 
+      'frankenstein', 'zombie', 'zombie-hand', 'bone', 'coffine-box', 'gravestone'
+    ];
+
+    function renderIconsGrid() {
+      const container = document.getElementById("icons-grid");
+      if (!container) return;
+      container.innerHTML = ICONS_LIST.map(name => `
+        <div 
+          onclick="copyIconTag('${name}')"
+          class="glass-card rounded-xl p-3 flex flex-col items-center justify-center cursor-pointer hover:border-amber-500/50 hover:bg-amber-500/10 transition group"
+          title="Click to copy <img> tag"
+        >
+          <img 
+            src="assets/3dicons/${name}.webp" 
+            alt="${name}" 
+            class="w-12 h-12 object-contain group-hover:scale-110 transition duration-200 drop-shadow-md"
+            loading="lazy"
+          />
+          <span class="text-[10px] font-mono text-slate-300 mt-2 truncate w-full text-center capitalize">
+            ${name.replace('-', ' ')}
+          </span>
+          <span class="text-[9px] text-amber-400 opacity-0 group-hover:opacity-100 transition mt-0.5">
+            Copy tag
+          </span>
+        </div>
+      `).join("");
+    }
+
+    function copyIconTag(name) {
+      const tag = `<img src="assets/3dicons/${name}.webp" alt="${name}" class="w-12 h-12 object-contain" />`;
+      navigator.clipboard.writeText(tag);
+      showToast(`Copied <img src="assets/3dicons/${name}.webp"> tag!`);
+    }
+
+    async function copyComponentCode(filePath, name) {
+      try {
+        const res = await fetch(filePath);
+        if (!res.ok) throw new Error("File not found");
+        const code = await res.text();
+        navigator.clipboard.writeText(code);
+        showToast(`Copied full code for ${name}!`);
+      } catch (err) {
+        showToast(`Opening ${filePath}...`);
+        window.open(filePath, '_blank');
+      }
+    }
+
+    function init() {
+      renderCategoryPills();
+      renderTools();
+      renderIconsGrid();
+      generateMasterPrompt();
+      updateFavCount();
+      lucide.createIcons();
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>

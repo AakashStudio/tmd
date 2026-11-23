@@ -192,6 +192,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Host krne kliye you need to have 99 plan
+    if (!user.entitlements.canCreateEvents) {
+      return NextResponse.json(
+        { error: "Hosting events requires an active ₹99 VIP PRO plan. Please upgrade to host an event." },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json().catch(() => ({}));
     const parseResult = createEventSchema.safeParse(body);
     if (!parseResult.success) {

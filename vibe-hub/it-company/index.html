@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SYNAPSE IT — Next-Gen Enterprise Cloud & Autonomous Infrastructure</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Local Core Engines -->
+  <script src="../assets/js/three.min.js" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'"></script>
+  <script src="../assets/js/anime.min.js" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js'"></script>
+  <script src="../assets/js/lucide.min.js" onerror="this.src='https://unpkg.com/lucide@latest'"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              cyan: '#06b6d4',
+              emerald: '#10b981'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background: #060913;
+      color: #f1f5f9;
+      overflow-x: hidden;
+    }
+    
+    /* Background Ambient Gradients */
+    .bg-grid {
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    }
+
+    /* Coconut UI Radial Glow Cards */
+    .coconut-card {
+      position: relative;
+      background: rgba(13, 19, 36, 0.7);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 1.25rem;
+      overflow: hidden;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s;
+    }
+    .coconut-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(139, 92, 246, 0.35);
+      box-shadow: 0 20px 40px -15px rgba(124, 58, 237, 0.2);
+    }
+    .coconut-card::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      background: radial-gradient(350px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(139, 92, 246, 0.3), transparent 45%);
+      border-radius: inherit;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .coconut-card:hover::before {
+      opacity: 1;
+    }
+
+    /* ThreeJS Hero Canvas */
+    #hero-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.75;
+    }
+
+    .hero-glass-badge {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(6, 182, 212, 0.15));
+      border: 1px solid rgba(139, 92, 246, 0.35);
+    }
+  </style>
+</head>
+<body class="font-sans antialiased selection:bg-violet-500 selection:text-white bg-grid">
+
+  <!-- ========================================================= -->
+  <!-- 1. FLOATING PILL NAVBAR (Navbar.gallery Style)             -->
+  <!-- ========================================================= -->
+  <nav class="fixed top-5 inset-x-0 mx-auto max-w-5xl px-4 z-50">
+    <div class="flex items-center justify-between px-6 py-3 rounded-full bg-slate-950/75 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-violet-950/40">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-violet-600 via-indigo-500 to-cyan-400 flex items-center justify-center text-white shadow-lg shadow-violet-500/30 group-hover:scale-105 transition">
+          <i data-lucide="cpu" class="w-5 h-5"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-black tracking-tight text-white text-base leading-none">SYNAPSE<span class="text-cyan-400">.IT</span></span>
+          <span class="text-[9px] font-mono uppercase tracking-widest text-slate-400">Enterprise Cloud</span>
+        </div>
+      </a>
+
+      <!-- Menu Items -->
+      <div class="hidden md:flex items-center gap-7 text-xs font-semibold text-slate-300">
+        <a href="#services" class="hover:text-cyan-400 transition">Services</a>
+        <a href="#telemetry" class="hover:text-cyan-400 transition">Live Operations</a>
+        <a href="#solutions" class="hover:text-cyan-400 transition">AI Infrastructure</a>
+        <a href="#security" class="hover:text-cyan-400 transition">Zero-Trust</a>
+        <a href="#pricing" class="hover:text-cyan-400 transition">SLA Plans</a>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[11px] font-mono text-emerald-400">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>99.999% SLA</span>
+        </div>
+        <a href="#consultation" class="px-5 py-2 rounded-full text-xs font-bold text-white bg-gradient-to-r from-violet-600 to-cyan-500 hover:from-violet-500 hover:to-cyan-400 shadow-lg shadow-violet-600/30 transition hover:scale-105">
+          Schedule Audit →
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ========================================================= -->
+  <!-- 2. HERO SECTION WITH LIVE 3D CANVAS (GetLayers + Superhero)-->
+  <!-- ========================================================= -->
+  <section class="relative min-h-screen flex items-center justify-center pt-32 pb-20 px-4 overflow-hidden">
+    <!-- Three.js 3D WebGL Background Canvas -->
+    <div id="hero-canvas"></div>
+
+    <div class="relative z-10 max-w-5xl mx-auto text-center pointer-events-auto">
+      
+      <!-- Top Innovation Pill -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full hero-glass-badge text-xs font-medium text-violet-300 mb-6 animate-pulse">
+        <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i>
+        <span>Autonomous SRE & Zero-Trust Cloud Architecture v4.2</span>
+      </div>
+
+      <!-- Main Superhero Typography Headline -->
+      <h1 class="text-4xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-[1.08] max-w-4xl mx-auto">
+        Powering Enterprise IT With <br>
+        <span class="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-fuchsia-300 to-cyan-400">
+          Self-Healing Cloud & AI Mesh
+        </span>
+      </h1>
+
+      <p class="mt-6 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+        Hamara autonomous IT ecosystem aapke cloud servers, Kubernetes clusters aur cybersecurity ko 24/7 bina kisi downtime ke manage karta hai.
+      </p>
+
+      <!-- CTA Buttons & Social Proof -->
+      <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="#consultation" class="w-full sm:w-auto px-8 py-4 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-violet-600 via-indigo-600 to-cyan-500 hover:from-violet-500 hover:to-cyan-400 shadow-xl shadow-violet-600/30 transition duration-300 hover:scale-105 flex items-center justify-center gap-2">
+          <i data-lucide="zap" class="w-4 h-4"></i>
+          <span>Deploy Free Infrastructure Audit</span>
+        </a>
+        <a href="#telemetry" class="w-full sm:w-auto px-7 py-4 rounded-xl text-sm font-semibold text-slate-300 bg-slate-900/90 border border-slate-700/80 hover:bg-slate-800 hover:text-white transition flex items-center justify-center gap-2">
+          <i data-lucide="terminal" class="w-4 h-4 text-cyan-400"></i>
+          <span>View Live Telemetry</span>
+        </a>
+      </div>
+
+      <!-- Live Client Counters -->
+      <div class="mt-14 pt-8 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+        <div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-white font-mono">99.999%</div>
+          <div class="text-xs text-slate-400 mt-1 uppercase tracking-wider">Historical SLA Uptime</div>
+        </div>
+        <div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-cyan-400 font-mono">12.4 ms</div>
+          <div class="text-xs text-slate-400 mt-1 uppercase tracking-wider">Global P99 Latency</div>
+        </div>
+        <div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-violet-400 font-mono">4.2 Billion</div>
+          <div class="text-xs text-slate-400 mt-1 uppercase tracking-wider">Daily Secure Requests</div>
+        </div>
+        <div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono">&lt; 30 Sec</div>
+          <div class="text-xs text-slate-400 mt-1 uppercase tracking-wider">Autonomous Failover</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================= -->
+  <!-- 3. LIVE OPERATIONS TELEMETRY DASHBOARD (Backlit UI Style)  -->
+  <!-- ========================================================= -->
+  <section id="telemetry" class="max-w-6xl mx-auto px-4 sm:px-6 py-20">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <span class="text-xs font-mono font-semibold text-cyan-400 uppercase tracking-widest px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/30">
+        Live Cloud Telemetry
+      </span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mt-3">
+        Real-Time Operations Command Center
+      </h2>
+      <p class="text-sm text-slate-400 mt-2">
+        Monitored across AWS, Azure, Google Cloud, and On-Premises bare-metal pods.
+      </p>
+    </div>
+
+    <!-- Backlit UI Style Window Frame -->
+    <div class="rounded-3xl bg-slate-950/90 border border-slate-800 p-6 sm:p-8 shadow-2xl shadow-violet-950/30">
+      
+      <!-- Window Title Bar -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-800 gap-4">
+        <div class="flex items-center gap-3">
+          <div class="flex gap-2">
+            <span class="w-3 h-3 rounded-full bg-rose-500/80"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-500/80"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-500/80"></span>
+          </div>
+          <div class="h-4 w-[1px] bg-slate-800 mx-1"></div>
+          <span class="text-xs font-mono text-slate-300 flex items-center gap-2">
+            <i data-lucide="server" class="w-4 h-4 text-violet-400"></i>
+            <span>cluster-ap-south-1.synapse-ops.internal</span>
+          </span>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <span class="flex items-center gap-1.5 text-xs font-mono px-3 py-1 rounded-lg bg-emerald-950/60 border border-emerald-500/40 text-emerald-400">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            ZERO ANOMALIES DETECTED
+          </span>
+          <span class="text-xs font-mono text-slate-400">REGION: MUMBAI / IND</span>
+        </div>
+      </div>
+
+      <!-- Telemetry Metric Row -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 my-6">
+        <div class="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 hover:border-violet-500/40 transition">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>Throughput Volume</span>
+            <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i>
+          </div>
+          <div class="text-3xl font-black text-white font-mono mt-2" id="kpi-reqs">2,842,910</div>
+          <div class="text-[11px] text-emerald-400 mt-1.5 flex items-center gap-1 font-mono">
+            ↑ +18.4% auto-scaled capacity
+          </div>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 hover:border-cyan-500/40 transition">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>Kubernetes Pod Health</span>
+            <i data-lucide="layers" class="w-4 h-4 text-violet-400"></i>
+          </div>
+          <div class="text-3xl font-black text-cyan-400 font-mono mt-2">512 / 512</div>
+          <div class="text-[11px] text-slate-400 mt-1.5 font-mono">
+            100% healthy across 4 availability zones
+          </div>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 hover:border-emerald-500/40 transition">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>Threat Prevention Ratio</span>
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <div class="text-3xl font-black text-emerald-400 font-mono mt-2">100.00%</div>
+          <div class="text-[11px] text-emerald-400 mt-1.5 font-mono">
+            14,920 automated DDoS attacks neutralized
+          </div>
+        </div>
+      </div>
+
+      <!-- Animated Backlit UI Bar Chart -->
+      <div class="p-6 rounded-2xl bg-slate-900/40 border border-slate-800/60">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-sm font-bold text-white">Dynamic Cluster Resource Utilization (CPU & RAM)</h3>
+            <p class="text-xs text-slate-400">Real-time load balancing across multi-region server nodes</p>
+          </div>
+          <span class="text-xs font-mono text-cyan-400 px-2.5 py-1 rounded bg-cyan-950/80 border border-cyan-800/60">
+            AUTO-BALANCING ON
+          </span>
+        </div>
+
+        <!-- 16 Animated Bars -->
+        <div class="flex items-end justify-between gap-1.5 sm:gap-3 h-44 pt-6 border-b border-slate-800">
+          <div class="flex-1 bg-violet-600/30 hover:bg-violet-400 rounded-t transition-all duration-300 h-[38%]" title="Node 01: 38%"></div>
+          <div class="flex-1 bg-violet-600/30 hover:bg-violet-400 rounded-t transition-all duration-300 h-[52%]" title="Node 02: 52%"></div>
+          <div class="flex-1 bg-violet-600/30 hover:bg-violet-400 rounded-t transition-all duration-300 h-[44%]" title="Node 03: 44%"></div>
+          <div class="flex-1 bg-violet-600/30 hover:bg-violet-400 rounded-t transition-all duration-300 h-[68%]" title="Node 04: 68%"></div>
+          <div class="flex-1 bg-violet-600/40 hover:bg-violet-400 rounded-t transition-all duration-300 h-[82%]" title="Node 05: 82%"></div>
+          <div class="flex-1 bg-violet-600/50 hover:bg-violet-400 rounded-t transition-all duration-300 h-[75%]" title="Node 06: 75%"></div>
+          <div class="flex-1 bg-gradient-to-t from-violet-600 to-cyan-400 rounded-t shadow-lg shadow-violet-500/40 h-[96%]" title="Peak Node 07: 96%"></div>
+          <div class="flex-1 bg-violet-600/50 hover:bg-violet-400 rounded-t transition-all duration-300 h-[88%]" title="Node 08: 88%"></div>
+          <div class="flex-1 bg-violet-600/40 hover:bg-violet-400 rounded-t transition-all duration-300 h-[62%]" title="Node 09: 62%"></div>
+          <div class="flex-1 bg-violet-600/30 hover:bg-violet-400 rounded-t transition-all duration-300 h-[48%]" title="Node 10: 48%"></div>
+          <div class="flex-1 bg-violet-600/40 hover:bg-violet-400 rounded-t transition-all duration-300 h-[70%]" title="Node 11: 70%"></div>
+          <div class="flex-1 bg-violet-600/30 hover:bg-violet-400 rounded-t transition-all duration-300 h-[55%]" title="Node 12: 55%"></div>
+          <div class="flex-1 bg-violet-600/40 hover:bg-violet-400 rounded-t transition-all duration-300 h-[64%]" title="Node 13: 64%"></div>
+          <div class="flex-1 bg-violet-600/50 hover:bg-violet-400 rounded-t transition-all duration-300 h-[80%]" title="Node 14: 80%"></div>
+          <div class="flex-1 bg-violet-600/30 hover:bg-violet-400 rounded-t transition-all duration-300 h-[58%]" title="Node 15: 58%"></div>
+          <div class="flex-1 bg-violet-600/30 hover:bg-violet-400 rounded-t transition-all duration-300 h-[42%]" title="Node 16: 42%"></div>
+        </div>
+        <div class="flex justify-between text-[10px] font-mono text-slate-500 mt-2">
+          <span>00:00 UTC</span>
+          <span>MULTI-REGION EDGE ROUTING</span>
+          <span>CURRENT LIVE</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================= -->
+  <!-- 4. SERVICES GRID (Coconut UI Mouse Glow + Local 3D Icons)  -->
+  <!-- ========================================================= -->
+  <section id="services" class="max-w-6xl mx-auto px-4 sm:px-6 py-20">
+    <div class="text-center max-w-2xl mx-auto mb-14">
+      <span class="text-xs font-mono font-semibold text-violet-400 uppercase tracking-widest px-3 py-1 rounded-full bg-violet-950/60 border border-violet-500/30">
+        Enterprise Solutions
+      </span>
+      <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mt-3">
+        Engineered for Modern IT Scale
+      </h2>
+      <p class="text-sm text-slate-400 mt-3">
+        Hover over any service card to experience the interactive Coconut UI radial magnetic illumination.
+      </p>
+    </div>
+
+    <!-- Coconut UI Interactive Grid with Local 3D Icons -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="coconut-grid">
+      
+      <!-- Card 1: Cloud & DevOps -->
+      <div class="coconut-card p-7 flex flex-col justify-between">
+        <div class="relative z-10">
+          <div class="w-16 h-16 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-6">
+            <img src="../assets/3dicons/rocket.webp" alt="Cloud Transformation" class="w-12 h-12 object-contain drop-shadow-lg" />
+          </div>
+          <span class="text-xs font-mono text-cyan-400">HYBRID & MULTI-CLOUD</span>
+          <h3 class="text-xl font-bold text-white mt-1">Cloud Transformation & CI/CD</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mt-2.5">
+            Architecting high-concurrency microservices on AWS, GCP, and Azure with Kubernetes automated GitOps deployment pipelines.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs relative z-10">
+          <span class="text-slate-400 font-mono">Terraform / Helm / K8s</span>
+          <a href="#consultation" class="text-violet-400 font-bold hover:text-white transition flex items-center gap-1">
+            Details →
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 2: Zero-Trust Security -->
+      <div class="coconut-card p-7 flex flex-col justify-between">
+        <div class="relative z-10">
+          <div class="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-6">
+            <img src="../assets/3dicons/shield.webp" alt="Cybersecurity" class="w-12 h-12 object-contain drop-shadow-lg" />
+          </div>
+          <span class="text-xs font-mono text-cyan-400">DEFENSE IN DEPTH</span>
+          <h3 class="text-xl font-bold text-white mt-1">Zero-Trust Cybersecurity & SOC</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mt-2.5">
+            Continuous identity verification, automated SOC-2/ISO-27001 compliance, penetration testing, and AI-driven intrusion prevention.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs relative z-10">
+          <span class="text-slate-400 font-mono">mTLS / WireGuard / IAM</span>
+          <a href="#consultation" class="text-violet-400 font-bold hover:text-white transition flex items-center gap-1">
+            Details →
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 3: Autonomous SRE & Healing -->
+      <div class="coconut-card p-7 flex flex-col justify-between">
+        <div class="relative z-10">
+          <div class="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6">
+            <img src="../assets/3dicons/target.webp" alt="Autonomous SRE" class="w-12 h-12 object-contain drop-shadow-lg" />
+          </div>
+          <span class="text-xs font-mono text-cyan-400">SELF-HEALING ARCHITECTURE</span>
+          <h3 class="text-xl font-bold text-white mt-1">Autonomous SRE & Observability</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mt-2.5">
+            Automated remediation agents that intercept memory leaks, restart pods, and redirect edge traffic before customers notice any lag.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs relative z-10">
+          <span class="text-slate-400 font-mono">Prometheus / OpenTelemetry</span>
+          <a href="#consultation" class="text-violet-400 font-bold hover:text-white transition flex items-center gap-1">
+            Details →
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 4: High-Performance Compute -->
+      <div class="coconut-card p-7 flex flex-col justify-between">
+        <div class="relative z-10">
+          <div class="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mb-6">
+            <img src="../assets/3dicons/fire.webp" alt="HPC & GPU Clusters" class="w-12 h-12 object-contain drop-shadow-lg" />
+          </div>
+          <span class="text-xs font-mono text-cyan-400">GPU & HPC CLUSTERS</span>
+          <h3 class="text-xl font-bold text-white mt-1">AI Training & Inference Clusters</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mt-2.5">
+            High-bandwidth NVLink GPU cluster provisioning for LLM training, vector search retrieval, and low-latency inference pipelines.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs relative z-10">
+          <span class="text-slate-400 font-mono">H100 / Ray / vLLM / Slurm</span>
+          <a href="#consultation" class="text-violet-400 font-bold hover:text-white transition flex items-center gap-1">
+            Details →
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 5: Enterprise Data Mesh -->
+      <div class="coconut-card p-7 flex flex-col justify-between">
+        <div class="relative z-10">
+          <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-6">
+            <img src="../assets/3dicons/chart.webp" alt="Data Mesh" class="w-12 h-12 object-contain drop-shadow-lg" />
+          </div>
+          <span class="text-xs font-mono text-cyan-400">ENTERPRISE LAKEHOUSE</span>
+          <h3 class="text-xl font-bold text-white mt-1">Data Mesh & RAG Pipelines</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mt-2.5">
+            Zero-ETL real-time streaming pipelines connecting PostgreSQL, ClickHouse, and vector databases for unified analytics.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs relative z-10">
+          <span class="text-slate-400 font-mono">Kafka / Flink / pgvector</span>
+          <a href="#consultation" class="text-violet-400 font-bold hover:text-white transition flex items-center gap-1">
+            Details →
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 6: Disaster Recovery & Compliance -->
+      <div class="coconut-card p-7 flex flex-col justify-between">
+        <div class="relative z-10">
+          <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-6">
+            <img src="../assets/3dicons/lock.webp" alt="Disaster Recovery" class="w-12 h-12 object-contain drop-shadow-lg" />
+          </div>
+          <span class="text-xs font-mono text-cyan-400">SUB-MINUTE RPO / RTO</span>
+          <h3 class="text-xl font-bold text-white mt-1">Disaster Recovery & Hot Failover</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mt-2.5">
+            Active-active geo-redundancy with automated database cross-region replication that guarantees seamless failover under disaster scenarios.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs relative z-10">
+          <span class="text-slate-400 font-mono">BGP Anycast / Zero Loss</span>
+          <a href="#consultation" class="text-violet-400 font-bold hover:text-white transition flex items-center gap-1">
+            Details →
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================= -->
+  <!-- 5. HIGH-CONVERTING AUDIT CTA (CTA.gallery Style)           -->
+  <!-- ========================================================= -->
+  <section id="consultation" class="max-w-5xl mx-auto px-4 sm:px-6 py-20">
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 border border-violet-500/40 p-8 sm:p-14 text-center shadow-2xl shadow-violet-950/60">
+      
+      <!-- Ambient Radial Backlight Glow -->
+      <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[32rem] h-[32rem] bg-violet-600/25 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-32 right-10 w-80 h-80 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="relative z-10">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 text-xs font-semibold mb-4">
+          <i data-lucide="check-circle" class="w-3.5 h-3.5 text-cyan-400"></i>
+          <span>Zero Obligation Enterprise Architecture Assessment</span>
+        </span>
+
+        <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight max-w-2xl mx-auto leading-tight">
+          Ready to Upgrade Your Cloud to 99.999% Reliability?
+        </h2>
+
+        <p class="mt-4 text-xs sm:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
+          Hamare Principal Cloud Architects aapke current architecture ka free latency, security, aur cost audit deliver karenge.
+        </p>
+
+        <!-- Interactive Form -->
+        <form class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 max-w-lg mx-auto" onsubmit="event.preventDefault(); alert('Architecture Audit Request Received! Our Enterprise Architect will contact you within 2 hours.');">
+          <div class="relative w-full sm:flex-1">
+            <i data-lucide="mail" class="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <input 
+              type="email" 
+              required
+              placeholder="Enter your enterprise work email..." 
+              class="w-full pl-10 pr-4 py-3.5 bg-slate-900/90 border border-slate-700/80 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition"
+            />
+          </div>
+          <button 
+            type="submit" 
+            class="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-gradient-to-r from-violet-600 via-indigo-600 to-cyan-500 hover:from-violet-500 hover:to-cyan-400 font-bold text-xs text-white shadow-xl shadow-violet-600/30 transition duration-200 hover:scale-105 shrink-0"
+          >
+            Claim Free IT Audit →
+          </button>
+        </form>
+
+        <div class="mt-6 flex flex-wrap items-center justify-center gap-6 text-[11px] font-mono text-slate-400">
+          <span class="flex items-center gap-1.5"><i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-400"></i> ISO-27001 Certified</span>
+          <span class="flex items-center gap-1.5"><i data-lucide="lock" class="w-3.5 h-3.5 text-cyan-400"></i> Strict NDA Guaranteed</span>
+          <span class="flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5 text-amber-400"></i> 2-Hour Response Time</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================= -->
+  <!-- 6. TYPOGRAPHIC FOOTER (Footer.design Style)               -->
+  <!-- ========================================================= -->
+  <footer class="border-t border-slate-800/80 bg-slate-950 text-slate-400 pt-16 pb-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-16">
+        
+        <!-- Company Info -->
+        <div class="col-span-2">
+          <a href="#" class="flex items-center gap-2.5 text-white font-extrabold text-lg mb-3">
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-violet-600 to-cyan-400 flex items-center justify-center text-white">
+              <i data-lucide="cpu" class="w-4 h-4"></i>
+            </div>
+            <span>SYNAPSE<span class="text-cyan-400">.IT</span></span>
+          </a>
+          <p class="text-xs text-slate-400 max-w-sm leading-relaxed mb-4">
+            Autonomous Cloud Architecture, Zero-Trust Defense, and High-Performance Enterprise Compute. Serving Global 2000 enterprises across 18 countries.
+          </p>
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-[11px] text-emerald-400 font-mono">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Global Network: All 42 Edge Locations Healthy
+          </div>
+        </div>
+
+        <!-- Col 1 -->
+        <div>
+          <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-4">Cloud Services</h4>
+          <ul class="space-y-2 text-xs">
+            <li><a href="#" class="hover:text-cyan-400 transition">Kubernetes Mesh</a></li>
+            <li><a href="#" class="hover:text-cyan-400 transition">Multi-Cloud Migration</a></li>
+            <li><a href="#" class="hover:text-cyan-400 transition">Autonomous SRE</a></li>
+            <li><a href="#" class="hover:text-cyan-400 transition">High-Density GPU Pods</a></li>
+            <li><a href="#" class="hover:text-cyan-400 transition">Database Replication</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 2 -->
+        <div>
+          <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-4">Cybersecurity</h4>
+          <ul class="space-y-2 text-xs">
+            <li><a href="#" class="hover:text-cyan-400 transition">Zero-Trust Identity</a></li>
+            <li><a href="#" class="hover:text-cyan-400 transition">SOC-2 Type II Audit</a></li>
+            <li><a href="#" class="hover:text-cyan-400 transition">Penetration Testing</a></li>
+            <li><a href="#" class="hover:text-cyan-400 transition">DDoS Mitigation</a></li>
+            <li><a href="#" class="hover:text-cyan-400 transition">Disaster Hot-Site</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3 -->
+        <div>
+          <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-4">Company</h4>
+          <ul class="space-y-2 text-xs">
+            <li><a href="#" class="hover:text-cyan-400 transition">About Synapse</a></li>
+            <li><a href="#" class="hover:text-cyan-400 transition">Case Studies</a></li>
+            <li><a href="#" class="hover:text-cyan-400 transition">Careers (Hiring SREs)</a></li>
+            <li><a href="#" class="hover:text-cyan-400 transition">Security Whitepaper</a></li>
+            <li><a href="#" class="hover:text-cyan-400 transition">Legal & Privacy</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Oversized Typographic Watermark -->
+      <div class="relative py-8 select-none border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <span class="text-xs text-slate-500 font-mono">
+          © 2026 SYNAPSE IT SOLUTIONS INC. ALL RIGHTS RESERVED.
+        </span>
+        <span class="text-4xl sm:text-7xl font-black tracking-tighter text-slate-900/60 uppercase pointer-events-none">
+          SYNAPSE IT
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================= -->
+  <!-- 7. CORE JAVASCRIPT: THREE.JS 3D CANVAS + COCONUT UI MOUSE -->
+  <!-- ========================================================= -->
+  <script>
+    // 1. Initialize Lucide Icons
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+
+    // 2. Coconut UI Dynamic Mouse Glow Tracking
+    const coconutGrid = document.getElementById('coconut-grid');
+    if (coconutGrid) {
+      coconutGrid.addEventListener('mousemove', (e) => {
+        const cards = document.getElementsByClassName('coconut-card');
+        for (const card of cards) {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          card.style.setProperty('--mouse-x', `${x}px`);
+          card.style.setProperty('--mouse-y', `${y}px`);
+        }
+      });
+    }
+
+    // 3. Three.js Interactive 3D WebGL Torus Knot (GetLayers & Scrolltide Pattern)
+    const canvasContainer = document.getElementById('hero-canvas');
+    if (canvasContainer && window.THREE) {
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.z = 24;
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      canvasContainer.appendChild(renderer.domElement);
+
+      // 3D Geometric Torus Knot with Wireframe Material
+      const geometry = new THREE.TorusKnotGeometry(8.5, 2.3, 140, 26);
+      const material = new THREE.MeshNormalMaterial({ wireframe: true, transparent: true, opacity: 0.35 });
+      const torusMesh = new THREE.Mesh(geometry, material);
+      scene.add(torusMesh);
+
+      // Particle Constellation
+      const particleGeo = new THREE.BufferGeometry();
+      const particleCount = 200;
+      const posArray = new Float32Array(particleCount * 3);
+      for (let i = 0; i < particleCount * 3; i++) {
+        posArray[i] = (Math.random() - 0.5) * 60;
+      }
+      particleGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+      const particleMat = new THREE.PointsMaterial({
+        size: 0.25,
+        color: 0x8b5cf6,
+        transparent: true,
+        opacity: 0.6
+      });
+      const particleMesh = new THREE.Points(particleGeo, particleMat);
+      scene.add(particleMesh);
+
+      // Mouse Smooth Spring Tracking
+      let mouseX = 0, mouseY = 0;
+      let targetX = 0, targetY = 0;
+      const windowHalfX = window.innerWidth / 2;
+      const windowHalfY = window.innerHeight / 2;
+
+      window.addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX - windowHalfX) * 0.0012;
+        mouseY = (e.clientY - windowHalfY) * 0.0012;
+      });
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      function animate() {
+        requestAnimationFrame(animate);
+        targetX += (mouseX - targetX) * 0.04;
+        targetY += (mouseY - targetY) * 0.04;
+
+        torusMesh.rotation.x += 0.004 + targetY;
+        torusMesh.rotation.y += 0.006 + targetX;
+        particleMesh.rotation.y -= 0.001;
+
+        renderer.render(scene, camera);
+      }
+      animate();
+    }
+
+    // 4. Live Counter Simulation
+    setInterval(() => {
+      const el = document.getElementById('kpi-reqs');
+      if (el) {
+        const val = 2842000 + Math.floor(Math.random() * 1500);
+        el.innerText = val.toLocaleString();
+      }
+    }, 2000);
+  </script>
+</body>
+</html>

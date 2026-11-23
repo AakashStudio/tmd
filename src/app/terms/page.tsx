@@ -87,7 +87,7 @@ export default function TermsPage() {
             4. VIP Subscriptions &amp; Digital Entitlements
           </h2>
           <p className="text-xs text-zinc-300 leading-relaxed">
-            TMD offers optional VIP membership tiers (Tier 49, Tier 149, PRO 499). Subscriptions activate immediately upon payment confirmation. Because digital benefits (such as unlimited swipes, rewind, and who-liked-you unlocks) are delivered instantly, subscription purchases are non-refundable once consumed.
+            TMD offers optional VIP membership tiers (Starter ₹29, Gold ₹49, VIP PRO ₹99). Subscriptions activate immediately upon payment confirmation. Because digital benefits (such as unlimited swipes, rewind, and who-liked-you unlocks) are delivered instantly, subscription purchases are non-refundable once consumed.
           </p>
         </section>
 

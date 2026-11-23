@@ -26,6 +26,7 @@ import { Card } from "@/components/ui/Card";
 import { useProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { EventTicketBookingModal } from "@/components/events/EventTicketBookingModal";
 
 interface EventItem {
@@ -105,9 +106,10 @@ const getInitialStartDateTime = () => {
 };
 
 export default function MapPage() {
+  const router = useRouter();
   const { user } = useAuth();
   const { profile, entitlements } = useProfile();
-  const isPro = Boolean(entitlements?.canAccessEvents);
+  const isPro = Boolean(entitlements?.canCreateEvents || entitlements?.isPro);
 
   const [events, setEvents] = useState<EventItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
@@ -116,7 +118,16 @@ export default function MapPage() {
   const [selectedPinEvent, setSelectedPinEvent] = useState<EventItem | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
+  const [showHostUpgradePrompt, setShowHostUpgradePrompt] = useState<boolean>(false);
   const [bookingModalEvent, setBookingModalEvent] = useState<EventItem | null>(null);
+
+  const handleHostClick = () => {
+    if (!entitlements?.canCreateEvents) {
+      setShowHostUpgradePrompt(true);
+    } else {
+      setShowCreateModal(true);
+    }
+  };
 
   // Form State for creating events
   const [newTitle, setNewTitle] = useState("");
@@ -382,7 +393,7 @@ export default function MapPage() {
 
           <button
             type="button"
-            onClick={() => setShowCreateModal(true)}
+            onClick={handleHostClick}
             className="py-1.5 px-3.5 rounded-full bg-gradient-to-r from-[#FFC629] to-[#F59E0B] hover:brightness-110 active:scale-95 text-black text-xs font-extrabold flex items-center gap-1.5 shadow-md shadow-[#FFC629]/20 transition cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" /> Host Event
@@ -468,7 +479,7 @@ export default function MapPage() {
                 </p>
               </div>
               <button
-                onClick={() => setShowCreateModal(true)}
+                onClick={handleHostClick}
                 className="w-full py-3 px-5 rounded-xl bg-gradient-to-r from-[#FFC629] to-[#F59E0B] hover:brightness-110 active:scale-95 text-black font-extrabold text-xs transition shadow-lg shadow-[#FFC629]/25 flex items-center justify-center gap-1.5"
               >
                 <Plus className="w-4 h-4 stroke-[2.5]" /> Create the First Event
@@ -1560,6 +1571,63 @@ export default function MapPage() {
                 )}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* VIP PRO ₹99 Host Upgrade Prompt Modal */}
+      {showHostUpgradePrompt && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in">
+          <div className="w-full max-w-sm rounded-3xl bg-[#111118] border border-amber-400/40 p-6 space-y-4 shadow-2xl relative text-center text-white">
+            <button
+              type="button"
+              onClick={() => setShowHostUpgradePrompt(false)}
+              className="absolute top-4 right-4 p-1.5 rounded-full bg-zinc-800 text-zinc-400 hover:text-white"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-amber-500/10 border border-amber-400/30 flex items-center justify-center shadow-lg">
+              <Sparkles className="w-7 h-7 text-[#FFC629] animate-pulse" />
+            </div>
+
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 block">
+                VIP PRO Exclusive
+              </span>
+              <h3 className="text-lg font-black text-white">Host Your Own Events</h3>
+              <p className="text-xs text-zinc-300 leading-relaxed">
+                Singles events host karne ke liye aapke paas <span className="text-amber-300 font-bold">₹99 VIP PRO</span> plan hona zaroori hai. Naye log join koi bhi kar sakta hai!
+              </p>
+            </div>
+
+            <div className="p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-left text-[11px] text-zinc-300 space-y-1.5">
+              <div className="flex items-center gap-2">
+                <span className="text-amber-400">✓</span> Host cafe mixers, speed dating & activities
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-amber-400">✓</span> Full attendee screening & approval control
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-amber-400">✓</span> Gold VIP Verification Badge on your profile
+              </div>
+            </div>
+
+            <div className="pt-1 flex flex-col gap-2">
+              <Link
+                href="/plan"
+                className="w-full py-3 rounded-2xl font-black text-xs text-black bg-gradient-to-r from-[#FFC629] via-[#F59E0B] to-[#FFC629] hover:brightness-105 active:scale-95 transition shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 text-center"
+              >
+                Upgrade to VIP PRO (₹99) →
+              </Link>
+              <button
+                type="button"
+                onClick={() => setShowHostUpgradePrompt(false)}
+                className="w-full py-2 text-xs font-semibold text-zinc-400 hover:text-white transition"
+              >
+                Not Now
+              </button>
+            </div>
           </div>
         </div>
       )}

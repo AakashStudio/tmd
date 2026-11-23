@@ -11,11 +11,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized or profile not found" }, { status: 401 });
     }
 
-    // 1. Entitlement Enforcement: Only ₹499 PRO subscribers can submit DOB correction requests
+    // 1. Entitlement Enforcement: Only ₹99 PRO subscribers can submit DOB correction requests
     if (!user.entitlements.canRequestDobCorrection) {
       return NextResponse.json(
         {
-          error: "DOB Correction requests are an exclusive feature of the ₹499 PRO plan.",
+          error: "DOB Correction requests are an exclusive feature of the ₹99 VIP PRO plan.",
         },
         { status: 403 }
       );

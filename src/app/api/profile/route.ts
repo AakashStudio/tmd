@@ -88,7 +88,7 @@ export async function PUT(req: NextRequest) {
       if (!user.entitlements.canChangeName) {
         return NextResponse.json(
           {
-            error: "Name change is restricted. You must hold an active ₹499 PRO plan to change your name.",
+            error: "Name change is restricted. You must hold an active ₹99 VIP PRO plan to change your name.",
           },
           { status: 403 }
         );
@@ -103,7 +103,7 @@ export async function PUT(req: NextRequest) {
       if (!user.entitlements.canSelectCity) {
         return NextResponse.json(
           {
-            error: "You have used all 3 free location changes. Upgrade to TMD Plus (₹149) or PRO (₹499) for unlimited location changes.",
+            error: "You have used all 3 free location changes. Upgrade to TMD Gold (₹49) or VIP PRO (₹99) for unlimited location changes.",
           },
           { status: 403 }
         );

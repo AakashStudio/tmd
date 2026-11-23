@@ -364,7 +364,7 @@ export default function HomePage() {
                   href="/plan"
                   className="w-full py-2 px-3 rounded-xl bg-amber-500/10 border border-amber-400/30 text-amber-300 text-[11px] font-semibold hover:bg-amber-400/20 transition text-center"
                 >
-                  Unlock Unlimited City Hopping with Plus (₹149) →
+                  Unlock Unlimited City Hopping with Gold (₹49) →
                 </Link>
               )}
             </div>

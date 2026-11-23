@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@db:5432/tmd_db?schema=public
+      - APP_TIMEZONE=Asia/Kolkata
+      - SESSION_SECRET=${SESSION_SECRET}
+      - VIEW_ONCE_TOKEN_TTL_SECONDS=60
+      - VIEW_ONCE_UNOPENED_EXPIRY_HOURS=72
+      - MEDIA_STORAGE_PATH=/app/storage/private_media
+      - RAZORPAY_KEY_ID=${RAZORPAY_KEY_ID}
+      - RAZORPAY_KEY_SECRET=${RAZORPAY_KEY_SECRET}
+      - RAZORPAY_WEBHOOK_SECRET=${RAZORPAY_WEBHOOK_SECRET}
+      - NODE_ENV=production
+    volumes:
+      - tmd_uploads:/app/public/uploads
+      - tmd_storage:/app/storage
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: tmd_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - tmd_pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  tmd_uploads:
+    name: tmd_uploads_data
+  tmd_storage:
+    name: tmd_storage_data
+  tmd_pgdata:
+    name: tmd_pg_data

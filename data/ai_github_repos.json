@@ -1,0 +1,55 @@
+{
+  "source": "Facebook Reel (https://www.facebook.com/reel/2909076742628596/)",
+  "title": "3 GitHub Repos That Replace $500/Month of AI Tools",
+  "category": "Open Source AI Tools & Autonomous Agents",
+  "savedAt": "2026-10-19T01:01:00+05:30",
+  "combinedStars": "247K+",
+  "monthlySavings": "$500/mo+",
+  "repos": [
+    {
+      "id": 1,
+      "name": "OpenHands (formerly OpenDevin)",
+      "repoUrl": "https://github.com/All-Hands-AI/OpenHands",
+      "stars": "72,000+",
+      "replaces": "Devin AI ($500/month)",
+      "cost": "Free & Open Source",
+      "keyFeatures": [
+        "Autonomous AI Software Engineer",
+        "Writes code, debugs, and runs unit tests",
+        "Manages Git (commits, branches, pull requests)",
+        "Includes CLI + Web GUI + Cloud + Enterprise setups",
+        "Used by engineers at Netflix, Amazon, and TikTok"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Dify",
+      "repoUrl": "https://github.com/langgenius/dify",
+      "stars": "139,000+",
+      "replaces": "Langflow, Pinecone & full AI SaaS backend stack",
+      "cost": "Free & Open Source (Self-Hosted / Cloud)",
+      "keyFeatures": [
+        "Visual workflow builder for LLM apps and agents",
+        "Built-in RAG (Retrieval-Augmented Generation) pipeline",
+        "50+ integrated tools and connectors",
+        "Supports any LLM model provider (OpenAI, Anthropic, Gemini, local models)",
+        "Zero subscription full AI application development platform"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "LibreChat",
+      "repoUrl": "https://github.com/danny-avila/LibreChat",
+      "stars": "36,000+",
+      "replaces": "ChatGPT Plus + Claude Pro + Gemini Advanced subscriptions ($60+/month)",
+      "cost": "Free & Open Source (Self-Hosted)",
+      "keyFeatures": [
+        "Unified chat interface for all LLM models (Claude, GPT-4o, Gemini 1.5/2.0, Mistral, Ollama/Local)",
+        "Built-in Code Interpreter & sandboxed execution",
+        "AI Image Generation (DALL-E, Stable Diffusion)",
+        "Web Search & custom plugins / MCP tools support",
+        "Self-hosted, multi-user, 100% private data"
+      ]
+    }
+  ]
+}
